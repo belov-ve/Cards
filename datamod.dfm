@@ -86,7 +86,6 @@ object DM: TDM
     ResourceOptions.SilentMode = True
     UpdateOptions.AssignedValues = [uvCheckRequired]
     UpdateOptions.CheckRequired = False
-    AutoCommitUpdates = False
     Left = 24
     Top = 182
   end
@@ -101,8 +100,21 @@ object DM: TDM
     UpdateOptions.EnableInsert = False
     UpdateOptions.EnableUpdate = False
     UpdateOptions.CheckRequired = False
-    AutoCommitUpdates = False
     Left = 104
+    Top = 182
+  end
+  object FDMemTable3: TFDMemTable
+    ActiveStoredUsage = [auRunTime]
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvCheckRequired]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.EnableUpdate = False
+    UpdateOptions.CheckRequired = False
+    Left = 168
     Top = 182
   end
 end

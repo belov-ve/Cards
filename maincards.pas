@@ -11,7 +11,7 @@ uses
   FMX.TabControl, FMX.MultiView, FMX.ListBox, FMX.Ani, FMX.Controls.Presentation,
   FMX.Edit, FMX.SearchBox, FMX.Objects, System.Actions, FMX.ActnList, FMX.Memo,
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
-  Xml.XMLDoc, System.IOUtils, FMX.Platform, FMX.ScrollBox;
+  Xml.XMLDoc, System.IOUtils, FMX.Platform, FMX.ScrollBox, FireDAC.Stan.Param;
 
 
 type
@@ -112,10 +112,8 @@ type
     RectangleAnswer: TRectangle;
     OprosAnswer: TLabel;
     OprosPackName: TLabel;
-    btnReverse: TSpeedButton;
-    Image4: TImage;
-    btnDirect: TSpeedButton;
-    Image5: TImage;
+    btnDirection: TSpeedButton;
+    ImageDirection: TImage;
     ColorBox2: TColorBox;
     ColorBox4: TColorBox;
     statCard: TLabel;
@@ -179,7 +177,23 @@ type
     OpenDialog: TOpenDialog;
     ChangeTabActionSelectFile: TChangeTabAction;
     ClientArray: TRectangle;
-    SpeedButton1: TSpeedButton;
+    PanelOpros: TPanel;
+    PanelExpressOpros: TPanel;
+    PanelPack: TPanel;
+    PanelPackList: TPanel;
+    GridPanelPacks: TGridPanelLayout;
+    GridPanelPack: TGridPanelLayout;
+    btnFreeButton: TSpeedButton;
+    GridPanelOpros: TGridPanelLayout;
+    SwitchRandom: TSwitch;
+    SwitchAuto: TSwitch;
+    LabelRandom: TLabel;
+    GridPanelOprosSwitch: TGridPanelLayout;
+    LabelAutoSwitch: TLabel;
+    KeyDirectionAnimated: TFloatKeyAnimation;
+    btnDirectAnimation: TFloatAnimation;
+    btnStartStudy: TSpeedButton;
+    Memo1: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -231,7 +245,7 @@ type
     procedure AnimationFinish(Sender: TObject);
     procedure btnOprosClick(Sender: TObject);
     procedure btnOprosMouseLeave(Sender: TObject);
-    procedure btnReverseClick(Sender: TObject);
+    procedure btnDirectionClick(Sender: TObject);
     procedure btnAaClick(Sender: TObject);
     procedure btnMinusClick(Sender: TObject);
     procedure RectangleExpressQClick(Sender: TObject);
@@ -249,8 +263,19 @@ type
     procedure mItemMouseEnter(Sender: TObject);
     procedure mItemMouseLeave(Sender: TObject);
     procedure mImportClick(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
     procedure PackListUpdate;
+    procedure ComPanelPacksResize(Sender: TObject);
+    procedure PanelOprosResize(Sender: TObject);
+    procedure PanelExpressOprosResize(Sender: TObject);
+    procedure PanelPackResize(Sender: TObject);
+    procedure PanelPackListResize(Sender: TObject);
+    procedure CardsGridResize(Sender: TObject);
+    procedure btnDirectAnimationFinish(Sender: TObject);
+    procedure SwitchAutoClick(Sender: TObject);
+    procedure SwitchAutoSwitch(Sender: TObject);
+    procedure Timer1Opros(Sender: TObject);
+    procedure btnStartStudyClick(Sender: TObject);
+    procedure mAboutClick(Sender: TObject);
   private
     { Private declarations }
     //procedure ImportXML(f_name : string);
@@ -272,36 +297,25 @@ type
 
 var
   Form1: TForm1;
-//  home_dir        : string;
-//  export_dir      : string;
   db_update       : string = 'update.s3db';
   db_work         : string = 'card.s3db';
   langlist        : string;         // список возможных значений для поля Lang
   txt,a,q         : string;
-  //{dbv,} updv     : integer;        // текущая версия стуктуры БД и последнее обновление
   need_upd        : boolean = False;
-  //last_id         : int64;
   card_lastrow    : integer;          // последнее положение указателя над строкой
   card_lastcol    : integer;          // последнее положение указателя над колонкой
   last_tap        : integer;          // последний "tap" по обьекту
   k_true          : integer;          // номер верного ответа или номер последнй карточки в экспресс опросе
-  {com_panel       : single = 53;      // ширина панели кнопок
-  btn_size        : single = 44;      // размер кнопки
-  space           : single = 5;       // отступы у элементов (кнопки, панели и т.д.)
-  btn_big         : single = 85;      // размер большой кнопки меню
-  btn_stn         : single = 70;      // размер стандартной кнопки меню }
   direct          : byte;             // направление при экспресс опросе
   new_rec         : byte;             // счетчик рекорда
-  //script1         : TStringList;
   pack_selected   : ^TListBoxItem;    // указатель на выбранный элемент
   mn              : array [0..3] of integer;
-  mr              : array [0..4] of ^TRectangle;      // панели с алементами формы ExpressOpros
+  mr              : array [0..4] of ^TRectangle;      // панели с элементами формы ExpressOpros
   mp              : array [0..4] of ^TImage;
   mt              : array [0..4] of ^TLabel;
   mas             : array [0..4] of ^TFloatAnimation; // анимация масштабирования
   map             : array [0..4] of ^TFloatAnimation; // анимация позиции
   //
-  //ini_direct      : boolean = True; // направление перебора карточке (последнее значение, хранить в ini)
   ini_maxanswer   : single = 5;       // максимальное количество хранимых ответов для одного направления ответа
   ini_autohide    : single = 1;       // автоматически скрывать через... подряд верных ответов (0 не скрывать)
   ini_fontOpros   : single = 22;
@@ -328,7 +342,7 @@ uses
     FMX.Helpers.Android,
     Androidapi.Helpers, Androidapi.JNI.GraphicsContentViewText, Androidapi.JNIBridge,
     Androidapi.JNI.JavaTypes, Androidapi.JNI.Net, Androidapi.JNI.Os, Androidapi.JNI.Webkit,
-    FMX.Platform.Android, Androidapi.IOUtils,
+    FMX.Platform.Android, Androidapi.IOUtils, Androidapi.JNI.App,
   {$ENDIF}
   FMX.VirtualKeyboard;
 
@@ -448,11 +462,13 @@ begin
     btnEdit.Visible           := state;
 
     case Pack.Tag of
-      0,2 : begin
+      0,2 :
+            begin
               btnAddCard.Visible    := cFalse;
               btnDeleteCard.Visible := cFalse;
             end;
-      1   : begin
+      1 :
+            begin
               btnAddCard.Visible    := cTrue;
               btnDeleteCard.Visible := cTrue;
             end;
@@ -470,7 +486,6 @@ begin
     begin
       LangEdit.Items.Text     := langlist;
       Statistics.IsExpanded   := cFalse;
-      //if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // открываем транзакцию редактирования
       case Pack.Tag of
         1: TopLabel.Text      := 'Edit';
         2: TopLabel.Text      := 'Insert';
@@ -506,9 +521,9 @@ begin
     if SearchBoxPack.Visible then SearchBoxPack.Visible := cFalse;
 
     // если какой-нибудь элемент списка выбран, запоминаем его RowID из поля TagString, или ''
-    if ( Assigned(pack_selected^) ) then nc_selected := pack_selected^.TagString
+    if Assigned(pack_selected^) then nc_selected := pack_selected^.TagString
     else nc_selected := EmptyStr;
-Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
+    Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
     if Assigned(pack_selected) then pack_selected^ := nil;
 
     ListPacks.BeginUpdate;
@@ -542,8 +557,9 @@ Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=List
       if ( nc_selected=ListPacks.ListItems[i].TagString ) then
       begin
         ListPacks.ItemIndex := i;                     // восстанавливаем выбор
-        pack_selected^      := ListPacks.Selected;    // запоминаем ссылку на выбранную пачку
-        ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aMore;
+        //  pack_selected^      := ListPacks.Selected;    // запоминаем ссылку на выбранную пачку
+        //  ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aMore;
+        ListPacksChange(nil)
       end
       else ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aNone;
       //
@@ -555,11 +571,31 @@ Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=List
   finally
     //ListPacks.Sorted := cTrue;
     ListPacks.EndUpdate;
-    if DM.FDDatabese.Connected then DM.FDDatabese.Close;
+    if not Assigned(pack_selected^) and DM.FDDatabese.Connected then DM.FDDatabese.Close;
   end;
 
 end;
 
+
+procedure TForm1.PanelExpressOprosResize(Sender: TObject);
+begin
+  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+end;
+
+procedure TForm1.PanelOprosResize(Sender: TObject);
+begin
+  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+end;
+
+procedure TForm1.PanelPackListResize(Sender: TObject);
+begin
+  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+end;
+
+procedure TForm1.PanelPackResize(Sender: TObject);
+begin
+  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+end;
 
 // замена в строке str символа # на указанную подстроку substr
 function TForm1.ReplaceInStr(str, substr : string) : string;
@@ -699,25 +735,26 @@ begin
       // форма в режиме ReadOnly - возврат с панели Pack на PackList
           0,4: ChangeTabActionPackList.ExecuteTarget(self);  //TabControl1.ActiveTab := PackList;
       // форма в режиме редактирования - отмена изменений
-          1:  begin
-                if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откат транзакции (выход без сохранения)
-                Pack.Tag := 0;
-                TabControl1Change(nil);   // обновление элементов формы
-              end;
+          1: begin
+              if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откат транзакции (выход без сохранения)
+              Pack.Tag := 0;
+              TabControl1Change(nil);   // обновление элементов формы
+             end;
           2: begin
               if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
               ChangeTabActionPackList.ExecuteTarget(self);
-            end;
+             end;
         end;
     2:    // если 2, то возврат с панели Card на Pack
           ChangeTabActionPack.ExecuteTarget(self);  //TabControl1.ActiveTab := Pack;
     3: // если 3 то возврат с панели Opros на PackList
         begin
+          if Timer1.Enabled then Timer1.Enabled := cFalse;
           pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));  //обновление статистики
           ChangeTabActionPackList.ExecuteTarget(self);
         end;
     4:  begin // если 3,4 то возврат с панели Opros на PackList
-          if Timer1.Enabled then Timer1.Enabled := not Timer1.Enabled;
+          if Timer1.Enabled then Timer1.Enabled := cFalse;
           ChangeTabActionPackList.ExecuteTarget(self);
         end;
   end;
@@ -729,6 +766,7 @@ begin
   if CardsGrid.Selected<>-1 then
   begin
     try
+      if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // открываем транзакцию для возможности отката удаления
       DM.FDQuery2.RecNo := CardsGrid.Selected+1;
       DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE nc='+DM.FDQuery2.FieldByName('nc').AsString);
     finally
@@ -825,18 +863,24 @@ begin
   else Form1.btnBackClick(nil);
 end;
 
-// Чтение и установка новой карты для формы Opros
+// Чтение и установка новой карты для формы Opros в режиме проверки
 procedure SelectNewCardToOpros;
+var i,j : integer;
 begin
   with Form1 do
   begin
+    case Opros.tag of
+    0,1 : //режим проверки
+      begin
           DM.FDQuery2.Refresh;
+          //DM.FDQuery2.Last;   //избыточное действие (Refresh корректно обновляет RecNo)
           //
           if DM.FDQuery2.RecordCount>1 then
           begin //осталось карт >1
             //выбираем номер показываемой карточки
             DM.FDQuery2.RecNo := Random(DM.FDQuery2.RecordCount)+1;
             while VarToStr(DM.FDQuery2['question1'])=last_card do DM.FDQuery2.RecNo := Random(DM.FDQuery2.RecordCount)+1;
+            //TopLabel.Text := IntToStr(DM.FDQuery2.RecNo); //для проверки ошибки 1.0.1.2N
           end
           else
           if DM.FDQuery2.RecordCount=1 then
@@ -848,9 +892,9 @@ begin
           end
           else
           begin //карточки для выбранного направления закончились
-            if (Opros.Tag=0) and btnReverse.Enabled then Opros.Tag := 1 // меняем направление на обратое
+            if (Opros.Tag=0) and btnDirection.HitTest then Opros.Tag := 1 // меняем направление на обратое
             else
-            if (Opros.Tag=1) and btnReverse.Enabled then Opros.Tag := 0 // меняем направление на прямое
+            if (Opros.Tag=1) and btnDirection.HitTest then Opros.Tag := 0 // меняем направление на прямое
             else
             begin //сообщить об окончании всей пачки и выйти
               ShowMessage(txt_warning2);
@@ -862,18 +906,50 @@ begin
             MessageDlg(txt_warning2+'. '+txt_warning3,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],0,TMsgDlgBtn.mbYes,SelectNewDirection);
             Exit;
           end;
+      end;
+    2 : // режим изучения
+      begin
+        // переходим к следующй карточке
+        i := DM.FDQuery2.RecNo; //запоминаем текущую
+        if SwitchRandom.IsChecked and (DM.FDQuery2.RecNo > 1) then
+        begin //случайный перебор
+          repeat  // генерация номера новой карточки, не райной текущй
+            j := Random(DM.FDQuery2.RecordCount)+1;
+          until (i<>j);
+          DM.FDQuery2.RecNo := j;
+        end
+        else //по порядку
+        begin
+          DM.FDQuery2.Next;
+          if DM.FDQuery2.Eof then DM.FDQuery2.First;
+        end;
+        //
+      end;
+    end;
 
-          // запоминаем номер выбранной карточки
-          last_card           := VarToStr(DM.FDQuery2['question1']);
-          // назначаем значения для полей вопрос/ответ
-          OprosQuestion.Text  := VarToStr(DM.FDQuery2['question1']);
-          OprosAnswer.Text    := VarToStr(DM.FDQuery2['question2']);
-          statCard.Text       := TrueOfSum(DM.FDQuery2['true'],DM.FDQuery2['false']);
-          // С анимацией показываем вопрос или ответ
-          case Opros.tag of
-            0: AnimationQuestion;
-            1: AnimationAnswer;
-          end;
+
+    // запоминаем номер выбранной карточки
+    last_card           := VarToStr(DM.FDQuery2['question1']);
+    // назначаем значения для полей вопрос/ответ
+    OprosQuestion.Text  := VarToStr(DM.FDQuery2['question1']);
+    OprosAnswer.Text    := VarToStr(DM.FDQuery2['question2']);
+    statCard.Text       := TrueOfSum(DM.FDQuery2['true'],DM.FDQuery2['false']);
+    // С анимацией показываем вопрос или ответ
+    case Opros.tag of
+      0: AnimationQuestion;
+      1: AnimationAnswer;
+      2: //режим изучения
+        begin
+          // ждем завершения предыдущей анимации
+          while QuestionAnimationScale.Running or QuestionAnimationPosition.Running do Delay(100);
+          while AnswerAnimationScale.Running or AnswerAnimationPosition.Running do Delay(100);
+          // эмитация псевдо переворота карты
+          QuestionAnimationScale.Start;
+          AnswerAnimationScale.Start;
+          QuestionAnimationPosition.Start;
+          AnswerAnimationPosition.Start;
+        end;
+    end;
   end;
 end;
 
@@ -962,8 +1038,17 @@ begin
   ini_fontOpros := OprosQuestion.TextSettings.Font.Size;
 end;
 
-procedure TForm1.btnReverseClick(Sender: TObject);
+procedure TForm1.btnDirectAnimationFinish(Sender: TObject);
 begin
+  // изменение направления анимации после завершения цикла
+  btnDirectAnimation.Inverse := not btnDirectAnimation.Inverse;
+end;
+
+procedure TForm1.btnDirectionClick(Sender: TObject);
+begin
+  if btnDirectAnimation.Running then Exit  // кнопка нажата и обрабатывается
+  else btnDirectAnimation.Start;
+
   DM.FDStat.Refresh;   // обновляем данные статистики по пачке
 
   // меняем направление перебора
@@ -977,6 +1062,7 @@ begin
   if not ImageQ.Visible then AnimationQuestion;
   while AnswerAnimationPosition.Running or AnswerAnimationScale.Running do Delay(100);
   if not ImageA.Visible then AnimationAnswer;
+
   // ждем завершения закрытия
   while QuestionAnimationPosition.Running or QuestionAnimationScale.Running
         or AnswerAnimationPosition.Running or AnswerAnimationScale.Running do Delay(100);
@@ -1214,6 +1300,12 @@ begin
   ListPacksDblClick(nil);
 end;
 
+procedure TForm1.btnStartStudyClick(Sender: TObject);
+begin
+  Opros.Tag := 2; // закладка Opros в режиме изучения
+  ChangeTabActionOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := Opros;
+end;
+
 procedure TForm1.btnStartTrainingClick(Sender: TObject);
 begin
   ChangeTabActionExpressOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := ExpressOpros;
@@ -1293,6 +1385,32 @@ begin
     card_lastrow  := CardsGrid.RowByPoint(X,Y);
 end;
 
+procedure TForm1.CardsGridResize(Sender: TObject);
+begin
+  CardsGrid.BeginUpdate;
+  if Form1.Width>Form1.Height then
+  begin
+          // отступы таблицы с карточками
+          CardsGrid.Margins.Bottom      := 0;
+          CardsGrid.Margins.Right       := ListPacks.Margins.Top;
+          // вид и ширина полей у списка карточек
+          Progress.Visible              := cFalse;
+          Question.Width                := CardsGrid.Width*0.3;
+          Answer.Width                  := CardsGrid.Width - Question.Width - 56;
+  end
+  else
+  begin
+          CardsGrid.Margins.Bottom      := ListPacks.Margins.Top;
+          CardsGrid.Margins.Right       := 0;
+          // вид и ширина полей у списка карточек
+          Progress.Visible              := cTrue;
+          Progress.Width                := Round(CardsGrid.Width*0.2);
+          Question.Width                := Round(CardsGrid.Width*0.25);
+          Answer.Width                  := CardsGrid.Width - Question.Width - Progress.Width - 56;
+  end;
+  CardsGrid.EndUpdate;
+end;
+
 procedure TForm1.CardsGridTap(Sender: TObject; const Point: TPointF);
 begin
   //TopLabel.Text := '(Tap) RowTap='+IntToStr(card_lastrow)+'  RowSelected='+IntToStr(CardsGrid.Selected);
@@ -1328,6 +1446,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 var i : Integer;
 begin
+
   // потом из ini файла
   OprosQuestion.TextSettings.Font.Size := ini_fontOpros;
   OprosAnswer.TextSettings.Font.Size := ini_fontOpros;
@@ -1439,13 +1558,17 @@ begin
   {$ENDIF}
   //-------------------------------------------------------------------
 
+Memo1.Lines.Add( Format('DB = %s', [db_work]) );
+Memo1.Lines.Add( Format('Upd DB = %s', [db_update]) );
+Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
+
 
   // проверка наличия файла БД и чтение версии структуры БД и последнего обновления
   DM.FDDatabese.Params.Database := db_work;
   if FileExists(db_work) then
   begin
     try
-      DM.FDDatabese.Connected := not DM.FDDatabese.Connected; //открываем соединение
+      DM.FDDatabese.Connected := cTrue; //открываем соединение
       DM.FDQuery1.SQL.Text := 'Select dbv, updv from version;';
       DM.FDQuery1.OpenOrExecute;
       //dbv   :=  DM.FDQuery1.FieldByName('dbv').AsInteger;
@@ -1580,16 +1703,19 @@ begin
     end;
   end;
 
+Memo1.Lines.Add( Format('Версия базы данных = %d', [updv]) );
 
   // проверка наличия файла обновления
   try
       if DM.FDDatabese.Connected then DM.FDDatabese.Close;
       DM.FDDatabese.Params.Database := db_update;
-      DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
+      DM.FDDatabese.Connected := cTrue;
       DM.FDQuery1.SQL.Text := 'Select updv from version;';
       DM.FDQuery1.OpenOrExecute;
 
-      if updv<>DM.FDQuery1.FieldByName('updv').AsInteger then
+Memo1.Lines.Add( Format('Версия обновления = %d', [DM.FDQuery1.FieldByName('updv').AsInteger]) );
+
+      if updv < DM.FDQuery1.FieldByName('updv').AsInteger then
       begin
         //запомним номер обновления для сохранения в БД
         updv := DM.FDQuery1.FieldByName('updv').AsInteger;
@@ -1603,6 +1729,12 @@ begin
         DM.FDQuery1.Open;
         DM.FDQuery1.FetchAll;
         DM.FDMemTable2.Data := DM.FDQuery1.Data;
+        //
+        DM.FDQuery1.SQL.Text := 'Select * from content_delete;';
+        DM.FDQuery1.Open;
+        DM.FDQuery1.FetchAll;
+        DM.FDMemTable3.Data := DM.FDQuery1.Data;
+        //
         need_upd := cTrue; // применить обновление к карточкам
       end
       else need_upd := cFalse; // обновление уже применялось, пропускаем его
@@ -1627,8 +1759,7 @@ begin
 
       // зафиксировать изменения
       DM.FDTransaction1.Commit;
-      //удалаем файл обновления
-      //DeleteFile(db_update) then ShowMessage('Файл обновления '+db_update+' удален') else ShowMessage('Файл обновления '+db_update+' не удален');
+Memo1.Lines.Add( 'Обновление базы пачек проведено' );
 
     except
       on E: Exception do
@@ -1641,7 +1772,18 @@ begin
     if DM.FDDatabese.Connected then DM.FDDatabese.Close;
     DM.FDMemTable1.Free;
     DM.FDMemTable2.Free;
+    DM.FDMemTable3.Free;
   end;
+
+  //удалаем файл обновления
+  //if DeleteFile(db_update) then ShowMessage('Файл обновления '+db_update+' удален') else ShowMessage('Файл обновления '+db_update+' не удален');
+  {$IF DEFINED(MSWINDOWS) OR DEFINED(ANDROID)}
+  try
+    DeleteFile(db_update);
+  except
+  end;
+  {$ENDIF}
+
 
   // заполнение списка пачек
   PackListUpdate;
@@ -1760,8 +1902,83 @@ var i : integer;
 begin
   with Form1 do for i := 0 to length(mr)-1 do
   begin
-    map[i].StartValue := mr[i].Position.Y;
-    map[i].StopValue  := mr[i].Position.Y + mr[i].Height/2
+    if Assigned( map[i] ) and Assigned( mr[i] ) then
+    begin
+      map[i].StartValue := mr[i].Position.Y;
+      map[i].StopValue  := mr[i].Position.Y + mr[i].Height/2
+    end;
+  end;
+end;
+
+// растановка элементов на панеле GridPanelLayout вертикально
+procedure GridPanelLayoutVerticalSet(GPanel : TGridPanelLayout);
+var i : integer;
+begin
+  with Form1 do
+  begin
+    if GPanel.ColumnCollection.Count<>1 then
+    begin
+      //
+      GPanel.BeginUpdate;
+
+      // добавляем необходимое количество строк в грид
+      while GPanel.RowCollection.Count <> GPanel.ColumnCollection.Count do
+        GPanel.RowCollection.Add;
+
+      // устанавливаем нужные размеры строк в %
+      for i := 0 to GPanel.RowCollection.Count-1 do
+        GPanel.RowCollection.Items[i].Value := 100/GPanel.RowCollection.Count;
+
+      // переносим контролы
+      for i := 0 to GPanel.ControlCollection.Count-1 do
+      begin
+        GPanel.ControlCollection.Items[i].Row     := i;
+        GPanel.ControlCollection.Items[i].Column  := 0;
+      end;
+
+      // удаляем колонки грида, кроме первой
+      while GPanel.ColumnCollection.Count <> 1 do
+        GPanel.ColumnCollection.Delete( GPanel.ColumnCollection.Count-1 );
+
+      //
+      GPanel.EndUpdate;
+    end;
+  end;
+end;
+
+// растановка элементов на панеле GridPanelLayout горизонтально
+procedure GridPanelLayoutGorizontalSet(GPanel : TGridPanelLayout);
+var i : integer;
+begin
+  with Form1 do
+  begin
+    if GPanel.RowCollection.Count<>1 then
+    begin
+      //
+      GPanel.BeginUpdate;
+
+      // добавляем необходимое количество строк в грид
+      while GPanel.RowCollection.Count <> GPanel.ColumnCollection.Count do
+        GPanel.ColumnCollection.Add;
+
+      // устанавливаем нужные размеры колонок в %
+      for i := 0 to GPanel.ColumnCollection.Count-1 do
+        GPanel.ColumnCollection.Items[i].Value := 100/GPanel.ColumnCollection.Count;
+
+      // переносим контролы
+      for i := 0 to GPanel.ControlCollection.Count-1 do
+      begin
+        GPanel.ControlCollection.Items[i].Column  := i;
+        GPanel.ControlCollection.Items[i].Row     := 0;
+      end;
+
+      // удаляем колонки грида, кроме первой
+      while GPanel.RowCollection.Count <> 1 do
+        GPanel.RowCollection.Delete( GPanel.RowCollection.Count-1 );
+
+      //
+      GPanel.EndUpdate;
+    end;
   end;
 end;
 
@@ -1769,34 +1986,14 @@ begin
   if Form1.Width>Form1.Height then portrait := cFalse
   else portrait := cTrue;
 
-  { if portrait then marging_st := TBounds.Create(TRectF.Create(0,0,space,0))
-  else marging_st := TBounds.Create(TRectF.Create(0,0,0,space)); }
-
-  //TopLabel.Text := 'Height='+FloatToStr(TabControl1.Height) +'  Width='+FloatToStr(TabControl1.Width);
-
 // Проверка и переформатирование панелей элементов
   if portrait then
   //портретная ориентация
   case TabControl1.ActiveTab.Index of
     // Элементы на PackList
     0:  begin
-          SetCompanel(ComPanelPacks, ColorBox4);
-          //вычисление отступа между кнопками нижней панели
-          i := (ComPanelPacks.Width - btn_size*4)/3;
-          // кнопка перехода к форме Pack
-          btnInfoPack.Position.X        := ComPanelPacks.Width-btn_size-space;
-          btnInfoPack.Position.Y        := (ComPanelPacks.Height-btn_size-space)/2;
-          //btnInfoPack.Margins           := marging_st;
-          //btnInfoPack.Align             := TAlignLayout.MostRight;
-          // кнопка удаления пачки из PackList
-          btnDeletePack.Position.X      := ComPanelPacks.Width-btn_size*2-i;
-          btnDeletePack.Position.Y      := btnInfoPack.Position.Y;  //(com_panel-btn_size+ComPanelPacks.CalloutLength)/2;
-          // отступ у кноки обучения
-          btnStartEducation.Position.X  := space;
-          btnStartEducation.Position.Y  := btnInfoPack.Position.Y;
-          // отступ у кнопки экспресс опроса
-          btnStartTraining.Position.X   := btn_size + i;
-          btnStartTraining.Position.Y   := btnInfoPack.Position.Y;
+          SetCompanel( ComPanelPacks, ColorBox4 );
+          GridPanelLayoutGorizontalSet( GridPanelPacks );
           // отступы у списка карточек
           ListPacks.Margins.Bottom      := 0;
           ListPacks.Margins.Right       := space;
@@ -1804,26 +2001,7 @@ begin
     // Панель на Pack
     1:  begin
           SetCompanel(ComPanelPack, ColorBox2);
-          // кнопка просмотра карточки
-          btnInfoCard.Position.X        := ComPanelPack.Width-btn_size-space;
-          btnInfoCard.Position.Y        := (ComPanelPack.Height-btn_size-space)/2;
-          //btnInfoCard.Margins           := marging_st;
-          //btnInfocard.Align             := TAlignLayout.MostRight;
-          // кнопка удаления карточки
-          btnDeleteCard.Position.X      := (ComPanelPacks.Width-btn_size)/2;
-          btnDeleteCard.Position.Y      := btnInfocard.Position.Y;
-          // кнопка добавления новой карточки
-          btnAddCard.Position.X         := space;
-          btnAddCard.Position.Y         := btnInfocard.Position.Y;
-          // отступы таблицы с карточками
-          CardsGrid.BeginUpdate;
-          CardsGrid.Margins.Bottom      := 0;
-          CardsGrid.Margins.Right       := ListPacks.Margins.Top;
-          // вид и ширина полей у списка карточек
-          Progress.Visible              := cFalse;
-          Question.Width                := CardsGrid.Width*0.3;
-          Answer.Width                  := CardsGrid.Width - Question.Width - 56;
-          CardsGrid.EndUpdate;
+          GridPanelLayoutGorizontalSet( GridPanelPack );
           btnDeleteStatistics.Position.X := Statistics.Width - btn_size-space;
     end;
     // Панель Opros
@@ -1851,21 +2029,17 @@ begin
           statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
           statCard.Position.Y := RectangleAnswer.Position.Y + RectangleAnswer.Height+statCard.Height/2;
 
-          // Кнопки смены направления опроса
-          btnReverse.Position.Y := (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
+          // Кнопка смены направления опроса
+          btnDirection.Position.Y := (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
             + RectangleQuestion.Height)/2;
-          btnReverse.Position.X := Form1.Width/4;
-          btnDirect.Position.Y  := btnReverse.Position.Y;
-          btnDirect.Position.X  := Form1.Width*3/4-btn_size*1.5;
+          btnDirection.Position.X := (PanelOpros.Width - btn_size)/2;
+
+          // Панель с переключателями режима обучения
+          GridPanelOprosSwitch.Position.Y := (RectangleAnswer.Position.Y - GridPanelOprosSwitch.Height
+                              + RectangleQuestion.Position.Y + RectangleQuestion.Height)/2;
 
           // Кнопки завершения опроса карточки
-          btnOprosHide.Position.Y   := 0;
-          btnOprosError.Position.Y  := btnOprosHide.Position.Y;
-          btnOprosOK.Position.Y     := btnOprosHide.Position.Y;
-
-          btnOprosHide.Position.X := btn_size;
-          btnOprosError.Position.X := (ComPanelOpros.Width-btn_size)/2;
-          btnOprosOK.Position.X := ComPanelOpros.Width-btn_size*2;
+          GridPanelLayoutGorizontalSet( GridPanelOpros );
     end;
     // Панель ExpressOpros
     4:  begin
@@ -1906,23 +2080,8 @@ begin
   case TabControl1.ActiveTab.Index of
     // Элементы на PackList
     0:  begin
-          SetCompanel(ComPanelPacks, ColorBox4);
-          //вычисление отступа между кнопками нижней панели
-          i := (ComPanelPacks.Height - btn_size*4)/3;
-          // кнопка перехода к форме Pack
-          btnInfoPack.Position.X        := (ComPanelPacks.Width-btn_size-space)/2;
-          btnInfoPack.Position.Y        := ComPanelPacks.Height-btn_size-space;
-          //btnInfoPack.Margins           := marging_st;
-          //btnInfoPack.Align             := TAlignLayout.MostBottom;
-          // кнопка удаления выбранной пачки
-          btnDeletePack.Position.X      := btnInfoPack.Position.X;            //(com_panel-btn_size)/2;
-          btnDeletePack.Position.Y      := ComPanelPacks.Height-btn_size*2-i;
-          // отступ у кноки обучения
-          btnStartEducation.Position.X  := btnInfoPack.Position.X;
-          btnStartEducation.Position.Y  := space;
-          // отступ у кнопки экспресс опроса
-          btnStartTraining.Position.X   := btnInfoPack.Position.X;
-          btnStartTraining.Position.Y   := btn_size + i;
+          SetCompanel( ComPanelPacks, ColorBox4 );
+          GridPanelLayoutVerticalSet( GridPanelPacks );
           // отступы у списка карточек
           ListPacks.Margins.Bottom      := space;
           ListPacks.Margins.Right       := 0;
@@ -1930,27 +2089,9 @@ begin
     // Панель на Pack
     1:  begin
           SetCompanel(ComPanelPack, ColorBox2);
-          // кнопка просмотра карточки
-          btnInfoCard.Position.X        := (ComPanelPack.Width-btn_size-space)/2;
-          btnInfoCard.Position.Y        := ComPanelPack.Height-btn_size-space;
-          //btnInfoCard.Margins           := marging_st;
-          //btnInfocard.Align             := TAlignLayout.MostBottom;
-          // кнопка удаления карточки
-          btnDeleteCard.Position.X      := btnInfocard.Position.X;
-          btnDeleteCard.Position.Y      := (ComPanelPack.Height-btn_size)/2;
-          // кнопка добавления новой карточки
-          btnAddCard.Position.X         := btnInfocard.Position.X;
-          btnAddCard.Position.Y         := space;
+          GridPanelLayoutVerticalSet( GridPanelPack );
+
           // отступы таблицы с карточками
-          CardsGrid.BeginUpdate;
-          CardsGrid.Margins.Bottom      := ListPacks.Margins.Top;
-          CardsGrid.Margins.Right       := 0;
-          // вид и ширина полей у списка карточек
-          Progress.Visible              := cTrue;
-          Progress.Width                := Round(CardsGrid.Width*0.2);
-          Question.Width                := Round(CardsGrid.Width*0.25);
-          Answer.Width                  := CardsGrid.Width - Question.Width - Progress.Width - 56;
-          CardsGrid.EndUpdate;
           btnDeleteStatistics.Position.X := Statistics.Width - btn_size-space;
     end;
     // Панель Opros
@@ -1980,21 +2121,17 @@ begin
           statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
           statCard.Position.Y := RectangleAnswer.Position.Y + RectangleAnswer.Height+statCard.Height;
 
-          // Кнопки смены направления опроса
-          btnReverse.Position.Y := (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
+          // Кнопка смены направления опроса
+          btnDirection.Position.Y := (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
             +RectangleQuestion.Height)/2;
-          btnReverse.Position.X := Form1.Width/4;
-          btnDirect.Position.Y  := btnReverse.Position.Y;
-          btnDirect.Position.X  := Form1.Width*3/4-btn_size*2;
+          btnDirection.Position.X := (PanelOpros.Width - com_panel - btn_size)/2;
+
+          // Панель с переключателями режима обучения
+          GridPanelOprosSwitch.Position.Y := (RectangleAnswer.Position.Y - GridPanelOprosSwitch.Height
+                              + RectangleQuestion.Position.Y + RectangleQuestion.Height)/2;
 
           // Кнопки завершения опроса карточки
-          btnOprosHide.Position.X   := 0;
-          btnOprosError.Position.X  := btnOprosHide.Position.X;
-          btnOprosOK.Position.X     := btnOprosHide.Position.X;
-
-          btnOprosHide.Position.Y   := btn_size;
-          btnOprosError.Position.Y  := (ComPanelOpros.Height-btn_size)/2;
-          btnOprosOK.Position.Y     := ComPanelOpros.Height-btn_size*2;
+          GridPanelLayoutVerticalSet( GridPanelOpros );
     end;
     // Панель ExpressOpros
     4:  begin
@@ -2030,17 +2167,25 @@ begin
     end;
   end;
   //
-  //marging_st.Free;
 end;
 
 procedure TForm1.ListPacksChange(Sender: TObject);
 begin
+  // если TabControl в процессе обновления
+  // блокируем выбор нового элемента (защита от быстрок тыканья в экран)
+  if TabControl1.TransitionRunning then
+  begin
+    if (Assigned(pack_selected^) and (pack_selected^<>ListPacks.Selected)) then ListPacks.ItemIndex := pack_selected^.Index;
+    Exit;
+  end;
+
   // убираем "aMore" с предыдущего элемента списка
   if (Assigned(pack_selected^) and (pack_selected^<>ListPacks.Selected)) then
   begin
     pack_selected^.ItemData.Accessory := TListBoxItemData.TAccessory.aNone;
     pack_selected^ := nil;
     //скрываем кнопки нижнего меню
+    btnStartStudy.Visible := cFalse;
     btnInfoPack.Visible   := cFalse;
     btnDeletePack.Visible := cFalse;
     mExport.Enabled       := cFalse;
@@ -2064,6 +2209,11 @@ begin
     if not DM.FDStat.Prepared then DM.FDStat.Prepare;
     DM.FDStat.OpenOrExecute;
 
+    // кнопку изучения показываем тольк если больше 0 не скрытых карточек
+    if ((VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide1']))>0) or
+       ((VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide2']))>0)
+       then btnStartStudy.Visible := True;
+
     // кнопку опроса показываем только если больше 1 карточки
     if VarToInt(DM.FDStat['countcards'])>0 then
     begin
@@ -2078,8 +2228,8 @@ begin
     else btnStartEducation.Visible := cFalse;
 
     // кнопку експресс опроса показываем кнопку только если в пачке больше 5 карточек
-    if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := DM.FDStat.Active
-    else btnStartTraining.Visible := not DM.FDStat.Active;
+    if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := cTrue
+    else btnStartTraining.Visible := cFalse;
 
     case pack_selected^.Tag of
       1..2 : btnDeletePack.Visible := cTrue;
@@ -2091,7 +2241,7 @@ end;
 
 procedure TForm1.ListPacksDblClick(Sender: TObject);
 begin
-  if not btnStartEducation.Visible then Exit; // кнопка не доступна занчит карт в пачке нет, ничего не делаем
+  if not btnStartEducation.Visible then Exit; // кнопка не доступна занчит в пачке нет карточек, ничего не делаем
   try
     // выбор направления
     with DM.FDStat do
@@ -2123,6 +2273,11 @@ begin
   // для обработки повторного клика по выбранной строки (для пальцев)
   if last_tap=Item.GetHashCode then ListPacksDblClick(Sender)
   else last_tap := Item.GetHashCode;
+end;
+
+procedure TForm1.mAboutClick(Sender: TObject);
+begin
+  Memo1.Visible := not Memo1.Visible;
 end;
 
 procedure TForm1.mItemMouseLeave(Sender: TObject);
@@ -2241,16 +2396,10 @@ begin
   try
     // отбор данных по выбранной пачке
     if DM.FDQuery1.Active then DM.FDQuery1.Active := cFalse;
-//    DM.FDQuery1.SQL.Text := 'SELECT * FROM packet WHERE np =' + pack_selected^.TagString;
     DM.FDQuery1.SQL.Text := 'SELECT p.uid, p.lang, p.packname, p.descript,';
     DM.FDQuery1.SQL.Add('p.version, datetime(s.lastmod,''localtime'') AS lastmod');
     DM.FDQuery1.SQL.Add('FROM packet p LEFT JOIN pack_stats s ON s.np=p.np');
     DM.FDQuery1.SQL.Add('WHERE p.np =' + pack_selected^.TagString);
-{
-SELECT p.np, p.uid, p.version, datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
-
-		WHERE p.np=3;
-}
     DM.FDQuery1.OpenOrExecute;
 
     //заполнение информации об экспортируемой пачке
@@ -2317,12 +2466,12 @@ SELECT p.np, p.uid, p.version, datetime(s.lastmod,'localtime') AS lastmod, s.cou
       Intent.putExtra(TJIntent.JavaClass.EXTRA_SUBJECT, StringToJString('Export Cards-pack '+DateTimeToStr(now)));
       Intent.putExtra(TJIntent.JavaClass.EXTRA_TEXT, StringToJString(txt_warning7+packname));
       // присоединяем файл експорта
-      j_file := SharedActivity.getExternalFilesDir(StringToJString(exp_fname+exp_ext));
+      j_file := TAndroidHelper.Activity.getExternalFilesDir(StringToJString(exp_fname+exp_ext));
       uri := TJnet_Uri.JavaClass.fromFile(j_file);
       Intent.putExtra(TJIntent.JavaClass.EXTRA_STREAM,TJParcelable.Wrap((uri as ILocalObject).GetObjectID));
       Intent.setType(StringToJString('vnd.android.cursor.dir/email'));
       // вызов диалога отправки
-      SharedActivity.startActivity(Intent);
+      TAndroidHelper.Activity.startActivity(Intent);
     {$ELSEIF DEFINED(IOS)}
       //потом сделать выгрузку для iOS
     {$ENDIF}
@@ -2344,6 +2493,7 @@ end;
 // экспорт карточек в XML файл
 procedure TForm1.mListBoxItem3Click(Sender: TObject);
 begin
+  Opros.Tag := 2; //режим обучения (просто перебор открытых карточек)
   ChangeTabActionOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := Opros;
   MasterPanel.HideMaster
 end;
@@ -2473,26 +2623,56 @@ end;
 
 procedure TForm1.ClickToContinue(Sender: TObject);
 begin
-//  if not isActive then
-//  begin
-    if btnOprosOk.Visible then
-    begin //кнопки ответов уже показаны. показать анимацию подсказки
-            if not KeyOkAnimated.Running then KeyOkAnimated.Start;
-            if not KeyErrAnimated.Running then KeyErrAnimated.Start;
-            if not KeyHideAnimated.Running then KeyHideAnimated.Start
-    end
-    else
+  case Opros.Tag of
+  0,1 : //режим опроса
     begin
-            // показываем кнопки для выбора ответа
-            HideButtonOpros(False);
-            case Opros.Tag of
-              0: AnimationAnswer;
-              1: AnimationQuestion;
-            end;
-            // Ожидаем завершения анимации панели
-            Delay(600);
+
+      if btnOprosOk.Visible then
+      begin //кнопки ответов уже показаны. показать анимацию подсказки
+        if not KeyOkAnimated.Running then KeyOkAnimated.Start;
+        if not KeyErrAnimated.Running then KeyErrAnimated.Start;
+        if not KeyHideAnimated.Running then KeyHideAnimated.Start;
+        if not KeyDirectionAnimated.Running then KeyDirectionAnimated.Start;
+      end
+      else
+      begin
+        // показываем кнопки для выбора ответа
+        HideButtonOpros(False);
+        case Opros.Tag of
+          0: AnimationAnswer;
+          1: AnimationQuestion;
+        end;
+
+        // Ожидаем завершения анимации панели
+        Delay(600);
+
+      end;
     end;
-//  end;
+  2: //режим изучения
+    begin
+       // защита от "много тыканья"
+       if QuestionAnimationScale.Running or QuestionAnimationPosition.Running then Exit;
+
+      // прячим карточки
+      AnimationQuestion;
+      Delay(200); //задержка для рассинхронизации переворота карточек (для красоты)
+      AnimationAnswer;
+
+      // перезапускаем таймер, если необходимо (на случай, если карточку поменяли вручную)
+      if SwitchAuto.IsChecked then
+      begin
+        Timer1.Enabled := cFalse;
+        Timer1.Enabled := cTrue;
+      end;
+
+      // Ожидаем завершения анимации панели
+      Delay(600);
+
+      // поменять карточки
+      SelectNewCardToOpros;
+
+    end;
+  end;
 end;
 
 procedure TForm1.SearchBoxPackChangeTracking(Sender: TObject);
@@ -2529,14 +2709,27 @@ begin
   ini_fontExpress := mt[0].TextSettings.Font.Size;
 end;
 
-procedure TForm1.SpeedButton1Click(Sender: TObject);
-begin
-  PackListUpdate
-end;
-
 procedure TForm1.StatisticsClick(Sender: TObject);
 begin
   Statistics.IsExpanded := not Statistics.IsExpanded;
+end;
+
+procedure TForm1.SwitchAutoClick(Sender: TObject);
+begin
+end;
+
+// включение/выключение режима автопереключения карточек при изучении
+procedure TForm1.SwitchAutoSwitch(Sender: TObject);
+begin
+  if SwitchAuto.IsChecked then
+  begin
+    // включение таймера переключения карточек
+    Timer1.Enabled := cTrue;
+    ClickToContinue(nil);  // закрыть карточки и выбрать новые (эмуляция нажатия)
+  end
+  else
+    //остановка автоматического переключения карточек
+    Timer1.Enabled := cFalse;
 end;
 
 procedure TForm1.btnDeleteStatisticsClick(Sender: TObject);
@@ -2566,9 +2759,15 @@ begin
   end;
 end;
 
+procedure TForm1.ComPanelPacksResize(Sender: TObject);
+begin
+//  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+end;
+
 procedure TForm1.TabControl1Change(Sender: TObject);
 begin
-  FormResize(nil);  // пересчет панелей ранее скрытых элементов
+  //FormResize(nil);  // пересчет панелей ранее скрытых элементов // после перехода на RX переношу в изменение событие размеров панелей
+
   // Настройка элементов для различных TabControl
   case TabControl1.ActiveTab.Index of
     // Форма PackList
@@ -2590,6 +2789,14 @@ begin
           begin
             btnInfoPack.Visible := cTrue;
             DM.FDStat.Refresh;
+
+            // кнопку изучения показываем только если больше 0-ля не скрытых карточек
+            if (VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide1'])>0) or
+               (VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide2'])>0)
+               then btnStartStudy.Visible := cTrue
+            else btnStartStudy.Visible := cFalse;
+
+
             // кнопку опроса показываем только если больше 1 карточки
             if VarToInt(DM.FDStat['countcards'])>0 then
             begin
@@ -2602,16 +2809,20 @@ begin
               end;
             end
             else btnStartEducation.Visible := cFalse;
+
             // кнопку експресс опроса показываем кнопку только если в пачке больше 5 карточек
             if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := cTrue
             else btnStartTraining.Visible := cFalse;
+
             case pack_selected^.Tag of
               1..2 :  btnDeletePack.Visible := cTrue;  // кнопка удаления локальной или сетевой пачки
               else btnDeletePack.Visible    := cFalse;
             end;
+
           end
           else
           begin
+            btnStartStudy.Visible     := cFalse;
             btnInfoPack.Visible       := cFalse;
             btnStartTraining.Visible  := cFalse;
             btnStartEducation.Visible := cFalse;
@@ -2736,55 +2947,108 @@ begin
           last_card             := EmptyStr;
           Toplabel.Text         := EmptyStr;
           TopLabel.TextSettings.FontColor := TAlphaColorRec.Black;
-          ImageQ.Visible        := cTrue;
-          ImageA.Visible        := cTrue;
+          btnBack.StyleLookup   := 'backtoolbutton';
+          btnBack.Width         := btn_stn;
           btnBack.Visible       := cTrue;
-          btnback.StyleLookup   := 'backtoolbutton';
-          btnback.Width         := btn_stn;
           btnSearch.Visible     := cFalse;
           btnAppend.Visible     := cFalse;
           btnSave.Visible       := cFalse;
           btnEdit.Visible       := cFalse;
           semafor.Visible       := cFalse;
           labelTimer.Visible    := cFalse;
-          HideButtonOpros(cTrue);
+          ImageQ.Visible        := cTrue;
+          ImageA.Visible        := cTrue;
           OprosPackName.Text    := pack_selected^.ItemData.Text;
+          HideButtonOpros(cTrue);
+
+          case Opros.Tag of
+          0,1 : // режим опроса
+            begin
+              PanelOpros.HitTest    := cTrue;
+              btnDirection.Visible  := cTrue;
+              statCard.Visible      := cTrue;
+              GridPanelOprosSwitch.Visible  := cFalse;
+              if not ComPanelOpros.Visible then
+              begin
+                ComPanelOpros.Visible := cTrue;
+                FormResize(nil);  // дополнительный пересчет панели, т.к. ComPanelOpros поменяла состояние
+              end;
+            end;
+          2 :   // режим изучения
+            begin
+              PanelOpros.HitTest    := cTrue;
+              btnDirection.Visible  := cFalse;
+              statCard.Visible      := cFalse;
+              GridPanelOprosSwitch.Visible  := cTrue;
+              if ComPanelOpros.Visible then
+              begin
+                ComPanelOpros.Visible := cFalse;
+                FormResize(nil);  // дополнительный пересчет панели, т.к. ComPanelOpros поменяла состояние
+              end;
+
+              // настройка параметров таймера
+              Timer1.Interval     := 5000+600;        // 5 секунды срабатывания + время анимации карточек
+              Timer1.OnTimer      := Timer1Opros; // назначение обработчика на таймер (переключение карточек)
+
+            end;
+          end;
 
           if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
           DM.FDQuery2.SQL.Clear;
 
           case Opros.Tag of
           0 : // прямой перебор карт
-              begin
-                // кнопки изменения направления перебора
-                btnDirect.Enabled   := cFalse;
-                if (DM.FDStat.FieldByName('countcards').AsInteger-DM.FDStat.FieldByName('hide2').AsInteger)>0 then
-                      btnReverse.Enabled  := not btnDirect.Enabled
-                else  btnReverse.Enabled  := btnDirect.Enabled;
+            begin
+              // кнопки изменения направления перебора
+              btnDirection.RotationAngle := 0;
+              if (DM.FDStat.FieldByName('countcards').AsInteger-DM.FDStat.FieldByName('hide2').AsInteger)>0 then
+                    btnDirection.HitTest  := cTrue
+              else  btnDirection.HitTest  := cFalse;
 
-                // селект данных со статистикой по карточке для прямого перебора
-                DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
-                DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
-                DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND c.hide1=0;');
-              end;
+              // селект данных со статистикой по карточке для прямого перебора
+              DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
+              DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
+              DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND c.hide1=0;');
+            end;
           1 : // обратный перебор
-              begin
-                // кнопки изменения направления перебора
-                btnReverse.Enabled   := cFalse;
-                if (DM.FDStat.FieldByName('countcards').AsInteger-DM.FDStat.FieldByName('hide1').AsInteger)>0 then
-                      btnDirect.Enabled  := not btnReverse.Enabled
-                else  btnDirect.Enabled  := btnReverse.Enabled;
+            begin
+              // кнопки изменения направления перебора
+              btnDirection.RotationAngle := 180;
+              if (DM.FDStat.FieldByName('countcards').AsInteger-DM.FDStat.FieldByName('hide1').AsInteger)>0 then
+                    btnDirection.HitTest := cTrue
+              else  btnDirection.HitTest := cFalse;
 
-                // селект данных со статистикой по карточке для обратного перебора
-                DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.reverse_true true, s.reverse_false false');
-                DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
-                DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND c.hide2=0;');
-              end;
+              // селект данных со статистикой по карточке для обратного перебора
+              DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.reverse_true true, s.reverse_false false');
+              DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
+              DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND c.hide2=0;');
+            end;
+          2 : // режим обучения
+            begin
+              DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
+              DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
+              DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND (c.hide1=0 OR c.hide2=0);');
+            end;
           end;
 
           // отбор карточек
           DM.FDQuery2.OpenOrExecute;
-          SelectNewCardToOpros;
+          case Opros.Tag of
+          0,1 : // режим опроса
+            begin
+              SelectNewCardToOpros;
+            end;
+          2 :   // режим обучения
+            begin
+              DM.FDQuery2.Last;   // переход к последней карточке (чтобы начать показ с первой)
+
+              // только одна карточка. скрываем панель выбора вариантов перебора
+              if DM.FDQuery2.RecNo < 2 then GridPanelOprosSwitch.Visible := cFalse;
+
+              SelectNewCardToOpros;
+              if SwitchAuto.IsChecked then Timer1.Enabled := cTrue; // запуск авто смены карточек, если это включено
+            end;
+          end;
     // End Opros
     end;
 
@@ -2818,6 +3082,8 @@ begin
           if VarToInt(DM.FDQuery3['record'])<>0 then TopLabel.Text := ReplaceInStr(txt_warning4, VarToStr(DM.FDQuery3['record']));
 
           // запуск таймера опроса
+          Timer1.Interval     := 1000;        // 1 секунда срабатывания
+          Timer1.OnTimer      := Timer1Timer; // установка обработчика таймера
           Timer1.Tag          := 61;
           Timer1.Enabled      := cTrue;
           LabelTimer.Visible  := cTrue;
@@ -2828,6 +3094,7 @@ begin
   end;
 end;
 
+// Обработка таймера для ExpressOpros
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   Timer1.Tag := Timer1.Tag-1;
@@ -2851,5 +3118,12 @@ begin
     btnAppend.Visible := not btnAppend.Visible;
   end;
 end;
+
+// Обработка таймера для автоматической смены карточек в режиме Opros
+procedure TForm1.Timer1Opros(Sender: TObject);
+begin
+  ClickToContinue(nil);
+end;
+
 
 end.
