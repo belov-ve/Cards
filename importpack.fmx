@@ -51,7 +51,7 @@ object Import: TImport
         Size.Width = 293.000000000000000000
         Size.Height = 42.000000000000000000
         Size.PlatformDefault = False
-        TextSettings.Font.Style = [fsBold]
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
         TextSettings.FontColor = claGreen
         TextSettings.HorzAlign = Center
         TextSettings.WordWrap = False

@@ -4,15 +4,16 @@ interface
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics,
   FireDAC.Comp.Client, Data.DB, FMX.StdCtrls, System.Rtti, Data.Bind.EngExt,
   Fmx.Bind.DBEngExt, Fmx.Bind.Grid, System.Bindings.Outputs,
   Data.Bind.Components, Data.Bind.Grid, Data.Bind.DBScope, FMX.Grid, FMX.Layouts,
   FMX.TabControl, FMX.MultiView, FMX.ListBox, FMX.Ani, FMX.Controls.Presentation,
   FMX.Edit, FMX.SearchBox, FMX.Objects, System.Actions, FMX.ActnList, FMX.Memo,
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
-  Xml.XMLDoc, System.IOUtils, FMX.Platform, FMX.ScrollBox, FireDAC.Stan.Param,
-  DateUtils;
+  Xml.XMLDoc, System.IOUtils, FMX.ScrollBox, FireDAC.Stan.Param,
+  DateUtils, FMX.Memo.Types, FMX.Grid.Style,
+  FMX.Dialogs, FMX.DialogService.Sync, FMX.Platform;
 
 
 type
@@ -30,9 +31,8 @@ type
     mExport: TListBoxItem;
     mAbout: TListBoxItem;
     mExit: TListBoxItem;
-    SeporatorExit: TListBoxItem;
-    SeporatorAbout: TListBoxItem;
-    mListBoxItem3: TListBoxItem;
+    Seporator1: TListBoxItem;
+    mOpros: TListBoxItem;
     LabelExit: TLabel;
     LabelAbout: TLabel;
     btnMenuAnimation: TFloatAnimation;
@@ -64,7 +64,6 @@ type
     ClearEditButton1: TClearEditButton;
     btnExit: TSpeedButton;
     btnAbout: TSpeedButton;
-    Image2: TImage;
     btnBack: TSpeedButton;
     btnDeleteStatistics: TSpeedButton;
     btnInfoCard: TSpeedButton;
@@ -200,6 +199,8 @@ type
     LabelHideLearned: TLabel;
     btnDirection: TImage;
     KeyDirectionAnimated180: TFloatKeyAnimation;
+    mDelPack: TListBoxItem;
+    LabelDelPack: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -210,7 +211,7 @@ type
     procedure MasterPanelStartHiding(Sender: TObject);
     procedure btnSearch1Click(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
-    procedure mListBoxItem3Click(Sender: TObject);
+    procedure mOprosClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure btnInfoPack1Click(Sender: TObject);
     procedure btnBackClick(Sender: TObject);
@@ -254,7 +255,6 @@ type
     procedure btnDirectionOldClick(Sender: TObject);
     procedure btnAaClick(Sender: TObject);
     procedure btnMinusClick(Sender: TObject);
-    procedure RectangleExpressQClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure semaforPaint(Sender: TObject; Canvas: TCanvas;
       const ARect: TRectF);
@@ -283,6 +283,9 @@ type
     procedure mAboutClick(Sender: TObject);
     procedure SpeedSelectorChange(Sender: TObject);
     procedure SwitchHideLearnedSwitch(Sender: TObject);
+    procedure CardsGridCellDblClick(const Column: TColumn; const Row: Integer);
+    procedure CardsGridCellClick(const Column: TColumn; const Row: Integer);
+    procedure OprosClick(Sender: TObject);
   private
     { Private declarations }
     //procedure ImportXML(f_name : string);
@@ -306,7 +309,7 @@ var
   Form1: TForm1;
   db_update       : string = 'update.s3db';
   db_work         : string = 'card.s3db';
-  langlist        : string;         // список возможных значений для поля Lang
+  langlist        : string;           // список возможных значений для поля Lang
   txt,a,q         : string;
   need_upd        : boolean = False;
   card_lastrow    : integer;          // последнее положение указателя над строкой
@@ -340,6 +343,7 @@ uses
   ListBoxHelper, datamod, common, importpack,
   {$IF DEFINED(MSWINDOWS)}
     //CodeSiteLogging,
+    //Winapi.Windows,
   {$ENDIF}
   {$IF not DEFINED(MSWINDOWS)}
     Posix.Unistd,
@@ -652,7 +656,7 @@ begin
   with Form1 do
   begin
     EditCardPack.Text         := PackName.Text;
-    DM.FDQuery2.RecNo            := CardsGrid.Selected+1;
+    DM.FDQuery2.RecNo         := CardsGrid.Selected+1;
     EditQuestion.Text         := DM.FDQuery2.FieldByName('question1').AsString;
     EditAnswer.Text           := DM.FDQuery2.FieldByName('question2').AsString;
     //last_id                   := DM.FDQuery2.FieldByName('nc').AsLargeInt;
@@ -789,9 +793,76 @@ begin
 end;
 
 procedure TForm1.btnDeletePackClick(Sender: TObject);
+var
+  ASyncService : IFMXDialogServiceASync;
 begin
   if ListPacks.Index<>-1 then
+    {* Метод устарел
     MessageDlg(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],0,TMsgDlgBtn.mbNo,CloseDlgDeletePack);
+    *}
+
+    {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
+    // FMX.DialogService.Sync.TDialogServiceSync.MessageDialog
+
+    //TDialogService.MessageDialog(txt_question2, TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo, 0);
+    //TDialogService.MessageDialog(
+    FMX.DialogService.Sync.MessageDialog(
+      txt_question2,
+      TMsgDlgType.mtConfirmation,
+      [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],
+      TMsgDlgBtn.mbNo as TMsgDlgBtn,
+      0 );
+
+      {*
+
+
+class procedure MessageDialog(
+  const AMessage: string;
+  const ADialogType: TMsgDlgType;
+  const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn;
+  const AHelpCtx: THelpContext;
+  const ACloseDialogProc: TInputCloseDialogProc); overload;
+
+class procedure MessageDialog(
+  const AMessage: string;
+  const ADialogType: TMsgDlgType;
+  const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn; const AHelpCtx: THelpContext;
+  const ACloseDialogEvent: TInputCloseDialogEvent;
+  const AContext: TObject = nil); overload;
+
+
+MessageDialog(
+  const AMessage: string;
+  const ADialogType: TMsgDlgType;
+  const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn;
+  const AHelpCtx: THelpContext): Integer;
+
+      *}
+
+
+
+    //  if ( TDialogService.MessageDialog(txt_question2, TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo, 0) = TMsgDlgBtn.mbYes ) then
+    //    CloseDlgDeletePack( mrYes );
+
+
+
+    {$ELSEIF DEFINED(ANDROID) or DEFINED(IOS)}
+    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+        ASyncService.MessageDialogAsync(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],TMsgDlgBtn.mbNo,0, CloseDlgDeletePack);
+
+    {$ENDIF}
+
+  { Пример новой функции  FMX (Android не поддерживается - Уже поддерживается?)
+  var
+  ASyncService : IFMXDialogServiceASync;
+    ...
+    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+        ASyncService.MessageDialogAsync(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],TMsgDlgBtn.mbNo,0, CloseDlgDeletePack);
+   }
+
 end;
 
 // обработчик MessageDlg (требоване для Non-blocking вызова OS)
@@ -924,7 +995,7 @@ begin
         i := DM.FDQuery2.RecNo; //запоминаем текущую
         if SwitchRandom.IsChecked and (DM.FDQuery2.RecNo > 1) then
         begin //случайный перебор
-          repeat  // генерация номера новой карточки, не райной текущй
+          repeat  // генерация номера новой карточки, не равной текущей
             j := Random(DM.FDQuery2.RecordCount)+1;
           until (i<>j);
           DM.FDQuery2.RecNo := j;
@@ -1331,6 +1402,19 @@ begin
   end;
 end;
 
+//Old CardsGridClick
+procedure TForm1.CardsGridCellClick(const Column: TColumn; const Row: Integer);
+begin
+  CardsGridClick(nil);
+end;
+
+//Old CardsGridDblClick
+procedure TForm1.CardsGridCellDblClick(const Column: TColumn;
+  const Row: Integer);
+begin
+  CardsGridDblClick(nil);
+end;
+
 procedure TForm1.CardsGridDblClick(Sender: TObject);
 //функция возвращает обратное значение для поля Hide
 function SetNewFieldHide(x : integer) : string;
@@ -1504,6 +1588,8 @@ begin
   //скрытие меню
   mExport.Enabled  := cFalse;
   mExport.HitTest  := cFalse;
+  mDelPack.Enabled  := cFalse;
+  mDelPack.HitTest  := cFalse;
 
 
   // ------------------- подготовка данных -----------------------------
@@ -1724,7 +1810,7 @@ Memo1.Lines.Add( Format('Database version = %d', [updv]) );
       DM.FDQuery1.SQL.Text := 'Select updv from version;';
       DM.FDQuery1.OpenOrExecute;
 
-Memo1.Lines.Add( Format('Version update = %d', [DM.FDQuery1.FieldByName('updv').AsInteger]) );
+      Memo1.Lines.Add( Format('Version update = %d', [DM.FDQuery1.FieldByName('updv').AsInteger]) );
 
       if updv < DM.FDQuery1.FieldByName('updv').AsInteger then
       begin
@@ -1869,8 +1955,10 @@ var   marging_colbox  : TBounds;
       padding_clear   : TBounds;
 begin
   // Установка значений полей отступов в зависимости от ориентации формы
-  if portrait then marging_colbox  := TBounds.Create(TRectF.Create(2,7,2,2))
-  else marging_colbox  := TBounds.Create(TRectF.Create(7,2,2,2));
+  //if portrait then marging_colbox  := TBounds.Create(TRectF.Create(2,7,2,2))
+  //else marging_colbox  := TBounds.Create(TRectF.Create(7,2,2,2));
+  if portrait then marging_colbox  := TBounds.Create(TRectF.Create(0,0,0,0))
+  else marging_colbox  := TBounds.Create(TRectF.Create(0,0,0,0));
   padding_clear := TBounds.Create(TRectF.Create(0,0,0,0));  // для заглушки. см.ниже
 
   //
@@ -2007,7 +2095,7 @@ begin
           GridPanelLayoutGorizontalSet( GridPanelPacks );
           // отступы у списка карточек
           ListPacks.Margins.Bottom      := 0;
-          ListPacks.Margins.Right       := space;
+          ListPacks.Margins.Right       := 0; //space;
     end;
     // Панель на Pack
     1:  begin
@@ -2134,7 +2222,7 @@ begin
           SetCompanel( ComPanelPacks, ColorBox4 );
           GridPanelLayoutVerticalSet( GridPanelPacks );
           // отступы у списка карточек
-          ListPacks.Margins.Bottom      := space;
+          ListPacks.Margins.Bottom      := 0; //space;
           ListPacks.Margins.Right       := 0;
     end;
     // Панель на Pack
@@ -2272,6 +2360,8 @@ begin
     btnStartStudy.Visible := cFalse;
     btnInfoPack.Visible   := cFalse;
     btnDeletePack.Visible := cFalse;
+    mDelPack.Enabled      := cFalse;
+    mDelPack.HitTest      := cFalse;
     mExport.Enabled       := cFalse;
     mExport.HitTest       := cFalse;
   end;
@@ -2316,15 +2406,23 @@ begin
     else btnStartTraining.Visible := cFalse;
 
     case pack_selected^.Tag of
-      1..2 : btnDeletePack.Visible := cTrue;
+      1..2 :
+      begin
+        //btnDeletePack.Visible := cTrue;
+        mDelPack.Enabled  := cTrue;
+        mDelPack.HitTest  := cTrue;
+      end
     else
       btnDeletePack.Visible := cFalse;
+      mDelPack.Enabled  := cFalse;
+      mDelPack.HitTest  := cFalse;
     end;
   end;
 end;
 
 procedure TForm1.ListPacksDblClick(Sender: TObject);
 begin
+
   if not btnStartEducation.Visible then Exit; // кнопка не доступна занчит в пачке нет карточек, ничего не делаем
   try
     // выбор направления
@@ -2576,11 +2674,16 @@ begin
 end;
 
 // экспорт карточек в XML файл
-procedure TForm1.mListBoxItem3Click(Sender: TObject);
+procedure TForm1.mOprosClick(Sender: TObject);
 begin
   Opros.Tag := 2; //режим обучения (просто перебор открытых карточек)
   ChangeTabActionOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := Opros;
   MasterPanel.HideMaster
+end;
+
+procedure TForm1.OprosClick(Sender: TObject);
+begin
+
 end;
 
 // заполнение полей с карточками экспресс опроса
@@ -2660,10 +2763,6 @@ begin
 
   k_true := mn[k_true-1]; // запоминаем номер вороса/ответа карточки из базы, вместо номера в массиве
   SetExpressField;
-end;
-
-procedure TForm1.RectangleExpressQClick(Sender: TObject);
-begin
 end;
 
 // Запуск анимации панели возпроса
@@ -2975,8 +3074,18 @@ begin
             else btnStartTraining.Visible := cFalse;
 
             case pack_selected^.Tag of
-              1..2 :  btnDeletePack.Visible := cTrue;  // кнопка удаления локальной или сетевой пачки
-              else btnDeletePack.Visible    := cFalse;
+              1..2 :
+              begin
+                //btnDeletePack.Visible := cTrue;  // кнопка удаления локальной или сетевой пачки
+                mDelPack.Enabled  := cTrue;
+                mDelPack.HitTest  := cTrue;
+              end;
+              else
+              begin
+                btnDeletePack.Visible    := cFalse;
+                mDelPack.Enabled  := cFalse;
+                mDelPack.HitTest  := cFalse;
+              end;
             end;
 
           end
@@ -2987,6 +3096,8 @@ begin
             btnStartTraining.Visible  := cFalse;
             btnStartEducation.Visible := cFalse;
             btnDeletePack.Visible     := cFalse;
+            mDelPack.Enabled          := cFalse;
+            mDelPack.HitTest          := cFalse;
           end;
     // End PackList
     end;
@@ -3266,6 +3377,9 @@ begin
     // End ExpresOpros
     end;
   end;
+
+  //
+  FormResize(nil);  // пересчет размещение элементов панели. (и всего TabControl) Добавил в версии IDE 11
 end;
 
 // Обработка таймера для ExpressOpros

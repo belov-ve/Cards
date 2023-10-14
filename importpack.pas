@@ -1,4 +1,4 @@
-unit importpack;
+п»їunit importpack;
 
 interface
 
@@ -49,14 +49,14 @@ procedure TImport.FileListButtonClick(const Sender: TObject;
   const AItem: TListItem; const AObject: TListItemSimpleControl);
 var
   i, i1                  : integer;
-  count_pack, count_card : integer;    // счетчики количества
+  count_pack, count_card : integer;    // СЃС‡РµС‚С‡РёРєРё РєРѕР»РёС‡РµСЃС‚РІР°
   INodeP, INodeC         : IXMLNode;
 begin
 
-  // скрываем кнопку 'Import'
+  // СЃРєСЂС‹РІР°РµРј РєРЅРѕРїРєСѓ 'Import'
   AObject.Visible := cFalse;
 
-  // импорт файла номер: AItem.Index
+  // РёРјРїРѕСЂС‚ С„Р°Р№Р»Р° РЅРѕРјРµСЂ: AItem.Index
   try
     DM.FDMemTable1 := TFDMemTable.Create(self);
     DM.FDMemTable2 := TFDMemTable.Create(self);
@@ -65,8 +65,8 @@ begin
       DM.XMLData.LoadFromFile( Files[AItem.Index] );
       DM.XMLData.Active := cTrue;
 
-      // начало имопрта данных из файла
-      // создаем временные таблицы
+      // РЅР°С‡Р°Р»Рѕ РёРјРѕРїСЂС‚Р° РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°
+      // СЃРѕР·РґР°РµРј РІСЂРµРјРµРЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
       // Table packet
       with DM.FDMemTable1.FieldDefs do
       begin
@@ -91,17 +91,17 @@ begin
         end;
         with AddFieldDef do begin
           Name := 'descript';
-          DataType := ftString;
+          DataType := ftWideString; //ftString;
           Size := 1024;
         end;
         with AddFieldDef do begin
-          Name := 'packname_ru';  // избыточные поля (для совеместимости с процедурой обновления)
-          DataType := ftString;
+          Name := 'packname_ru';  // РёР·Р±С‹С‚РѕС‡РЅС‹Рµ РїРѕР»СЏ (РґР»СЏ СЃРѕРІРµРјРµСЃС‚РёРјРѕСЃС‚Рё СЃ РїСЂРѕС†РµРґСѓСЂРѕР№ РѕР±РЅРѕРІР»РµРЅРёСЏ)
+          DataType := ftWideString; //ftString;
           Size := 256;
         end;
         with AddFieldDef do begin
-          Name := 'descript_ru';  // избыточные поля (для совеместимости с процедурой обновления)
-          DataType := ftString;
+          Name := 'descript_ru';  // РёР·Р±С‹С‚РѕС‡РЅС‹Рµ РїРѕР»СЏ (РґР»СЏ СЃРѕРІРµРјРµСЃС‚РёРјРѕСЃС‚Рё СЃ РїСЂРѕС†РµРґСѓСЂРѕР№ РѕР±РЅРѕРІР»РµРЅРёСЏ)
+          DataType := ftWideString;  //ftString;
           Size := 1024;
         end;
         with AddFieldDef do begin
@@ -119,12 +119,12 @@ begin
         end;
         with AddFieldDef do begin
           Name := 'question1';
-          DataType := ftString;
+          DataType :=  ftWideString;  //ftString;
           Size := 256;
         end;
         with AddFieldDef do begin
           Name := 'question2';
-          DataType := ftString;
+          DataType := ftWideString;  //ftString;
           Size := 1024;
         end;
         with AddFieldDef do begin
@@ -134,15 +134,15 @@ begin
         end;
       end;
 
-      // Заполнение временных таблиц
-      // перебор пачек
+      // Р—Р°РїРѕР»РЅРµРЅРёРµ РІСЂРµРјРµРЅРЅС‹С… С‚Р°Р±Р»РёС†
+      // РїРµСЂРµР±РѕСЂ РїР°С‡РµРє
       DM.FDMemTable1.Open;
       DM.FDMemTable2.Open;
       count_card := 0; count_pack := DM.XMLData.DocumentElement.ChildNodes.Count;
       for i := 0 to DM.XMLData.DocumentElement.ChildNodes.Count-1 do
       begin
         INodeP := DM.XMLData.DocumentElement.ChildNodes[i];
-        if CompareText(INodeP.NodeName,'packet')=0 then // есть секция packet
+        if CompareText(INodeP.NodeName,'packet')=0 then // РµСЃС‚СЊ СЃРµРєС†РёСЏ packet
         begin
           DM.FDMemTable1.Append;
           DM.FDMemTable1.FieldValues['np']           := i;
@@ -155,16 +155,17 @@ begin
           DM.FDMemTable1.FieldValues['descript']     := INodeP.ChildValues['descript'];
           DM.FDMemTable1.FieldValues['descript_ru']  := INodeP.ChildValues['descript'];
           DM.FDMemTable1.Post;
-          // перебор карточек
+          // РїРµСЂРµР±РѕСЂ РєР°СЂС‚РѕС‡РµРє
           INodeC := INodeP.ChildNodes['cards'];
           for i1 := 0 to INodeC.ChildNodes.Count-1 do
           begin
-            if CompareText(INodeC.ChildNodes[i1].NodeName,'card')=0 then // есть секция card
+            if CompareText(INodeC.ChildNodes[i1].NodeName,'card')=0 then // РµСЃС‚СЊ СЃРµРєС†РёСЏ card
             begin
               Inc(count_card);
               DM.FDMemTable2.Append;
               DM.FDMemTable2.FieldValues['np']         := i;
               DM.FDMemTable2.FieldValues['question1']  := INodeC.ChildNodes[i1].ChildValues['question1'];
+              //DM.FDMemTable2.FieldValues['question1'] := 'test-question-ГјГ¶Г¤';         // С‚РµСЃС‚ utf-8
               DM.FDMemTable2.FieldValues['question2']  := INodeC.ChildNodes[i1].ChildValues['question2'];
               if Length(VarToStr(INodeC.ChildNodes[i1].Attributes['version']))=0 then
                     DM.FDMemTable2.FieldValues['version'] := INodeP.Attributes['version']
@@ -175,7 +176,7 @@ begin
         end;
       end;
 
-      // вызов импорта
+      // РІС‹Р·РѕРІ РёРјРїРѕСЂС‚Р°
       if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := cTrue;
       DM.FDTransaction1.StartTransaction;
       DBUpdate(1);
@@ -187,8 +188,8 @@ begin
     except
       on E: Exception do
       begin
-        TopLabel.Text := EmptyStr;    // очищаем предыдущее сообщение
-        if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откатываем изменения
+        TopLabel.Text := EmptyStr;    // РѕС‡РёС‰Р°РµРј РїСЂРµРґС‹РґСѓС‰РµРµ СЃРѕРѕР±С‰РµРЅРёРµ
+        if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // РѕС‚РєР°С‚С‹РІР°РµРј РёР·РјРµРЅРµРЅРёСЏ
         if DM.FDDatabese.Connected then DM.FDDatabese.Connected := cFalse;
         ShowMessage(txt_error0 + E.Message)
       end;
@@ -206,7 +207,7 @@ var
     i                   : integer;
     fname               : TListViewItem;
     packname, lang, vers  : string;
-// процедура проверки формата XML файла
+// РїСЂРѕС†РµРґСѓСЂР° РїСЂРѕРІРµСЂРєРё С„РѕСЂРјР°С‚Р° XML С„Р°Р№Р»Р°
 procedure CheckXMLFile(f_name  : string; var packname, lang, version : string);
 var
     INodeP          : IXMLNode;
@@ -215,36 +216,36 @@ begin
   DM.XMLData.LoadFromFile(f_name);
   DM.XMLData.Active := cTrue;
 
-  // проверка структуры xml файла
-  // проверяем корневой узел
+  // РїСЂРѕРІРµСЂРєР° СЃС‚СЂСѓРєС‚СѓСЂС‹ xml С„Р°Р№Р»Р°
+  // РїСЂРѕРІРµСЂСЏРµРј РєРѕСЂРЅРµРІРѕР№ СѓР·РµР»
   if CompareText(DM.XMLData.DocumentElement.NodeName, 'pack') <> 0 then
     raise Exception.Create(EmptyStr);
 
-  // проверяем атрибуты корневого узла 'program'
+  // РїСЂРѕРІРµСЂСЏРµРј Р°С‚СЂРёР±СѓС‚С‹ РєРѕСЂРЅРµРІРѕРіРѕ СѓР·Р»Р° 'program'
   if CompareText(DM.XMLData.DocumentElement.AttributeNodes['program'].NodeValue, app_name) <> 0 then
     raise Exception.Create(EmptyStr);
 
-  // проверяем атрибуты корневого узла 'data-format' - !!! версия "1"
+  // РїСЂРѕРІРµСЂСЏРµРј Р°С‚СЂРёР±СѓС‚С‹ РєРѕСЂРЅРµРІРѕРіРѕ СѓР·Р»Р° 'data-format' - !!! РІРµСЂСЃРёСЏ "1"
   if CompareText(DM.XMLData.DocumentElement.AttributeNodes['data-format'].NodeValue, '1') <> 0 then
     raise Exception.Create(EmptyStr);
 
-  // проверка наличия и обязательных атрибутов узла "packet"
-  // uid, lang version
+  // РїСЂРѕРІРµСЂРєР° РєРѕР»РёС‡РµСЃС‚РІРѕ СѓР·Р»РѕРІ "packet"
+  // Рё РЅР°Р»РёС‡РёСЏ Сѓ РЅРёС… РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… Р°С‚СЂРёР±СѓС‚РѕРІ: uid, lang version
   count_pack  := 0;
   for i := 0 to DM.XMLData.DocumentElement.ChildNodes.Count-1 do
   begin
     INodeP := DM.XMLData.DocumentElement.ChildNodes[i];
-    if CompareText(INodeP.NodeName,'packet')=0 then // есть секция packet
+    if CompareText(INodeP.NodeName,'packet')=0 then // РµСЃС‚СЊ СЃРµРєС†РёСЏ packet
     begin
-      Inc(count_pack);              //найдена пачка
-      // дата последнего изменения
+      Inc(count_pack);              //РЅР°Р№РґРµРЅР° РїР°С‡РєР°
+      // РґР°С‚Р° РїРѕСЃР»РµРґРЅРµРіРѕ РёР·РјРµРЅРµРЅРёСЏ
       if (Length(INodeP.Attributes['uid'])=0) or (Length(INodeP.Attributes['version'])=0) then
-        raise Exception.Create(EmptyStr) // в одной из пачек не хватает обязательных аттрибутов
+        raise Exception.Create(EmptyStr) // РІ РѕРґРЅРѕР№ РёР· РїР°С‡РµРє РЅРµ С…РІР°С‚Р°РµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… Р°С‚С‚СЂРёР±СѓС‚РѕРІ
       else begin
         if (Length(VarToStr(INodeP.Attributes['changed']))=0) then version := VarToStr(INodeP.Attributes['version'])
         else version := VarToStr(INodeP.Attributes['changed'])
       end;
-      // язык пачки
+      // СЏР·С‹Рє РїР°С‡РєРё
       if Length(VarToStr(INodeP.Attributes['lang']))=0 then DM.FDMemTable1.FieldValues['lang'] := 'Other'
       else lang := INodeP.Attributes['lang'];
     end;
@@ -252,10 +253,10 @@ begin
   //
   case count_pack of
     0  : raise Exception.Create(EmptyStr);
-    else begin // Чтение имени пачки (пачка одна)
-      INodeP := DM.XMLData.DocumentElement.ChildNodes[0];
-      // есть секция packet?
-      if CompareText(INodeP.NodeName,'packet')<>0 then Exception.Create(EmptyStr)  // секции packet нет, создаем ошибку
+    else begin // Р§С‚РµРЅРёРµ РёРјРµРЅРё РїР°С‡РєРё (РїР°С‡РєР° РѕРґРЅР°)
+      INodeP := DM.XMLData.DocumentElement.ChildNodes[1];    // РЅРµР°РґРѕ [1], СЂР°РЅСЊС€Рµ Р±С‹Р»Рѕ [0]
+      // РµСЃС‚СЊ СЃРµРєС†РёСЏ packet?
+      if CompareText(INodeP.NodeName,'packet')<>0 then raise Exception.Create(EmptyStr)  // СЃРµРєС†РёРё packet РЅРµС‚, СЃРѕР·РґР°РµРј РѕС€РёР±РєСѓ
       else if count_pack=1 then packname := INodeP.ChildValues['packname']
       else begin
         packname  := 'Multi packet';
@@ -269,10 +270,10 @@ end;
 //
 
 begin
-  // сброс повторного вызова обработчика
+  // СЃР±СЂРѕСЃ РїРѕРІС‚РѕСЂРЅРѕРіРѕ РІС‹Р·РѕРІР° РѕР±СЂР°Р±РѕС‚С‡РёРєР°
   if FileList.Items.Count<>0 then Exit;
 
-  // заполнение списка файлов
+  // Р·Р°РїРѕР»РЅРµРЅРёРµ СЃРїРёСЃРєР° С„Р°Р№Р»РѕРІ
   FileList.BeginUpdate;
   FileList.EditMode := cFalse;
   //FileList.Items.Clear;
@@ -287,26 +288,26 @@ begin
       fname.Height  := com_panel;
       fname.Text    := packname;
       fname.Detail  := lang + '  ' + 'Changed : '+Format('%.19s ',[vers]);
-      //fname.tag     := 1; // если можно импортировать 0 - нельзя
+      //fname.tag     := 1; // РµСЃР»Рё РјРѕР¶РЅРѕ РёРјРїРѕСЂС‚РёСЂРѕРІР°С‚СЊ 0 - РЅРµР»СЊР·СЏ
       fname.ButtonText  := 'Import';
       inc(i);
     except
       on E: Exception do
       begin
-        // файл не прошел проверку
+        // С„Р°Р№Р» РЅРµ РїСЂРѕС€РµР» РїСЂРѕРІРµСЂРєСѓ
         {
         fname.Text        := 'File: '+ TPath.GetFileName(Files[i]);
         fname.Detail      := DM.txt_warning8;
-        fname.tag         := 0; // если можно импортировать 0 - нельзя
+        fname.tag         := 0; // РµСЃР»Рё РјРѕР¶РЅРѕ РёРјРїРѕСЂС‚РёСЂРѕРІР°С‚СЊ 0 - РЅРµР»СЊР·СЏ
         fname.ButtonText  := 'Hide';
         }
-        Files.Delete(i);  // удаляем иго из списка на обработку
+        Files.Delete(i);  // СѓРґР°Р»СЏРµРј РµРіРѕ РёР· СЃРїРёСЃРєР° РЅР° РѕР±СЂР°Р±РѕС‚РєСѓ
       end;
     end;
     //
   end;
   //
-  if Files.Count=0 then //спиок файлов пуст
+  if Files.Count=0 then //СЃРїРёРѕРє С„Р°Р№Р»РѕРІ РїСѓСЃС‚
   begin
       FileList.ItemAppearance.ItemAppearance := 'Custom';
       fname         := FileList.Items.Add;
@@ -324,7 +325,7 @@ end;
 procedure TImport.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   {$IF DEFINED(ANDROID) or DEFINED(IOS)}
-    // автоматическая очистка формы при закрытии
+    // Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РѕС‡РёСЃС‚РєР° С„РѕСЂРјС‹ РїСЂРё Р·Р°РєСЂС‹С‚РёРё
     Action := TCloseAction.caFree;
   {$ENDIF}
 end;
@@ -341,7 +342,7 @@ begin
   try
     Files.DisposeOf
   finally
-    StyleBook1.DisposeOf;   // очистка стиля формы, для обхода глюка со сбоем в XE7 (пропадают элементы в родительской форме)
+    StyleBook1.DisposeOf;   // РѕС‡РёСЃС‚РєР° СЃС‚РёР»СЏ С„РѕСЂРјС‹, РґР»СЏ РѕР±С…РѕРґР° РіР»СЋРєР° СЃРѕ СЃР±РѕРµРј РІ XE7 (РїСЂРѕРїР°РґР°СЋС‚ СЌР»РµРјРµРЅС‚С‹ РІ СЂРѕРґРёС‚РµР»СЊСЃРєРѕР№ С„РѕСЂРјРµ)
   end;
 end;
 

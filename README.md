@@ -1,6 +1,6 @@
 # Cards
  Cards for memorizing a couple of words
  
- Version  v1.0.5
+ Version  v1.11.0
 
-### RAD STUDIO XE8
+### Embarcadero Delphi 11

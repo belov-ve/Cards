@@ -10,7 +10,8 @@ uses
   FireDAC.Stan.ExprFuncs, FireDAC.FMXUI.Wait, FireDAC.Comp.ScriptCommands,
   FireDAC.Stan.Util, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Script, FireDAC.Comp.UI, FMX.Types, FMX.Controls;
+  FireDAC.Comp.Script, FireDAC.Comp.UI, FMX.Types, FMX.Controls,
+  FireDAC.Phys.SQLiteWrapper.Stat;
 
 type
   TDM = class(TDataModule)
