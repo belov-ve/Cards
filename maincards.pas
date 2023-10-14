@@ -11,7 +11,7 @@ uses
   FMX.TabControl, FMX.MultiView, FMX.ListBox, FMX.Ani, FMX.Controls.Presentation,
   FMX.Edit, FMX.SearchBox, FMX.Objects, System.Actions, FMX.ActnList, FMX.Memo,
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
-  Xml.XMLDoc, System.IOUtils, FMX.Platform;
+  Xml.XMLDoc, System.IOUtils, FMX.Platform, FMX.ScrollBox;
 
 
 type
@@ -32,7 +32,6 @@ type
     SeporatorExit: TListBoxItem;
     SeporatorAbout: TListBoxItem;
     mListBoxItem3: TListBoxItem;
-    ToolBar1: TToolBar;
     LabelExit: TLabel;
     LabelAbout: TLabel;
     btnMenuAnimation: TFloatAnimation;
@@ -179,6 +178,8 @@ type
     Label10: TLabel;
     OpenDialog: TOpenDialog;
     ChangeTabActionSelectFile: TChangeTabAction;
+    ClientArray: TRectangle;
+    SpeedButton1: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -248,11 +249,12 @@ type
     procedure mItemMouseEnter(Sender: TObject);
     procedure mItemMouseLeave(Sender: TObject);
     procedure mImportClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure PackListUpdate;
   private
     { Private declarations }
     //procedure ImportXML(f_name : string);
     //procedure DBUpdate(typePack : shortint);
-    procedure PackListUpdate;
     {
     const
       app_name  : string = 'Cards';
@@ -449,21 +451,20 @@ begin
       0,2 : begin
               btnAddCard.Visible    := cFalse;
               btnDeleteCard.Visible := cFalse;
-      end;
+            end;
       1   : begin
               btnAddCard.Visible    := cTrue;
               btnDeleteCard.Visible := cTrue;
-      end;
+            end;
     end;
     if state then
     begin
       LangEdit.Items.Clear;     // иначе не отключается выпадающий список
       TopLabel.Text           := EmptyStr;
-      btnBack.Text            := btn_back;
-      btnback.Width           := btn_stn;
       btnback.StyleLookup     := 'backtoolbutton';
       btnInfoCard.StyleLookup := 'arrowrighttoolbutton';
-
+      btnBack.Text            := btn_back;
+      btnback.Width           := btn_stn;
     end
     else
     begin
@@ -474,11 +475,24 @@ begin
         1: TopLabel.Text      := 'Edit';
         2: TopLabel.Text      := 'Insert';
       end;
-      btnBack.Text            := btn_cancel;
-      btnback.Width           := btn_big;
       btnback.StyleLookup     := 'toolbutton';
       btnInfoCard.StyleLookup := 'composetoolbutton';
+      btnBack.Text            := btn_cancel;
+      btnback.Width           := btn_big;
     end;
+  end;
+end;
+
+// формирование уникальной строки для TStringList
+function CheckItemText(ItemList : TStrings; const txt : string) : string;
+var i : ShortInt;
+begin
+  i := 0;
+  Result := txt;
+  while ItemList.IndexOf(Result)<>-1 do
+  begin
+    Inc(i);
+    Result := txt + Format( ' (%d)', [i] );
   end;
 end;
 
@@ -489,43 +503,51 @@ var i           : integer;
 begin
   try
 
-    SearchBoxPack.Text := EmptyStr; // пока отключил из за ошибки
     if SearchBoxPack.Visible then SearchBoxPack.Visible := cFalse;
 
-    // если какой-нибудь элемент списка выбран, запоминаем его RowID из поля TagString, или -1
+    // если какой-нибудь элемент списка выбран, запоминаем его RowID из поля TagString, или ''
     if ( Assigned(pack_selected^) ) then nc_selected := pack_selected^.TagString
     else nc_selected := EmptyStr;
-    //Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
+Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
+    if Assigned(pack_selected) then pack_selected^ := nil;
 
     ListPacks.BeginUpdate;
-    ListPacks.Items.Clear;
+    ListPacks.ResetFilter;      // сбрасываем фильтр поиска
+    ListPacks.Clear;
+
+    //while ListPacks.Items.Count<>0 do ListPacks.DeleteItem(0);
+
     //ListPacks.Sorted      := cFalse;
-    ListPacks.Sorted      := cTrue;
     ListPacks.ItemHeight  := com_panel;
 
     if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
     DM.FDQuery1.SQL.Clear;
-    DM.FDQuery1.Open('SELECT np, packname, type FROM packet;');
+    DM.FDQuery1.Open('SELECT np, packname, type FROM packet ORDER BY np DESC;');
 
+//ListPacks.DefaultItemStyles.ItemStyle := 'listboxitembottomdetail';
     // заполняем список пачек
     while not DM.FDQuery1.Eof do
     begin
-      i := ListPacks.Items.Add(DM.FDQuery1.FieldByName('packname').AsString);
-      ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aNone; //TListBoxItemData.TAccessory.aMore;
+      i := ListPacks.Items.Add( CheckItemText( ListPacks.Items, DM.FDQuery1.FieldByName('packname').AsString ) );
+//стиль ()
+//ListPacks.ListItems[i].StyleLookup := 'listboxitembottomdetail';
       // заполняем строчку для Detail
       ListPacks.ListItems[i].ItemData.Detail := GetDetail(DM.FDDatabese,DM.FDQuery1.FieldByName('np').AsLargeInt);
       // RowID записи
       ListPacks.ListItems[i].TagString  := DM.FDQuery1.FieldByName('np').AsString;
       // тип справочника
       Listpacks.ListItems[i].Tag := DM.FDQuery1.FieldByName('type').AsInteger;
+
       // эта пачка была выбрана до обновления списка
       if ( nc_selected=ListPacks.ListItems[i].TagString ) then
       begin
-        ListPacks.ItemIndex := i;            // восстанавливаем выбор
-        pack_selected^ := ListPacks.Selected;  // запоминаем ссылку на выбранную пачку
-      end;
-
+        ListPacks.ItemIndex := i;                     // восстанавливаем выбор
+        pack_selected^      := ListPacks.Selected;    // запоминаем ссылку на выбранную пачку
+        ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aMore;
+      end
+      else ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aNone;
       //
+
       DM.FDQuery1.Next;
     end;
     DM.FDQuery1.Close;
@@ -1003,10 +1025,19 @@ begin
             case Pack.Tag of
               // Редактирование существующей
               1:  begin
+                    // проверка на изменение имени
+                    DM.FDQuery1.SQL.Clear;
+                    DM.FDQuery1.SQL.Add('SELECT np FROM packet WHERE packname='''+
+                        PackName.Text +''';');
+                    DM.FDQuery1.OpenOrExecute;
+                    if ( DM.FDQuery1.RecordCount > 1 ) or
+                       ( VarToStr(DM.FDQuery1['np']) <> pack_selected^.TagString ) then
+                            PackName.Text := CheckItemText( ListPacks.Items, PackName.Text );
+                    // обновление
                     DM.FDQuery1.SQL.Clear;
                     DM.FDQuery1.SQL.Add('UPDATE packet SET packname=:p,');
                     DM.FDQuery1.SQL.Add('descript=:d,lang=:l');
-                    DM.FDQuery1.SQL.Add('WHERE np='+pack_selected^.TagString+';');
+                    DM.FDQuery1.SQL.Add('WHERE np=' + pack_selected^.TagString +';');
                     DM.FDQuery1.ParamByName('p').AsString := PackName.Text;
                     DM.FDQuery1.ParamByName('d').AsString := PackDescription.Text;
                     DM.FDQuery1.ParamByName('l').AsString := LangEdit.Text;
@@ -1018,12 +1049,14 @@ begin
               end;
               // Добавление новой пачки
               2:  begin
+                    PackName.Text := CheckItemText( ListPacks.Items, PackName.Text );
                     try
                       DM.FDQuery1.Open('SELECT hex(randomblob(16));');    // формирование уникального uid ддя новой пачки
 
                       DM.FDDatabese.ExecSQL( 'INSERT INTO packet (uid,lang,packname,descript, version) '
                         + 'VALUES (''' + DM.FDQuery1.Fields.Fields[0].AsString + ''',''' + LangEdit.Text
-                        + ''',''' + PackName.Text + ''',''' + PackDescription.Text + ''',datetime());' );
+                        + ''',''' + CheckAndCorrect( PackName.Text ) + ''','''
+                        + CheckAndCorrect( PackDescription.Text ) + ''',datetime());' );
 
                       // получение last_row_id (np для packet)
                       last_id := LastRowID(DM.FDDatabese);
@@ -1033,8 +1066,9 @@ begin
                       ListPacks.ItemIndex := -1;          // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
                       i := ListPacks.Items.Add(PackName.Text);
                       }
-                      i := ListPacks.AddAndClearSelect(PackName.Text);
-                      if i<>-1 then begin
+                      i := ListPacks.AddAndClearSelect( PackName.Text );
+                      if i<>-1 then
+                      begin
                         // заполняем строчку для Detail
                         ListPacks.ListItems[i].ItemData.Detail := GetDetail(DM.FDDatabese,last_id);
                         // запоминаем RowID и тип пачки
@@ -1043,7 +1077,11 @@ begin
                         // установка курсора в списке на новую добавленую строчку
                         ListPacks.ItemIndex              := i;  // без установки BeginUpdate вызывается onChange=ListPacksChange(nil);
                       end
-                      else DM.FDTransaction1.Rollback;
+                      else
+                      begin
+                        ListPacks.DeleteItem(i);
+                        DM.FDTransaction1.Rollback;
+                      end;
                     except
                       on E: Exception do
                       begin
@@ -2015,7 +2053,6 @@ begin
     ListPacks.Selected.ItemData.Accessory := TListBoxItemData.TAccessory.aMore;
 
     pack_selected^ := ListPacks.Selected;  // запоминаем ссылку на выбранную пачку
-TopLabel.Text := pack_selected^.TagString;
 
     //если левые/нижние кнопки меню скрыты, то отображаем
     if not btnInfoPack.Visible then btnInfoPack.Visible := not btnInfoPack.Visible;
@@ -2127,12 +2164,12 @@ begin
   {$ENDIF}
 end;
 
-
 procedure TForm1.mImportClick(Sender: TObject);
 var i       : integer;
-    //fname   : TListViewItem;
     import  : TImport;
-    s_file  : TSearchRec;
+    {$IF DEFINED(ANDROID) or DEFINED(IOS)}
+      s_file  : TSearchRec;
+    {$ENDIF}
 begin
     {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
       OpenDialog.InitialDir := export_dir;
@@ -2152,34 +2189,40 @@ begin
           import.DisposeOf; //очистка формы
         end;
       end;
+      PackListUpdate;             // обновление списка пачек
+      MasterPanel.HideMaster;
+
     {$ELSEIF DEFINED(ANDROID) or DEFINED(IOS)}
       Import := TImport.Create(self);
       //заполняем списком из export_dir/*.xml
 
-      i := FindFirst( TPath.Combine(Tpath.GetSharedDownloadsPath,'*'+exp_ext), faAnyFile, s_file);
+      i := FindFirst( TPath.Combine(export_dir,'*'+exp_ext), faAnyFile, s_file);
       while i=0 do
       begin
-        i := Import.Files.Add(TPath.Combine(s_file.PathOnly,s_file.Name));
-        FindNext(s_file)
+        Import.Files.Add(TPath.Combine(export_dir, s_file.Name));
+        //Import.Files.Add(s_file.Name);
+        i := FindNext(s_file)
       end;
       FindClose(s_file);
       // открываем форму в модальном режиме
       Import.ShowModal(procedure( AResult: TModalResult)
         begin
           //if (AResult = mrOK) then ShowMessage('Ура');
+          //Form1.StyleBook := StyleBook1;
+          PackListUpdate;             // обновление списка пачек
+          MasterPanel.HideMaster;
         end);
-
     {$ENDIF}
-    PackListUpdate;             // обновление списка пачек
-    MasterPanel.HideMaster;
 end;
 
 // Экспорт пачки
 procedure TForm1.mExportClick(Sender: TObject);
 var
     packname          : string;
-    file_ind          : integer;
     lNode, cardsNode  : IXMLNode;
+    {$IF DEFINED(ANDROID) or DEFINED(IOS)}
+      file_ind          : integer;
+    {$ENDIF}
     {$IF DEFINED(ANDROID)}
       Intent          : JIntent;
       uri             : Jnet_Uri;
@@ -2486,6 +2529,11 @@ begin
   ini_fontExpress := mt[0].TextSettings.Font.Size;
 end;
 
+procedure TForm1.SpeedButton1Click(Sender: TObject);
+begin
+  PackListUpdate
+end;
+
 procedure TForm1.StatisticsClick(Sender: TObject);
 begin
   Statistics.IsExpanded := not Statistics.IsExpanded;
@@ -2584,7 +2632,7 @@ begin
           btnSave.Text := btn_save;
           btnSave.TextSettings.FontColor := $FFFF0000;  // red
           //
-          btnBack.Width       := btn_stn;
+          //btnBack.Width       := btn_stn;
           btnBack.Text        := btn_back;
           //
           if ini_maxanswer<>0 then Progress.Max := ini_maxanswer*2
@@ -2691,6 +2739,8 @@ begin
           ImageQ.Visible        := cTrue;
           ImageA.Visible        := cTrue;
           btnBack.Visible       := cTrue;
+          btnback.StyleLookup   := 'backtoolbutton';
+          btnback.Width         := btn_stn;
           btnSearch.Visible     := cFalse;
           btnAppend.Visible     := cFalse;
           btnSave.Visible       := cFalse;
@@ -2751,6 +2801,8 @@ begin
           btnAppend.StyleLookup := 'refreshtoolbutton';
           btnSave.Visible       := cFalse;
           btnBack.Visible       := cTrue;
+          btnback.StyleLookup   := 'backtoolbutton';
+          btnback.Width         := btn_stn;
           semafor.Opacity       := 0;
           semafor.Visible       := cTrue;
           ExpressPackName.Text  := pack_selected^.ItemData.Text;

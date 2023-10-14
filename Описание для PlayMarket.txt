@@ -1,0 +1,16 @@
+Организация обучения по принципу "Карточка-вопрос" - "Карточка-ответ"
+
+Training on the principle of "Card-question" - "Card-reply"
+
+
+
+Приложение для организации процесса обучения по принципу "Карточка-вопрос" - "Карточка-ответ".
+Ведется статистика верных и ошибочных ответов.
+Вы можете создавать свои наборы карточек, скрывать известные ответы и проводить импорт/экспорт наборов.
+Реализовано два вида обучения: режим обучения и режим минутного экспресс опроса (игровой режим).
+
+
+The application for the organization of the learning process on a "Card-question" - "Card-reply".
+Accumulates statistics of correct and incorrect answers.
+You can create your cards, hide known answers and conduct import/export packets.
+There are two types of training: the training mode and the mode the express interview (game mode).

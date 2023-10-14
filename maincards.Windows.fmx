@@ -1,0 +1,135 @@
+inherited Form1_Windows: TForm1_Windows
+  DesignerMasterStyle = 3
+  inherited ToolBar: TToolBar
+    inherited ColorBoxToolBar: TColorBox
+      inherited semafor: TRectangle
+        inherited SemaforShow: TFloatKeyAnimation
+          Keys = <
+            item
+            end
+            item
+              Key = 0.200000002980232200
+            end
+            item
+              Key = 0.500000000000000000
+            end
+            item
+              Key = 0.800000011920929000
+            end
+            item
+              Key = 1.000000000000000000
+            end>
+        end
+      end
+    end
+  end
+  inherited ClientArray: TRectangle
+    inherited MasterPanel: TMultiView
+      inherited MainMenu: TListBox
+        Viewport.Width = 149.000000000000000000
+        Viewport.Height = 596.000000000000000000
+      end
+    end
+    inherited MainPanel: TPanel
+      inherited TabControl1: TTabControl
+        TabIndex = 2
+        inherited PackList: TTabItem
+          inherited ListPacks: TListBox
+            Viewport.Width = 390.000000000000000000
+            Viewport.Height = 508.000000000000000000
+          end
+        end
+        inherited Pack: TTabItem
+          inherited CardsGrid: TGrid
+            Viewport.Width = 390.000000000000000000
+            Viewport.Height = 327.000000000000000000
+          end
+          inherited PanelPackInfo: TPanel
+            inherited PackDescription: TMemo
+              Viewport.Width = 265.000000000000000000
+              Viewport.Height = 69.000000000000000000
+            end
+            inherited Statistics: TExpander
+              ContentSize = '109'
+            end
+          end
+        end
+        inherited Card: TTabItem
+          IsSelected = True
+          inherited EditAnswer: TMemo
+            TabOrder = 2
+            Viewport.Width = 270.000000000000000000
+            Viewport.Height = 65.000000000000000000
+          end
+          inherited EditReverseHide: TCheckBox
+            TabOrder = 4
+          end
+          inherited EditDirectHide: TCheckBox
+            TabOrder = 3
+          end
+        end
+        inherited Opros: TTabItem
+          IsSelected = False
+          inherited ComPanelOpros: TCalloutPanel
+            inherited ColorBox3: TColorBox
+              inherited btnOprosOK: TSpeedButton
+                inherited ImageOK: TImage
+                  inherited KeyOkAnimated: TFloatKeyAnimation
+                    Keys = <
+                      item
+                      end
+                      item
+                        Key = 0.250000000000000000
+                      end
+                      item
+                        Key = 0.750000000000000000
+                      end
+                      item
+                        Key = 1.000000000000000000
+                      end>
+                  end
+                end
+              end
+              inherited btnOprosHide: TSpeedButton
+                inherited ImageHide: TImage
+                  inherited KeyHideAnimated: TFloatKeyAnimation
+                    Keys = <
+                      item
+                      end
+                      item
+                        Key = 0.250000000000000000
+                      end
+                      item
+                        Key = 0.750000000000000000
+                      end
+                      item
+                        Key = 1.000000000000000000
+                      end>
+                  end
+                end
+              end
+              inherited btnOprosError: TSpeedButton
+                inherited ImageErr: TImage
+                  inherited KeyErrAnimated: TFloatKeyAnimation
+                    Keys = <
+                      item
+                      end
+                      item
+                        Key = 0.250000000000000000
+                      end
+                      item
+                        Key = 0.750000000000000000
+                      end
+                      item
+                        Key = 1.000000000000000000
+                      end>
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end

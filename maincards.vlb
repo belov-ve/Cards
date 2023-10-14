@@ -1,5 +1,5 @@
 ﻿[]
-Coordinates=580,120,99,58
+Coordinates=344,349,67,36
 Visible=True
 ExplicitSubNodes=
 
@@ -8,9 +8,6 @@ Coordinates=121,1,58,33
 
 [mExit]
 Visible=False
-
-[ToolBar1]
-Coordinates=344,349,67,36
 
 [btnMenuAnimation]
 Coordinates=17,349,122,36

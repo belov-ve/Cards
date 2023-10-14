@@ -44,7 +44,6 @@ implementation
 
 {$R *.fmx}
 
-
 procedure TImport.FileListButtonClick(const Sender: TObject;
   const AItem: TListViewItem; const AObject: TListItemSimpleControl);
 var
@@ -332,6 +331,7 @@ end;
 procedure TImport.FormCreate(Sender: TObject);
 begin
   Files         := TStringList.Create;
+  btnback.StyleLookup := 'backtoolbutton';
   btnback.Width := btn_big;
 end;
 
@@ -345,3 +345,4 @@ begin
 end;
 
 end.
+
