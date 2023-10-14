@@ -1,0 +1,27 @@
+﻿[FileList]
+Coordinates=10,10,107,234
+Visible=True
+
+[ColorBoxToolBar]
+Coordinates=331,10,112,36
+
+[ToolBar]
+Coordinates=261,10,60,36
+
+[btnBack]
+Coordinates=190,10,61,58
+
+[StyleBook1]
+Coordinates=107,253,79,36
+
+[]
+Coordinates=136,87,91,36
+
+[Module Settings]
+ModelLayerNames=
+ActiveLayerNames=
+EditingLayerName=
+
+[TopLabel]
+Coordinates=127,10,53,58
+

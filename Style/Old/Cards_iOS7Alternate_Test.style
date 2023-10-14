@@ -1,0 +1,3186 @@
+object TLayout
+  Align = alCenter
+  Height = 500.000000000000000000
+  Position.X = 343.000000000000000000
+  Position.Y = 181.000000000000000000
+  Width = 500.000000000000000000
+  object TStyleDescription
+    StyleName = 'Description'
+    Author = 'Embarcadero Technologies Inc.'
+    AuthorURL = 'mod www.embarcadero.com'
+    MobilePlatform = True
+    RetinaDisplay = False
+    Version = '1.0'
+  end
+  object TImage
+    StyleName = 'iOS7Alternatestyle.png'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Visible = False
+    Width = 50.000000000000000000
+  end
+  object TImage
+    StyleName = 'iOS7Alternatecircleloupe.png'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Visible = False
+    Width = 50.000000000000000000
+  end
+  object TImage
+    StyleName = 'iOS7Alternaterectloupe.png'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Visible = False
+    Width = 50.000000000000000000
+  end
+  object TImage
+    StyleName = 'iOS7Alternateaniindicator.png'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Visible = False
+    Width = 50.000000000000000000
+  end
+  object TRectangle
+    StyleName = 'backgroundstyle'
+    DesignVisible = False
+    Fill.Color = xFFD6D6D6
+    Height = 50.000000000000000000
+    HitTest = False
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'labelstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'buttonstylelabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'speedbuttonstylelabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'colorbuttonstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TRectangle
+      StyleName = 'fill'
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Stroke.Color = xFF666668
+      XRadius = 5.000000000000000000
+      YRadius = 5.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TGridLayout
+    StyleName = 'spineditbutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    ItemHeight = -1.000000000000000000
+    ItemWidth = 64.000000000000000000
+    Orientation = orHorizontal
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      Width = 64.000000000000000000
+      object TButton
+        StyleName = 'upbutton'
+        CanFocus = False
+        Cursor = crArrow
+        DisableFocusEffect = False
+        Height = 22.000000000000000000
+        StyleLookup = 'scrollbartopbutton'
+        Width = 80.000000000000000000
+      end
+    end
+    object TLayout
+      Position.Y = -1.000000000000000000
+      Width = 64.000000000000000000
+      object TButton
+        StyleName = 'downbutton'
+        CanFocus = False
+        Cursor = crArrow
+        DisableFocusEffect = False
+        Height = 22.000000000000000000
+        StyleLookup = 'scrollbarbottombutton'
+        Width = 80.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'editstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'buttons'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 48.000000000000000000
+      Position.Y = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TLabel
+      StyleName = 'prompt'
+      Locked = True
+      Height = 15.000000000000000000
+      Opacity = 0.500000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'timeeditstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TGridLayout
+      Height = 50.000000000000000000
+      ItemHeight = -1.000000000000000000
+      ItemWidth = 64.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Orientation = orHorizontal
+      Position.X = 24.000000000000000000
+      Position.Y = 6.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        Position.Y = 6.000000000000000000
+        Width = 64.000000000000000000
+        object TButton
+          StyleName = 'upbutton'
+          CanFocus = False
+          DisableFocusEffect = False
+          Height = 22.000000000000000000
+          StyleLookup = 'scrollbartopbutton'
+          Width = 80.000000000000000000
+        end
+      end
+      object TLayout
+        Position.Y = 5.000000000000000000
+        Width = 64.000000000000000000
+        object TButton
+          StyleName = 'downbutton'
+          CanFocus = False
+          DisableFocusEffect = False
+          Height = 22.000000000000000000
+          StyleLookup = 'scrollbarbottombutton'
+          Width = 80.000000000000000000
+        end
+      end
+    end
+    object TButton
+      StyleName = 'clearbutton'
+      CanFocus = False
+      DisableFocusEffect = False
+      Height = 22.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 4.000000000000000000
+      Position.Y = 2.000000000000000000
+      StyleLookup = 'cleareditbutton'
+      Width = 80.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TCheckBox
+      StyleName = 'check'
+      CanFocus = False
+      DisableFocusEffect = True
+      Height = 19.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'dateeditstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TButton
+      StyleName = 'arrow'
+      CanFocus = False
+      Cursor = crArrow
+      DisableFocusEffect = False
+      Height = 22.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Position.X = 24.000000000000000000
+      Position.Y = 6.000000000000000000
+      StyleLookup = 'dropdowneditbutton'
+      Width = 80.000000000000000000
+    end
+    object TButton
+      StyleName = 'clearbutton'
+      CanFocus = False
+      DisableFocusEffect = False
+      Height = 22.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 4.000000000000000000
+      Position.Y = 2.000000000000000000
+      StyleLookup = 'cleareditbutton'
+      Width = 80.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TCheckBox
+      StyleName = 'check'
+      CanFocus = False
+      DisableFocusEffect = True
+      Height = 19.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'clearingeditstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 26.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TButton
+      StyleName = 'clearbutton'
+      CanFocus = False
+      DisableFocusEffect = False
+      Height = 22.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 2.000000000000000000
+      Position.Y = 2.000000000000000000
+      StyleLookup = 'cleareditbutton'
+      Width = 80.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'spinboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 21.000000000000000000
+      Margins.Top = 4.000000000000000000
+      Margins.Right = 21.000000000000000000
+      Margins.Bottom = 4.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TButton
+      StyleName = 'minusbutton'
+      CanFocus = False
+      Cursor = crArrow
+      DisableFocusEffect = False
+      Height = 22.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 2.000000000000000000
+      Position.Y = 2.000000000000000000
+      StyleLookup = 'scrollbarleftbutton'
+      Width = 80.000000000000000000
+    end
+    object TButton
+      StyleName = 'plusbutton'
+      CanFocus = False
+      Cursor = crArrow
+      DisableFocusEffect = False
+      Height = 22.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 28.000000000000000000
+      Position.Y = 2.000000000000000000
+      StyleLookup = 'scrollbarrightbutton'
+      Width = 80.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'splitterstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TEllipse
+      StyleName = 'grip'
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'checkboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'radiobuttonstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'scrollbarstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TTrack
+      StyleName = 'htrack'
+      Locked = True
+      Height = 17.000000000000000000
+      Orientation = orHorizontal
+      StyleLookup = 'scrollbarhtrackstyle'
+      Width = 100.000000000000000000
+    end
+    object TTrack
+      StyleName = 'vtrack'
+      Locked = True
+      Height = 17.000000000000000000
+      Orientation = orHorizontal
+      StyleLookup = 'scrollbarvtrackstyle'
+      Width = 100.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'menuviewstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Padding.Right = 8.000000000000000000
+    Padding.Bottom = 8.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Height = 50.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'menubaritemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'glyph'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'checkmark'
+        Height = 50.000000000000000000
+        Opacity = 0.001000000047497451
+        Width = 50.000000000000000000
+        object TPath
+          Data.Path = {
+            070000000000000056D9524391AE2C4301000000927666436502164301000000
+            9F3983432B7C3C43010000009E9AA64382D2B442010000006F1CB04375A4D142
+            0100000026DF8243263F67430300000056D9524391AE2C43}
+          Fill.Color = claBlack
+          Height = 50.000000000000000000
+          HitTest = False
+          Width = 50.000000000000000000
+          object TColorAnimation
+            Duration = 0.000200000009499490
+            PropertyName = 'Fill.Color'
+            StartValue = claBlack
+            StopValue = claBlack
+            Trigger = 'IsMouseOver=true'
+            TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+          end
+          object TColorAnimation
+            Duration = 0.000200000009499490
+            PropertyName = 'Fill.Color'
+            StartValue = claBlack
+            StopValue = claBlack
+            Trigger = 'IsMouseOver=true'
+            TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+          end
+        end
+        object TFloatAnimation
+          Duration = 0.100000001490116100
+          PropertyName = 'Opacity'
+          StopValue = 1.000000000000000000
+          Trigger = 'IsChecked=true'
+          TriggerInverse = 'IsChecked=false'
+        end
+      end
+      object TImage
+        StyleName = 'bitmap'
+        Height = 50.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 8.000000000000000000
+      Margins.Right = 8.000000000000000000
+      Position.X = 33.000000000000000000
+      Width = 50.000000000000000000
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = claBlack
+        StopValue = claBlack
+        Trigger = 'IsSelected=true'
+        TriggerInverse = 'IsSelected=false'
+      end
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = claBlack
+        StopValue = claBlack
+        Trigger = 'IsMouseOver=true;IsSelected=false'
+        TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+      end
+    end
+    object TText
+      StyleName = 'shortcut'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 12.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Position.X = -26.000000000000000000
+      Width = 50.000000000000000000
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = claBlack
+        StopValue = claBlack
+        Trigger = 'IsMouseOver=true'
+        TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+      end
+    end
+    object TLayout
+      StyleName = 'submark'
+      Height = 50.000000000000000000
+      Position.X = 30.000000000000000000
+      Width = 50.000000000000000000
+      object TPath
+        Data.Path = {
+          0400000000000000000000000000000001000000000000000000803F01000000
+          0000803F0000003F030000000000000000000000}
+        Fill.Color = claBlack
+        Locked = True
+        Height = 50.000000000000000000
+        HitTest = False
+        Width = 50.000000000000000000
+        object TColorAnimation
+          Duration = 0.000200000009499490
+          PropertyName = 'Fill.Color'
+          StartValue = claBlack
+          StopValue = claBlack
+          Trigger = 'IsMouseOver=true'
+          TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'menuitemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'glyph'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'checkmark'
+        Height = 50.000000000000000000
+        Opacity = 0.001000000047497451
+        Width = 50.000000000000000000
+        object TPath
+          Data.Path = {
+            070000000000000056D9524391AE2C4301000000927666436502164301000000
+            9F3983432B7C3C43010000009E9AA64382D2B442010000006F1CB04375A4D142
+            0100000026DF8243263F67430300000056D9524391AE2C43}
+          Fill.Color = xFF414141
+          Height = 50.000000000000000000
+          HitTest = False
+          Width = 50.000000000000000000
+          object TColorAnimation
+            Duration = 0.000200000009499490
+            PropertyName = 'Fill.Color'
+            StartValue = xFF414141
+            StopValue = claBlack
+            Trigger = 'IsSelected=true'
+            TriggerInverse = 'IsSelected=false'
+          end
+          object TColorAnimation
+            Duration = 0.000200000009499490
+            PropertyName = 'Fill.Color'
+            StartValue = xFF414141
+            StopValue = claBlack
+            Trigger = 'IsMouseOver=true;IsSelected=false'
+            TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+          end
+        end
+        object TFloatAnimation
+          Duration = 0.100000001490116100
+          PropertyName = 'Opacity'
+          StopValue = 1.000000000000000000
+          Trigger = 'IsChecked=true'
+          TriggerInverse = 'IsChecked=false'
+        end
+      end
+      object TImage
+        StyleName = 'bitmap'
+        Height = 50.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 8.000000000000000000
+      Margins.Right = 8.000000000000000000
+      Position.X = 33.000000000000000000
+      Width = 50.000000000000000000
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = claBlack
+        StopValue = claBlack
+        Trigger = 'IsSelected=true'
+        TriggerInverse = 'IsSelected=false'
+      end
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = xFF414141
+        StopValue = claBlack
+        Trigger = 'IsMouseOver=true;IsSelected=false'
+        TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+      end
+    end
+    object TText
+      StyleName = 'shortcut'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 12.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Position.X = -26.000000000000000000
+      Width = 50.000000000000000000
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = xFF414141
+        StopValue = claBlack
+        Trigger = 'IsMouseOver=true;IsSelected=false'
+        TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+      end
+      object TColorAnimation
+        Duration = 0.000200000009499490
+        PropertyName = 'Color'
+        StartValue = xFF414141
+        StopValue = claBlack
+        Trigger = 'IsSelected=true'
+        TriggerInverse = 'IsSelected=false'
+      end
+    end
+    object TLayout
+      StyleName = 'submark'
+      Height = 50.000000000000000000
+      Position.X = 30.000000000000000000
+      Width = 50.000000000000000000
+      object TPath
+        Data.Path = {
+          0400000000000000000000000000000001000000000000000000803F01000000
+          0000803F0000003F030000000000000000000000}
+        Fill.Color = xFF414141
+        Locked = True
+        Height = 50.000000000000000000
+        HitTest = False
+        Width = 50.000000000000000000
+        object TColorAnimation
+          Duration = 0.000200000009499490
+          PropertyName = 'Fill.Color'
+          StartValue = xFF414141
+          StopValue = claBlack
+          Trigger = 'IsMouseOver=true;IsSelected=false'
+          TriggerInverse = 'IsMouseOver=false;IsSelected=false'
+        end
+        object TColorAnimation
+          Duration = 0.000200000009499490
+          PropertyName = 'Fill.Color'
+          StartValue = xFF414141
+          StopValue = claBlack
+          Trigger = 'IsSelected=true'
+          TriggerInverse = 'IsSelected=false'
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'menuseparatorstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Margins.Top = 1.000000000000000000
+    Margins.Bottom = 1.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'groupboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Padding.Left = 2.000000000000000000
+    Padding.Top = 8.000000000000000000
+    Padding.Right = 2.000000000000000000
+    Padding.Bottom = 2.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'listboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'AlternatingRowBackground'
+      Brush.Color = xFFEBEBEB
+    end
+    object TRectangle
+      StyleName = 'background'
+      Fill.Color = claWhite
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        ClipChildren = True
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+      object TLayout
+        StyleName = 'header'
+        Height = 50.000000000000000000
+        Visible = False
+        Width = 50.000000000000000000
+      end
+      object TLayout
+        StyleName = 'footer'
+        Height = 50.000000000000000000
+        Visible = False
+        Width = 50.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'listboxitemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TCheckBox
+      StyleName = 'check'
+      CanFocus = False
+      DisableFocusEffect = True
+      Height = 19.000000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+    object TLayout
+      StyleName = 'accessorymore'
+      Height = 50.000000000000000000
+      Visible = False
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'accessorycheckmark'
+      Height = 50.000000000000000000
+      Visible = False
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'accessorydetail'
+      Height = 50.000000000000000000
+      Visible = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'searchboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'outline'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        Locked = True
+        Height = 50.000000000000000000
+        Margins.Left = 26.000000000000000000
+        Margins.Top = 6.000000000000000000
+        Margins.Right = 6.000000000000000000
+        Margins.Bottom = 6.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TLayout
+        StyleName = 'buttons'
+        Locked = True
+        Height = 50.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Position.X = 48.000000000000000000
+        Position.Y = 2.000000000000000000
+        Width = 50.000000000000000000
+        object TClearEditButton
+          StyleName = 'clearbutton'
+          CanFocus = False
+          DisableFocusEffect = False
+          Height = 46.000000000000000000
+          Position.X = 2.000000000000000000
+          Position.Y = 2.000000000000000000
+          StyleLookup = 'cleareditbutton'
+          Width = 28.000000000000000000
+        end
+      end
+      object TLabel
+        StyleName = 'prompt'
+        Locked = True
+        Height = 15.000000000000000000
+        Opacity = 0.500000000000000000
+        Width = 120.000000000000000000
+      end
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'listboxitemdetaillabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'listboxitemlabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'listboxitemnodetail'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TCheckBox
+      StyleName = 'check'
+      CanFocus = False
+      DisableFocusEffect = True
+      Height = 19.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+    object TImage
+      StyleName = 'icon'
+      Height = 50.000000000000000000
+      HitTest = False
+      Position.X = 20.000000000000000000
+      Visible = False
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'area'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'listboxitembottomdetail'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TCheckBox
+      StyleName = 'check'
+      CanFocus = False
+      DisableFocusEffect = True
+      Height = 19.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+    object TImage
+      StyleName = 'icon'
+      Height = 50.000000000000000000
+      HitTest = False
+      Position.X = 20.000000000000000000
+      Visible = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'listboxitemrightdetail'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TGridLayout
+      StyleName = 'area'
+      Height = 50.000000000000000000
+      HitTest = False
+      ItemHeight = 64.000000000000000000
+      ItemWidth = -1.000000000000000000
+      Orientation = orHorizontal
+      Width = 50.000000000000000000
+      object TLayout
+        Height = 64.000000000000000000
+        object TCheckBox
+          StyleName = 'check'
+          CanFocus = False
+          DisableFocusEffect = True
+          Height = 19.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Visible = False
+          Width = 120.000000000000000000
+        end
+        object TImage
+          StyleName = 'icon'
+          Height = 50.000000000000000000
+          HitTest = False
+          Visible = False
+          Width = 50.000000000000000000
+        end
+      end
+      object TLayout
+        Height = 64.000000000000000000
+        Position.X = -1.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'listboxitemleftdetail'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TGridLayout
+      StyleName = 'area'
+      Height = 50.000000000000000000
+      HitTest = False
+      ItemHeight = 64.000000000000000000
+      ItemWidth = -1.000000000000000000
+      Orientation = orHorizontal
+      Width = 50.000000000000000000
+      object TLayout
+        Height = 64.000000000000000000
+        object TCheckBox
+          StyleName = 'check'
+          CanFocus = False
+          DisableFocusEffect = True
+          Height = 19.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Visible = False
+          Width = 120.000000000000000000
+        end
+        object TImage
+          StyleName = 'icon'
+          Height = 50.000000000000000000
+          HitTest = False
+          Visible = False
+          Width = 50.000000000000000000
+        end
+      end
+      object TLayout
+        Height = 64.000000000000000000
+        Position.X = -1.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'listboxplainheader'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'area'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TText
+        StyleName = 'text'
+        Color = claBlack
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'listboxgroupheader'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'area'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TText
+        StyleName = 'text'
+        Color = claBlack
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'listboxheader'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'listboxfooter'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'area'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TText
+        StyleName = 'text'
+        Color = claBlack
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+  end
+  object TFmxObject
+    StyleName = 'listviewstyle'
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TFontObject
+      StyleName = 'detailfont'
+      Font.Size = 16.000000000000000000
+    end
+    object TFontObject
+      StyleName = 'headerfont'
+      Font.Size = 16.000000000000000000
+    end
+    object TFontObject
+      StyleName = 'buttonfont'
+      Font.Size = 16.000000000000000000
+    end
+    object TFontObject
+      StyleName = 'deletebuttonfont'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'colorlistboxitemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TCheckBox
+      StyleName = 'check'
+      CanFocus = False
+      DisableFocusEffect = True
+      Height = 19.000000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+    object TRectangle
+      StyleName = 'color'
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 2.000000000000000000
+      Position.Y = 2.000000000000000000
+      Stroke.Color = xFF666668
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'treeviewstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'AlternatingRowBackground'
+      Brush.Color = xFFEBEBEB
+    end
+    object TRectangle
+      StyleName = 'background'
+      Fill.Color = claWhite
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        ClipChildren = True
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'treeviewitemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TSpeedButton
+      StyleName = 'button'
+      Height = 22.000000000000000000
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Position.X = 3.000000000000000000
+      Position.Y = 3.000000000000000000
+      StyleLookup = 'treeviewexpanderbuttonstyle'
+      Width = 80.000000000000000000
+    end
+    object TLayout
+      Height = 50.000000000000000000
+      Margins.Left = 20.000000000000000000
+      Width = 50.000000000000000000
+      object TCheckBox
+        StyleName = 'check'
+        CanFocus = False
+        DisableFocusEffect = True
+        Height = 19.000000000000000000
+        Width = 120.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'treeviewexpanderbuttonstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Margins.Top = 1.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TPath
+      Data.Path = {
+        0500000000000000D36D3F431BEF4843010000001749E043BA09E54301000000
+        C9B63943C73B344401000000D36D3F431BEF4843030000000000000000000000}
+      Fill.Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+      object TFloatAnimation
+        Duration = 0.000099999997473788
+        PropertyName = 'Opacity'
+        StopValue = 1.000000000000000000
+        Trigger = 'IsExpanded=false'
+        TriggerInverse = 'IsExpanded=true'
+      end
+    end
+    object TPath
+      Data.Path = {
+        0500000000000000CB11CF4379E93C4301000000DDB4CD4396230A4401000000
+        7DBF1E424871094401000000CB11CF4379E93C43030000000000000000000000}
+      Fill.Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Opacity = 0.000000000000000000
+      Width = 50.000000000000000000
+      object TFloatAnimation
+        Duration = 0.000099999997473788
+        PropertyName = 'Opacity'
+        StopValue = 1.000000000000000000
+        Trigger = 'IsExpanded=true'
+        TriggerInverse = 'IsExpanded=false'
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'popoverstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TRectangle
+    StyleName = 'multiviewstyle'
+    DesignVisible = False
+    Fill.Color = xFFD6D6D6
+    Height = 50.000000000000000000
+    HitTest = False
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'dropline'
+      Brush.Color = xFF666668
+    end
+  end
+  object TRectangle
+    StyleName = 'panelstyle'
+    DesignVisible = False
+    Fill.Color = xFFD6D6D6
+    Height = 50.000000000000000000
+    HitTest = False
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Stroke.Color = xFF666668
+    XRadius = 5.000000000000000000
+    YRadius = 5.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TCalloutRectangle
+    StyleName = 'calloutpanelstyle'
+    DesignVisible = False
+    Fill.Color = xFFD6D6D6
+    Height = 50.000000000000000000
+    HitTest = False
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Stroke.Color = xFF666668
+    XRadius = 5.000000000000000000
+    YRadius = 5.000000000000000000
+    Width = 50.000000000000000000
+    CalloutWidth = 23.000000000000000000
+    CalloutLength = 11.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabcontrolstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TStyleTag
+      StyleName = 'FullSize'
+    end
+    object TStyleTag
+      StyleName = 'TabHeight'
+      TagFloat = 49.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'tabitemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'bottom'
+      Locked = True
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'tabitemcustom'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'bottom'
+      Locked = True
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'progressbarstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'smallscrollbarstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TTrack
+      StyleName = 'htrack'
+      Locked = True
+      Height = 17.000000000000000000
+      Orientation = orHorizontal
+      StyleLookup = 'scrollbarhtrackstyle'
+      Width = 100.000000000000000000
+    end
+    object TTrack
+      StyleName = 'vtrack'
+      Locked = True
+      Height = 17.000000000000000000
+      Orientation = orHorizontal
+      StyleLookup = 'scrollbarvtrackstyle'
+      Width = 100.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'scrollboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'background'
+      Locked = True
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TLayout
+          Height = 50.000000000000000000
+          Width = 50.000000000000000000
+          object TSizeGrip
+            StyleName = 'sizegrip'
+            Locked = True
+            Height = 50.000000000000000000
+            Position.X = 30.000000000000000000
+            Width = 50.000000000000000000
+          end
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'framedscrollboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TRectangle
+      StyleName = 'background'
+      Fill.Color = claWhite
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        ClipChildren = True
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TLayout
+          Height = 50.000000000000000000
+          Width = 50.000000000000000000
+          object TSizeGrip
+            StyleName = 'sizegrip'
+            Locked = True
+            Height = 50.000000000000000000
+            Position.X = 30.000000000000000000
+            Width = 50.000000000000000000
+          end
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'memostyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'imagecontrolstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'trackbarstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TStyleTag
+      Tag = 36
+      StyleName = 'ThumbSize'
+    end
+    object TThumb
+      StyleName = 'vthumb'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = -2.000000000000000000
+      Margins.Top = -2.000000000000000000
+      Margins.Right = -2.000000000000000000
+      Margins.Bottom = -2.000000000000000000
+      StyleLookup = 'vthumbbarstyle'
+      Width = 50.000000000000000000
+    end
+    object TThumb
+      StyleName = 'hthumb'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = -2.000000000000000000
+      Margins.Top = -2.000000000000000000
+      Margins.Right = -2.000000000000000000
+      Margins.Bottom = -2.000000000000000000
+      StyleLookup = 'hthumbbarstyle'
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'droptargetstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TRectangle
+      Height = 50.000000000000000000
+      HitTest = False
+      Stroke.Thickness = 4.000000000000000000
+      XRadius = 15.000000000000000000
+      YRadius = 15.000000000000000000
+      Width = 50.000000000000000000
+      object TText
+        StyleName = 'text'
+        Color = claBlack
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Left = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Position.X = 10.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+    object TFloatKeyAnimation
+      Duration = 0.599999964237213100
+      Keys = <
+        item
+        end
+        item
+          Key = 0.500000000000000000
+          Value = -20.000000000000000000
+        end
+        item
+          Key = 1.000000000000000000
+        end>
+      Loop = True
+      PropertyName = 'Padding.Top'
+      StartFromCurrent = False
+      Trigger = 'IsDragOver=true'
+    end
+    object TPath
+      Data.Path = {
+        100000000000000008EC8343F087A4430100000008EC8343083CFB4302000000
+        35BE7143504DF9430200000012835C43A8E6F54302000000F0674943F803F143
+        0100000008EC8343FC0116440100000008EC8343FC5116440100000000408443
+        FC5116440100000010689A43FC412B4401000000081CD043F803F14302000000
+        915DC64321E0F54302000000919DBB439643F94302000000087CB043F833FB43
+        01000000087CB043F087A4430100000008EC8343F087A4430300000000000000
+        00000000}
+      Fill.Color = claBlack
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'gridstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'AlternatingRowBackground'
+      Brush.Color = xFFEBEBEB
+    end
+    object TBrushObject
+      StyleName = 'linefill'
+      Brush.Color = xFFD6D6D6
+    end
+    object TRectangle
+      StyleName = 'background'
+      Fill.Color = claWhite
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+      object THeader
+        StyleName = 'header'
+        Sides = [sdTop, sdLeft, sdBottom, sdRight]
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TLayout
+        StyleName = 'content'
+        ClipChildren = True
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TRectangle
+          StyleName = 'selection'
+          Fill.Color = x7FC8E3F4
+          Height = 50.000000000000000000
+          HitTest = False
+          Width = 50.000000000000000000
+        end
+        object TRectangle
+          StyleName = 'focus'
+          Fill.Color = xFFC8E3F4
+          Height = 50.000000000000000000
+          HitTest = False
+          Margins.Top = 1.000000000000000000
+          Margins.Bottom = 1.000000000000000000
+          Width = 50.000000000000000000
+        end
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Position.Y = 32.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'headeritemstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 4.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'calendarlabelstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TEllipse
+    StyleName = 'transparentcirclebuttonstyle'
+    DesignVisible = False
+    Fill.Color = x00808080
+    Height = 50.000000000000000000
+    HitTest = False
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TColorAnimation
+      Duration = 0.100000001490116100
+      PropertyName = 'Fill.Color'
+      StartValue = x00808080
+      StopValue = xAF808080
+      Trigger = 'IsMouseOver=true'
+      TriggerInverse = 'IsMouseOver=false'
+    end
+    object TFloatAnimation
+      Duration = 0.100000001490116100
+      PropertyName = 'Parent.Opacity'
+      StartValue = 1.000000000000000000
+      StopValue = 0.500000000000000000
+      Trigger = 'IsMouseOver=true'
+      TriggerInverse = 'IsMouseOver=false'
+    end
+  end
+  object TLayout
+    StyleName = 'expanderstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TRectangle
+      Fill.Color = xFFD6D6D6
+      Height = 50.000000000000000000
+      HitTest = False
+      Stroke.Color = xFF666668
+      XRadius = 5.000000000000000000
+      YRadius = 5.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TText
+          StyleName = 'text'
+          Color = claBlack
+          Locked = True
+          Height = 50.000000000000000000
+          HitTest = False
+          Margins.Left = 2.000000000000000000
+          Margins.Right = 2.000000000000000000
+          Width = 50.000000000000000000
+        end
+        object TExpanderButton
+          StyleName = 'button'
+          DisableFocusEffect = False
+          Height = 22.000000000000000000
+          Locked = True
+          Width = 80.000000000000000000
+        end
+        object TCheckBox
+          StyleName = 'checkbox'
+          CanFocus = False
+          DisableFocusEffect = False
+          Locked = True
+          Height = 19.000000000000000000
+          Position.X = 25.000000000000000000
+          Width = 120.000000000000000000
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'expanderbuttonstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'comboeditstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 4.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 23.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'comboboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 4.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+  end
+  object TLayout
+    StyleName = 'transparentlistboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'AlternatingRowBackground'
+      Brush.Color = xFFEBEBEB
+    end
+    object TLayout
+      StyleName = 'background'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        ClipChildren = True
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+      object TLayout
+        StyleName = 'header'
+        Height = 50.000000000000000000
+        Visible = False
+        Width = 50.000000000000000000
+      end
+      object TLayout
+        StyleName = 'footer'
+        Height = 50.000000000000000000
+        Visible = False
+        Width = 50.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'numberboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 4.000000000000000000
+      Margins.Top = 4.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Margins.Bottom = 4.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'buttons'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 48.000000000000000000
+      Position.Y = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'popupboxstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'arcdialstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TEllipse
+      StyleName = 'background'
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Stroke.Color = xFFA0A0A0
+      Width = 50.000000000000000000
+      object TInnerGlowEffect
+        Softness = 0.400000005960464500
+        GlowColor = xFF4F4848
+        Opacity = 0.899999976158142100
+        Trigger = 'IsPressed=true'
+        Enabled = False
+      end
+      object TLayout
+        StyleName = 'tick'
+        Locked = True
+        Height = 50.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Width = 50.000000000000000000
+        object TLayout
+          Height = 50.000000000000000000
+          Position.X = 41.000003814697270000
+          Width = 50.000000000000000000
+          object TEllipse
+            Fill.Color = claBlack
+            Locked = True
+            Height = 50.000000000000000000
+            HitTest = False
+            Stroke.Color = xFF666668
+            Width = 50.000000000000000000
+          end
+        end
+      end
+    end
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+    object TText
+      StyleName = 'tracktext'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Bottom = -10.000000000000000000
+      Position.Y = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'cornerbuttonstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TRectangle
+      StyleName = 'background'
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Stroke.Color = xFFA0A0A0
+      Width = 50.000000000000000000
+      object TInnerGlowEffect
+        Softness = 0.400000005960464500
+        GlowColor = xFF4F4848
+        Opacity = 0.899999976158142100
+        Trigger = 'IsPressed=true'
+        Enabled = False
+      end
+    end
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'textcellstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 4.000000000000000000
+      Margins.Top = 4.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Margins.Bottom = 4.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'checkcellstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'progresscellstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'track'
+      Height = 50.000000000000000000
+      Padding.Left = 1.000000000000000000
+      Padding.Top = 1.000000000000000000
+      Padding.Right = 1.000000000000000000
+      Padding.Bottom = 1.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'popupcellstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      Height = 50.000000000000000000
+      Position.X = 35.000000000000000000
+      Width = 50.000000000000000000
+      object TPath
+        Data.Path = {
+          0500000000000000000000000000803F010000000000803F0000803F01000000
+          0000003F0000000001000000000000000000803F030000000000000000000000}
+        Fill.Color = claBlack
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Top = -7.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TPath
+        Data.Path = {
+          04000000000000000000000000000000010000000000803F0000000001000000
+          0000003F0000803F030000000000000000000000}
+        Fill.Color = claBlack
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Top = 6.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'imagecellstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TImage
+      StyleName = 'image'
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TImage
+    StyleName = 'aniindicatorstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    HitTest = False
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBitmapListAnimation
+      StyleName = 'ani'
+      AnimationBitmap.PNG = {
+        89504E470D0A1A0A0000000D494844520000007800000028080600000035EA3E
+        25000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+        0FE349444154785EED5C0B8C54D5193EE75CA888021A58B1368888A2E11156AB
+        8BA951C4D45448B536617697CACE2C0DB1B2B3AB69A27D85686C4C8D8FC4E83E
+        507CB033BBA9BBB36BB44AB5C60A8AD1D445CDA22CB1585A1F55412056D1452A
+        F79CFEDF7FCF0C7776EE9DE7A610E4DB4CEEBDFF39F3DDF3B8F7FC8FF3CF8A62
+        50DBD872153EF6B2621CF17C0DCDCFE2632F2B465DACB9171F7B5931EAA2F1B5
+        F8D8CBBC18638F192C5B76DD14F7B83135CE8183038F3DB6760F0BB5398D8F16
+        81754230DA7C758D2D3FD0C65D2D8D73772AD9BA918515F0D537C42FD0CADCA4
+        5C716F4F77C76B9E54CFF48E1E4AE1AB5D7EC35CE9B8CD5A9807FA121D839069
+        A1CFE6428BDA68CB2223DD9B95746EEFED6C7DD58A0351D7109F65A458A11DD5
+        D5BFAE751B64DAC82CBEFAE54D0BB4237EA9B4BCA7A7ABFD752B66287BCCE09B
+        71C79D22B49A7670EC98CBAD28075C4675B86E018C369F30E662A9C55946E8DB
+        AD2407A5F019692E3442CC721DF97B2BCA41497C4A576B2DCF5142FDD68A7280
+        B6A30FE88B1585C228395B0A73AEA3F50D569403B41D7D405FAC28839C09C653
+        4295BF92429D8CA7D18A33E02794CA5027FD44E5C368F3E961BD464AB54F1A53
+        551B6D5E6DC51994CA374E7EB58E26EF731ACA2A5AF66EB4E20C4AE51B2FF7F5
+        D3A87EAEB538A5361A5F69C519A0CD683BFA80BE5871288E17FBFE6284FC0F3D
+        0C5323D1A65A2BCEC06BB3A9421FB82F23C0138C2568E98A96D92C2128630670
+        C4D3E809E4C742E90FFDB2741D00DF0587BDE4659474CECD9148D389B8AE940F
+        CB685DB469552C161BD7D7D7F1254DF3C3904B217ECA154AE4C3A445A2CDCBC1
+        974824BEA66F75424E4BDF355C41A81DDEA7C8FED2325A1B6BBE26CDE718D90D
+        B991F2C738D2DBFC2EB5753BCE336DA63E787DC9E58B34DC703AD9003F5CB8F0
+        D631DC3E65FA2097422EC65149F3AE52E6EF383FD466D389BA18738C3DE60052
+        D6C1D02FCA35D3A8D3E7A323BD5DEDDBA9C2146A0C23D5D9FAB43D154AC97FE2
+        D8DBD9B61D1DD352D648D79C401C18E06750C63A92962075BCAAA78979B837D9
+        BEA6223ED291F406CD1AD6136A230DF14EE68BC6CFA32217E5A5F241471A5A46
+        87E584A5F5D196EE9E646B82F8E6D112F70DCA535D6D3C9040317CD091D2E873
+        F78B137F52DBD8D4D7D3D9DA5F178BCF36864601DF4DB4D5E1683120A574B80F
+        217C4ABACBE830F3D4E97BAEAC8D363D95EAEC7886DA7736CDB0C7976CBF0E47
+        404AF33769E4589A33EA43D32AFAF64AA3F504A3C4222A5EC2638EA7077A064B
+        117F49C9B70B2A7F7A428C36F3704E3AE5B331DF1CDC903640D888809EA1A508
+        D7D4A117FD8D0A423E3E18119E8EF4F894911B88EF269C87211F5F24D6540D1D
+        896514D7F4366CEC4DB487EA60201F1FDE40D691B48CE29A7A8CFEDEE79D0723
+        1FDFCF56AC3AD3D5CE4AE2E3B75A1BF14A1F4D20CEC3400FC05A63CC6538A795
+        6337CDE56A18A10E045BB7BE31BC6DCBE6A139F32E3A404FF1649A90CF860607
+        F04485626EF58269C68813A5569BFBBADA3682C31689A12D03EF11DFA373AA17
+        4C22AE33A9C3FF26D99F6D7120F2F16D7D6BF347C4D73D6F7ECD3863D40C7A92
+        3F18DAB2F9055B1C887C7CC4B593DAD33FB7FAC2B1F4BA4CA711F988AE37D9E2
+        40E4E51B1CD84DED593F7B3EEC35398DDAF7315D6796F420E4E37B7BF0F5CFA8
+        3D2FCC39EF4297DECED368C23ED9B665E02D5B1C88B9F3172CA1B1AEA2B7A9B7
+        2FD9DE8839B045C77034437A0EBDDFEF533BFC3A281F38B8E0F741C9D8A16579
+        B9DFEF83813142078522904FEBABFC7E1F0C8C42CB7D1A417C42EB4BC8EDC8F0
+        9185FA6E2AD9FE2B7B991721ED8371EAF79B7750FBEEB4E77911C4474B409532
+        7A8695082DD5BFFA3A5B1FB5977911C497E3265506978D1E3F48BF509BCB452E
+        5FDAD0280F017C15E1DBC6770C471CD29E0B034E33FC2A98DEB46C8546620072
+        079648A3E690527F25CCE286A30F5F501AF17A2AD9161A790260556A6DCE24A3
+        6330D57DFF562BCE021C7DF605A5783395686FB5E24014C3C77DD0F2722DE460
+        5FB28D7DD73014C3873A884E91773404D7C68A035154FBC85F871F0E57AD18AF
+        26888F9768B8219158FC392D4D4C283D89667D2C97E6854316B899288C5E8C07
+        6369F417DFB305EC8620B84E7EE0B5B4A092254D5E5911A0FB9E40F7BF1813E9
+        77FCE186905FF900912C23FD79123D3015F1C10DA1F6FD8126174102EA83616F
+        A21042DB477DC718602C784C786C0A238C0FE790A18CEB1489203E1E2804AAA9
+        611CEE22AD7E1F7C4C1AD05B8242818800451AE2310417B4308F13ED17C43C45
+        AAEFFCC8562152793DFB984A7CEE48D90E1F1303501B8BB7D82A19E02D827180
+        27940CB48D0809C21F27C7BFC65611CAD50DF03111B2A347E521F8986803DA62
+        AB648027199F7C7CAEAB22D6C7FCC208D30D1F136D405BBC1A87500C1FF79DC6
+        00638131C1D8A4BF67AB64500C1FCE21E332AA83BAE5F2F10463174219F1D078
+        B56F313A5B1F6D59AAB55C64A4B800E5B4D4DE850FD715A65A4971716DB4E952
+        EC96EC7C6FF2BDD235EB8571334B92719D36EAF023E3C5BEFA9E646BBF3770E4
+        841B713ECA69B27F8D0FCEB1CC4BA36BF0D6238286A5523BF265ECDCA01CA037
+        769D912A71BCFC7215963EDC1B6D405B501E696CF9393E38C732850002A24461
+        7CDA388FD1EA92DAF9FE94DFA4921D9B706FB481550EC19B6CB24851B7083EF4
+        1D6380B1C098A02EBE43DF9D8EE252F9700E19CA50A7123E0E55DA2D267C04E2
+        A9C3C22CA7C9A081A5892364B915CA6CC0D246BAF0EA850B6F7DF5A5976E3B48
+        62BBCDE6C1EA00D603E0DBAF6584BE89BFF41EEB21B7827438BD4D8BC99DBA82
+        F8B6826F64501F0DA703C772119F9562CFD538475B70F4BB15D04158A61002A4
+        4BFECE48BEBEAEFB3FA0033ECCA7C4DE2BD03E6E0BE073358AE24B74ECA4033E
+        0C0E3FD291BEFBB627288DCF46B438AA0554C297A3CB86CD84A5D09B4A894FC9
+        D0E2A0BE1F6C3C48899B4F9C7AFA5E0E8DE5C37E31E14AE84DFACEAEBE6447CA
+        8A33C0D242634B7C66E277A7EDFEBE1587C2DE7322DA1064C8E0E142E80FFA08
+        BADB8A43E1DD13B684D8C36D198152F9500775F19D20E3E9FFCD9733C17822B0
+        53A185BEC38A72E0281713BF836C1D7E62F2416AB38D74E73BAE52F75B510E5C
+        71B01F0EBDEB88F7AD2814F69E3B6C1B0281B82E3DD51F8EFDFAC0A756140ADC
+        93EF4D6DB0A21C94C2C775A82E7F270487932F107E1D3C1AF0EBE0D1805F078F
+        063C1D976B70958BC3C95794BBF1ED4471AE4EF1383C7C393959D86CC67EA4E3
+        E8BE3FAE5BC37BA17E230BF0B6DBE4F5B09683F4821F54F754219D2546FFF7B9
+        FEE4831F597156CE1374075C2158CBD6A00A05FC3BB800B012D3DB6B7E230BE0
+        ED367285602D5B832A14417C7E2306809FCBAE1059CBD6A00A45317C81754250
+        295FAE0E167A161D66F27E6408BCBD54794E2643230F1C574CC7043862CC522B
+        CA01F652E9213A17F94756148A6272BC6CDB67DABEE445317C683BF781FA6245
+        A12886AF941CAF4AF9722678D707935FA4C317080404ADF3083FA683189C7F54
+        009F7C58F5063D361C0C0972D43962638318C83FB2E250C005483BF308E55971
+        06DC661BC4B07DC98B427CDC661BC4F0FA921F05DB47B27410C3EFCE84A1523E
+        9E602CA30857C227841F4AFEEA5390234E8B23B6D4F0E1739B6784BC23E400C1
+        CF45AA08F2A62007B064A44D76F09145FE3C171CCA2244BE13E73CA5F38C9077
+        94E64384CADF193F1F3032C70B56303E383FD466F314EE0D3EE44B2110003950
+        888FB715C92AE573DB66F4017C1823E44B41957139A114BEB42C5D077C5EA898
+        549945257C00BE0B0E9C7B3A183AD2D1334E3D63EFA591339A9E4F253A36451A
+        E233C8D7E4ED26FF7E29360EA432AA27D1D68F70E1B0968D7433C49B1752713D
+        EA401F64E57825DA07C9F29B4625CC97B55F2AC59BF4D4A85467FB3388A0D920
+        CB24E9B8482ABB1E5572F810DDF1E578F9F74BB1714093E2F475756CC2DB8C20
+        0B2DD527D183F90E15F3064A213E7F8E17360E60D0D03D061141B341968952B8
+        7840B91FA5F0F973BC3C5B66EF15F4F2905FCF0F28F7A35C3E3CC41C14F1E578
+        F1776044B08EE4A5089D52037E9220909B738F96C6EA05B9DB71CD2DE9C4713C
+        3DD00B583AB8B4981CAF58FC168447718E200BFCF074E278597C5E3AA9178891
+        7217FCF0F412560E1F1E668447F942CA3DF0C3D34668397C7075101EE50B23F6
+        C00F4F1BA165F597540942963847E003BE310C2E36B5B76D7963DFD096CDAFCD
+        3DEFA203743995D6B95D43839B79490EC39CF9358B687DA8A235BE97DEF066E4
+        4DD9A2B272BCE6CC5F7009298CC9646C3D4E7CBF43DE942D2A8FAFBA86064F42
+        373D914A76DC89BC295B5426DF8279F4369C6C94793695687F007953B6A84CBE
+        0BCEA2099C44B3B7A1975643CC812D1AF51CB963388A21B15464F955A4C00B2D
+        CF6904E57309477694CB873DE491F95CA43BBBCBE68BC6D78ECCE7324A3D5D76
+        7FA3F1BBB2365E60782AF57205ED43342F2B9F8BDAB7AD5C3E44F346E6730544
+        B28E9CBC20D225B4C28E4405ED0BCCE73A72FA1B8CD1E63B86A30A69CB9B01DF
+        137E552539407E94C4176DC60FB16A3CA328387FAB143E5A4EEF30465E44CBF2
+        93C800B1E22C94C6D7BC1A0910D8230FDA46054AE243768B11E7638F3C681B15
+        E01FAA79BF651AE84DB6ADF2A4C120976A391220B047EEDF46E5251A66F968E5
+        0001E5F119C7183D41181D8D44E3AFE0E72FB6A02C3EAA3716FE39F2CC906F86
+        60822D2A8F0F79655A4C429E196C05F8B0B6A83C3E43DA55989368029621DFCC
+        1FD840DF3106180B1E131A1B5B140E2FAF6C229231906F86783CC43CC170ACE1
+        737148ACC21C20A02CBE64FB75528A7BD33F0DC50FA46D95D2F86825807185BC
+        32E49709FBD3502FEFCC43297C5809E0F323AF0CF9653462FCD3502524076180
+        403EFE153EAF4A59C05B099F1FAB0AF2CB10A2A5C999CA796716E83BC680C782
+        C604638336A02DB64A065809A8EC46A45AD16A80CC500E3373DE19812718BB10
+        A395030494CD97EC58A3F7EB8552A987F0EB779403A5F0116AF0232C844FD169
+        E49921DF0C7967B6BC309FEF5F386099474007810EE49721CF8C96874738EFCC
+        22878FEE6D7F08C60F7D9DEF5F386099474007513B2CA5C83343BE1976D2500E
+        A0EF18038C05C604F7461B68B27915F21E1EFB2F1C38CFCD5C86A81DF2CB9067
+        867C33ECA4A1984395768B29B3CD7438738AEC6F66EFE6428B52F8E82D7A820E
+        511AA6959148535722C17C596F52413E9FEB071D4EA6778C4A1B63B1582FFF5E
+        5788AC1C6A3F9FF79B68B59238D26D411C3BE35AD19BB99EDEDA6B5D69F0FBE4
+        F596EF49AFD40356003AB00E472C9DC3C16033E24F90F95D3FE8706AFB32EA44
+        84EA6E48246E03DF5FBD52FB06FB015D405F3862728A46A2201F1968E43BEF86
+        EE52E3555EC30428C4E719687237F4F9D7E68415561C0ADC13F7461B828C4518
+        6808C5429F73FE5B01F03DE9DE6883D7966CB08126E52EE873E4BF5971063913
+        7CA4E71415C347FA7035E9B77F50C7BD2CC93C28860F71767A08B64B23375B51
+        38E89EB837DA602539409C1D796FBC7A1500EE897BA30D569403C4D969557807
+        F96F56541A3C1D7774E4281503BF0E1E0D40FFD6C69A7AEC65C5601D4C96B7BD
+        CC0321FE077F83AF4EF222F0AE0000000049454E44AE426082}
+      AnimationCount = 12
+      AnimationRowCount = 2
+      Duration = 1.000000000000000000
+      Loop = True
+      PropertyName = 'Bitmap'
+    end
+  end
+  object TLayout
+    StyleName = 'tableviewstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TBrushObject
+      StyleName = 'AlternatingRowBackground'
+      Brush.Color = xFFEBEBEB
+    end
+    object TLayout
+      StyleName = 'background'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TLayout
+        StyleName = 'content'
+        ClipChildren = True
+        Height = 50.000000000000000000
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Width = 50.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'vscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.X = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TScrollBar
+        StyleName = 'hscrollbar'
+        Height = 18.000000000000000000
+        SmallChange = 0.000000000000000000
+        Orientation = orHorizontal
+        Position.Y = 42.000000000000000000
+        Width = 150.000000000000000000
+      end
+      object TLayout
+        Height = 50.000000000000000000
+        Width = 50.000000000000000000
+        object TSmallScrollBar
+          StyleName = 'vsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+        object TSmallScrollBar
+          StyleName = 'hsmallscrollbar'
+          Height = 8.000000000000000000
+          SmallChange = 0.000000000000000000
+          Orientation = orHorizontal
+          Visible = False
+          Width = 150.000000000000000000
+        end
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'magnifierglassstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TCircle
+      StyleName = 'content'
+      Height = 50.000000000000000000
+      HitTest = False
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'magnifierglassrectanglestyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'innercontent'
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
+      object TRectangle
+        StyleName = 'content'
+        Height = 50.000000000000000000
+        HitTest = False
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 3.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 21.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 3.000000000000000000
+        XRadius = 5.000000000000000000
+        YRadius = 5.000000000000000000
+        Width = 50.000000000000000000
+      end
+    end
+  end
+  object TLayout
+    StyleName = 'rectanglestaticLoupe'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TRectangle
+      StyleName = 'content'
+      Height = 50.000000000000000000
+      Stroke.Color = xFF666668
+      Stroke.Thickness = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'selectionpointstyle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'backtoolbuttonlabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'segmentedbuttonmiddle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'segmentedbuttonleft'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'segmentedbuttonright'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tooledit'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'buttons'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 48.000000000000000000
+      Position.Y = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TLabel
+      StyleName = 'prompt'
+      Locked = True
+      Height = 15.000000000000000000
+      Opacity = 0.500000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'searchedit'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 20.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'buttons'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 48.000000000000000000
+      Position.Y = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TLabel
+      StyleName = 'prompt'
+      Locked = True
+      Height = 15.000000000000000000
+      Opacity = 0.500000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'stepperbuttonleft'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'stepperbuttonright'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'toolbuttonleft'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'toolbuttonright'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'toolbuttonmiddle'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemmore'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemfavorites'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemhistory'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitembookmarks'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemcontacts'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemsearch'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemmostrecent'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemdownloads'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemrecent'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemtoprated'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemmostviewed'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'tabitemfeatured'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'toollabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'cleareditbutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'listboxheaderlabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'transparentedit'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'buttons'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 48.000000000000000000
+      Position.Y = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TLabel
+      StyleName = 'prompt'
+      Locked = True
+      Height = 15.000000000000000000
+      Opacity = 0.500000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'searcheditbutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'additembutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'deleteitembutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'calendartodaybtn'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'innerprogressbar'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'roundededit'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TLayout
+      StyleName = 'content'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TLayout
+      StyleName = 'buttons'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 48.000000000000000000
+      Position.Y = 2.000000000000000000
+      Width = 50.000000000000000000
+    end
+    object TBrushObject
+      StyleName = 'foreground'
+      Brush.Color = claBlack
+    end
+    object TBrushObject
+      StyleName = 'selection'
+      Brush.Color = x7FC8E3F4
+    end
+    object TFontObject
+      StyleName = 'font'
+      Font.Size = 16.000000000000000000
+    end
+    object TLabel
+      StyleName = 'prompt'
+      Locked = True
+      Height = 15.000000000000000000
+      Opacity = 0.500000000000000000
+      Visible = False
+      Width = 120.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'embossedlabel'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TText
+      StyleName = 'text'
+      Color = claBlack
+      Locked = True
+      Height = 50.000000000000000000
+      HitTest = False
+      Width = 50.000000000000000000
+    end
+  end
+  object TLayout
+    StyleName = 'listitembutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'listitemdeletebutton'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+  end
+  object TLayout
+    StyleName = 'outertrackbar'
+    DesignVisible = False
+    Height = 50.000000000000000000
+    Position.X = 225.000000000000000000
+    Position.Y = 225.000000000000000000
+    Width = 50.000000000000000000
+    object TStyleTag
+      Tag = 36
+      StyleName = 'ThumbSize'
+    end
+    object TThumb
+      StyleName = 'vthumb'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = -2.000000000000000000
+      Margins.Top = -2.000000000000000000
+      Margins.Right = -2.000000000000000000
+      Margins.Bottom = -2.000000000000000000
+      StyleLookup = 'outertrackbarvthumbbar'
+      Width = 50.000000000000000000
+    end
+    object TThumb
+      StyleName = 'hthumb'
+      Locked = True
+      Height = 50.000000000000000000
+      Margins.Left = -2.000000000000000000
+      Margins.Top = -2.000000000000000000
+      Margins.Right = -2.000000000000000000
+      Margins.Bottom = -2.000000000000000000
+      StyleLookup = 'outertrackbarhthumbbar'
+      Width = 50.000000000000000000
+    end
+  end
+end
