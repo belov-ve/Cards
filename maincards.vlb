@@ -1,5 +1,5 @@
 ﻿[]
-Coordinates=623,78,80,58
+Coordinates=141,173,66,58
 Visible=True
 ExplicitSubNodes=
 
@@ -472,10 +472,4 @@ Coordinates=923,463,82,58
 [LabelImport]
 Coordinates=201,593,53,58
 Visible=True
-
-[btnDirection]
-Coordinates=141,173,66,58
-
-[ImageDirection]
-Coordinates=127,269,57,58
 

@@ -113,8 +113,6 @@ type
     RectangleAnswer: TRectangle;
     OprosAnswer: TLabel;
     OprosPackName: TLabel;
-    btnDirection: TSpeedButton;
-    ImageDirection: TImage;
     ColorBox2: TColorBox;
     ColorBox4: TColorBox;
     statCard: TLabel;
@@ -200,6 +198,8 @@ type
     SpeedSelector: TTrackBar;
     SwitchHideLearned: TSwitch;
     LabelHideLearned: TLabel;
+    btnDirection: TImage;
+    KeyDirectionAnimated180: TFloatKeyAnimation;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -251,7 +251,7 @@ type
     procedure AnimationFinish(Sender: TObject);
     procedure btnOprosClick(Sender: TObject);
     procedure btnOprosMouseLeave(Sender: TObject);
-    procedure btnDirectionClick(Sender: TObject);
+    procedure btnDirectionOldClick(Sender: TObject);
     procedure btnAaClick(Sender: TObject);
     procedure btnMinusClick(Sender: TObject);
     procedure RectangleExpressQClick(Sender: TObject);
@@ -270,7 +270,6 @@ type
     procedure mItemMouseLeave(Sender: TObject);
     procedure mImportClick(Sender: TObject);
     procedure PackListUpdate;
-    procedure ComPanelPacksResize(Sender: TObject);
     procedure PanelOprosResize(Sender: TObject);
     procedure PanelExpressOprosResize(Sender: TObject);
     procedure PanelPackResize(Sender: TObject);
@@ -1054,7 +1053,7 @@ begin
   btnDirectAnimation.Inverse := not btnDirectAnimation.Inverse;
 end;
 
-procedure TForm1.btnDirectionClick(Sender: TObject);
+procedure TForm1.btnDirectionOldClick(Sender: TObject);
 begin
   if btnDirectAnimation.Running then Exit  // кнопка нажата и обрабатывается
   else btnDirectAnimation.Start;
@@ -2029,12 +2028,21 @@ begin
           else if i<btn_size then i := btn_size;
 
           // ширина отступов между элементами
-          interv  := TabControl1.Height*0.03;  //3% от ширины
+          interv  := 6; //TabControl1.Height*0.03;  //3% от ширины
+
+          // изменение размера картинки в зависимости от ширины экрана
+          btnDirection.Height := Round( PanelOpros.Height / 14 );
 
           OprosPackName.Height  := i;
 
-          i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
-              - StatCard.Height - GridPanelOprosSwitch.Height - interv*6;
+          case Opros.Tag of
+            2:  // режим изучения (нет цифр статистики)
+                  i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
+                      - GridPanelOprosSwitch.Height - interv*5;
+            else  i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
+                      - StatCard.Height - btnDirection.Height - interv*6;
+          end;
+
           // если панель с кнопками видна, учесть ее размер (вычесть из доступного пространства)
           if ComPanelOpros.Visible then i := i - ComPanelOpros.Height;
 
@@ -2043,55 +2051,75 @@ begin
           RectangleQuestion.Position.Y  := Round( OprosPackName.Position.Y + OprosPackName.Height + interv );
           RectangleQuestion.Height      := i;
 
-          // Панель с переключателями режима обучения
-          GridPanelOprosSwitch.Position.Y := Round( RectangleQuestion.Position.Y + RectangleQuestion.Height + interv );
+          case Opros.Tag of
+            2: // режим изучения (нет цифр статистики)
+              begin
+                // Панель с переключателями режима обучения
+                GridPanelOprosSwitch.Position.Y := Round( RectangleQuestion.Position.Y + RectangleQuestion.Height + interv );
 
-          RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
-          RectangleAnswer.Height        := RectangleQuestion.Height;
+                RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
+                RectangleAnswer.Height        := RectangleQuestion.Height;
+
+              end;
+            else // режим опроса (нет панели изменения режима обучения)
+              begin
+                // Кнопка смены направления опроса
+                btnDirection.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
+                btnDirection.Position.X := Round( (PanelOpros.Width - btn_size)/2 );
+
+                RectangleAnswer.Position.Y    := Round( btnDirection.Position.Y + btnDirection.Height + interv );
+                RectangleAnswer.Height        := RectangleQuestion.Height;
+
+                // Статистика по карточке
+                statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
+                statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
+
+                // Кнопки завершения опроса карточки
+                GridPanelLayoutGorizontalSet( GridPanelOpros );
+              end;
+          end;
 
           // Установка параметров для панелей в анимации
           PrepareAnimation;
-
-          // Статистика по карточке
-          statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
-          statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
-
-          // Кнопка смены направления опроса
-          btnDirection.Position.Y := Round( (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
-            +RectangleQuestion.Height)/2 );
-          btnDirection.Position.X := Round( (PanelOpros.Width - btn_size)/2 );
-
-          // Кнопки завершения опроса карточки
-          GridPanelLayoutGorizontalSet( GridPanelOpros );
     end;
     // Панель ExpressOpros
     4:  begin
+          // ширина отступов между элементами
+          interv  := 6;
+
+          // изменение размера картинки в зависимости от ширины экрана
+          Image3.Height := Round( PanelExpressOpros.Height / 14 );
+
           // панель с вопросом
-          RectangleExpressQ.Width       := TabControl1.Width*0.88;
-          RectangleExpressQ.Position.X  := (TabControl1.Width - RectangleExpressQ.Width)/2;
-          RectangleExpressQ.Position.Y  := ExpressPackName.Height + 28;
-          RectangleExpressQ.Height      := (TabControl1.Height - RectangleExpressQ.Position.Y - Image3.Height - 16)*0.182;
-          i := RectangleExpressQ.Height/10;
+          RectangleExpressQ.Width       := Round(PanelExpressOpros.Width * 0.88);
+          RectangleExpressQ.Position.X  := Round( (PanelExpressOpros.Width - RectangleExpressQ.Width)/2 );
+          RectangleExpressQ.Position.Y  := ExpressPackName.Position.Y + ExpressPackName.Height + interv;
+          RectangleExpressQ.Height      := Round( (PanelExpressOpros.Height - ExpressPackName.Position.Y
+                                            - ExpressPackName.Height - Image3.Height - interv * 7 )/5 );
+
+          //i := RectangleExpressQ.Height/10;
           //
-          Image3.Position.Y := RectangleExpressQ.Position.Y+RectangleExpressQ.Height;
+          Image3.Position.Y := RectangleExpressQ.Position.Y + RectangleExpressQ.Height + interv;
+
           // панели с вариантами ответов (4 шт.)
+          // 1-я
           RectangleExpressA1.Position.X := RectangleExpressQ.Position.X;
-          RectangleExpressA1.Position.Y := RectangleExpressQ.Position.Y + RectangleExpressQ.Height + Image3.Height + 16;
+          RectangleExpressA1.Position.Y := Image3.Position.Y + Image3.Height + interv;
           RectangleExpressA1.Width      := RectangleExpressQ.Width;
           RectangleExpressA1.Height     := RectangleExpressQ.Height;
-          // 2-z
+          // 2-я
           RectangleExpressA2.Position.X := RectangleExpressQ.Position.X;
-          RectangleExpressA2.Position.Y := RectangleExpressA1.Position.Y + RectangleExpressQ.Height + i;
+          RectangleExpressA2.Position.Y := RectangleExpressA1.Position.Y + RectangleExpressQ.Height + interv;
           RectangleExpressA2.Width      := RectangleExpressQ.Width;
           RectangleExpressA2.Height     := RectangleExpressQ.Height;
-          // 3-z
+          // 3-я
           RectangleExpressA3.Position.X := RectangleExpressQ.Position.X;
-          RectangleExpressA3.Position.Y := RectangleExpressA2.Position.Y + RectangleExpressQ.Height + i;
+          RectangleExpressA3.Position.Y := RectangleExpressA2.Position.Y + RectangleExpressQ.Height  + interv;
           RectangleExpressA3.Width      := RectangleExpressQ.Width;
           RectangleExpressA3.Height     := RectangleExpressQ.Height;
-          // 4-z
+          // 4-я
           RectangleExpressA4.Position.X := RectangleExpressQ.Position.X;
-          RectangleExpressA4.Position.Y := RectangleExpressA3.Position.Y + RectangleExpressQ.Height + i;
+          RectangleExpressA4.Position.Y := RectangleExpressA3.Position.Y + RectangleExpressQ.Height  + interv;
           RectangleExpressA4.Width      := RectangleExpressQ.Width;
           RectangleExpressA4.Height     := RectangleExpressQ.Height;
           //
@@ -2130,62 +2158,90 @@ begin
           OprosPackName.Height := i;
 
           // ширина отступов между элементами
-          interv  := TabControl1.Height*0.03;  //3% от ширины
+          interv  := 6; //TabControl1.Height*0.03;  //3% от ширины
+
+          // изменение размера картинки в зависимости от ширины экрана
+          btnDirection.Height := Round( PanelOpros.Height / 14 );
 
           // свободное пространство для карт: (размер формы - фиксированные элементы - отступы)
-          i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height - StatCard.Height - GridPanelOprosSwitch.Height - interv * 6;
+          case Opros.Tag of
+            2:  // режим изучения (нет цифр статистики)
+                  i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
+                      - GridPanelOprosSwitch.Height - interv * 5;
+            else  i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
+                      - StatCard.Height - btnDirection.Height - interv * 6;
+          end;
           i := i *0.5;  // по 50% на панель
 
           RectangleQuestion.Position.Y  := Round( OprosPackName.Position.Y + OprosPackName.Height + interv );
           RectangleQuestion.Height      := Round( i );
 
-          // Панель с переключателями режима обучения
-          GridPanelOprosSwitch.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
+          case Opros.Tag of
+            2:  begin // режим изучения (панели настройки есть)
+                  // Панель с переключателями режима обучения
+                  GridPanelOprosSwitch.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
 
-          RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
-          RectangleAnswer.Height        := RectangleQuestion.Height;
+                  // Панель карточки ответа
+                  RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
+                  RectangleAnswer.Height        := RectangleQuestion.Height;
+                end
+            else  // нет панели настройки, есть кнопка направления переключания карточек
+                begin
+                  // Кнопка смены направления опроса
+                  btnDirection.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
+                  btnDirection.Position.X := Round( (PanelOpros.Width - com_panel - btn_size)/2 );
+
+                  // Панель карточки ответа
+                  RectangleAnswer.Position.Y    := Round( btnDirection.Position.Y + btnDirection.Height + interv );
+                  RectangleAnswer.Height        := RectangleQuestion.Height;
+
+                  // Статистика по карточке
+                  statCard.Position.X := Round( RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width );
+                  statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
+
+                  // Кнопки завершения опроса карточки
+                  GridPanelLayoutVerticalSet( GridPanelOpros );
+                end;
+          end;
 
           // Установка параметров для панелей в анимации
           PrepareAnimation;
 
-          // Статистика по карточке
-          statCard.Position.X := Round( RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width );
-          statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
-
-          // Кнопка смены направления опроса
-          btnDirection.Position.Y := Round(  (RectangleAnswer.Position.Y - btn_size + RectangleQuestion.Position.Y
-            + RectangleQuestion.Height)/2 );
-          btnDirection.Position.X := Round(  (PanelOpros.Width - com_panel - btn_size)/2 );
-
-
-          // Кнопки завершения опроса карточки
-          GridPanelLayoutVerticalSet( GridPanelOpros );
     end;
     // Панель ExpressOpros
     4:  begin
+          // ширина отступов между элементами
+          interv  := 6;
+
+          // изменение размера картинки в зависимости от ширины экрана
+          Image3.Height := Round( PanelExpressOpros.Height / 14 );
+
           // панель с вопросом
-          RectangleExpressQ.Width       := TabControl1.Width*0.4;
-          RectangleExpressQ.Height      := (TabControl1.Height - Image3.Height - ExpressPackName.Height - 44)/4;
-          RectangleExpressQ.Position.X  := (TabControl1.Width - RectangleExpressQ.Width)/2;
-          RectangleExpressQ.Position.Y  := ExpressPackName.Height + 28;
+          RectangleExpressQ.Width       := Round( (PanelExpressOpros.Width - interv * 6)/2 );
+          RectangleExpressQ.Height      := Round( (PanelExpressOpros.Height - Image3.Height - ExpressPackName.Position.Y
+                                            - ExpressPackName.Height - interv * 7)/3 );
+
+          RectangleExpressQ.Position.X  := (PanelExpressOpros.Width - RectangleExpressQ.Width)/2;
+          RectangleExpressQ.Position.Y  := ExpressPackName.Position.Y + ExpressPackName.Height + interv;
           //
-          Image3.Position.Y := RectangleExpressQ.Position.Y+RectangleExpressQ.Height;
+          Image3.Position.Y := RectangleExpressQ.Position.Y + RectangleExpressQ.Height + interv;
           // панели с вариантами ответов (4 шт.)
-          RectangleExpressA1.Position.X := TabControl1.Width*0.2/3;
-          RectangleExpressA1.Position.Y := RectangleExpressQ.Position.Y+RectangleExpressQ.Height+Image3.Height+16;
+          // 1-я;
+          RectangleExpressA1.Position.X := interv * 2;
+          RectangleExpressA1.Position.Y := Image3.Position.Y + Image3.Height + interv;
           RectangleExpressA1.Width      := RectangleExpressQ.Width;
           RectangleExpressA1.Height     := RectangleExpressQ.Height;
-          // 2-z
-          RectangleExpressA2.Position.X := RectangleExpressQ.Width + TabControl1.Width*0.4/3;
+          // 2-я
+          RectangleExpressA2.Position.X := RectangleExpressA1.Position.X + RectangleExpressA1.Width + interv * 2;
           RectangleExpressA2.Position.Y := RectangleExpressA1.Position.Y;
           RectangleExpressA2.Width      := RectangleExpressQ.Width;
           RectangleExpressA2.Height     := RectangleExpressQ.Height;
-          // 3-z
+          // 3-я
           RectangleExpressA3.Position.X := RectangleExpressA1.Position.X;
-          RectangleExpressA3.Position.Y := RectangleExpressA1.Position.Y + RectangleExpressQ.Height + RectangleExpressQ.Height/2;
+          RectangleExpressA3.Position.Y := RectangleExpressA1.Position.Y + RectangleExpressQ.Height + interv * 2;
           RectangleExpressA3.Width      := RectangleExpressQ.Width;
           RectangleExpressA3.Height     := RectangleExpressQ.Height;
-          // 4-z
+          // 4-я
           RectangleExpressA4.Position.X := RectangleExpressA2.Position.X;
           RectangleExpressA4.Position.Y := RectangleExpressA3.Position.Y;
           RectangleExpressA4.Width      := RectangleExpressQ.Width;
@@ -2661,7 +2717,8 @@ begin
         if not KeyOkAnimated.Running then KeyOkAnimated.Start;
         if not KeyErrAnimated.Running then KeyErrAnimated.Start;
         if not KeyHideAnimated.Running then KeyHideAnimated.Start;
-        if not KeyDirectionAnimated.Running then KeyDirectionAnimated.Start;
+        if not (KeyDirectionAnimated.Running or KeyDirectionAnimated180.Running) then
+          if btnDirection.RotationAngle=0 then KeyDirectionAnimated.Start else KeyDirectionAnimated180.Start;
       end
       else
       begin
@@ -2863,11 +2920,6 @@ begin
     SetPackStatistics;      // обновление полей статистики
     CardsGrid.Repaint
   end;
-end;
-
-procedure TForm1.ComPanelPacksResize(Sender: TObject);
-begin
-//  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
 end;
 
 procedure TForm1.TabControl1Change(Sender: TObject);
