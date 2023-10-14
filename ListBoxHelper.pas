@@ -9,23 +9,17 @@ uses FMX.Controls, FMX.Types, System.SysUtils, FMX.ListBox, FMX.SearchBox;
 type
   TListBoxHelper = class helper for TListBox
     //class var seachbox_helper: TSearchBox;
-    //constructor Create(AOwner: TComponent); // override;
-    //procedure RegisterSearchBox(searchBox : TSearchBox = nil);
-    function ResetFilter : string;                          // возвращает старый фильтр
-    function GetSearchBox : TSearchBox;                     // возвращает SearchBox
-    function AddAndClearSelect(s : string) : integer;       // добавить, ничего не выбирать, фильтр очистить
-    function AddAndSelect(s : string) : integer;            // добавить, выбрать, фильтр очистить
-    function AddAndSaveOldSelect(s : string) : integer;     // добавить, сохранить выбор, фильтр очистить
-    function AddAndSaveOldView(s : string) : integer;       // добавить, сохранить выбор и фильтр, вернуть номер добавленного в отфильтрованном списке, или -1 если не попадает в фильтр
-    procedure DeleteItem(i : integer = -1);                 // удаление по индексу. если не указано то удаляем выбранный
+    function ResetFilter : string;                                // возвращает старый фильтр
+    function GetSearchBox : TSearchBox;                           // возвращает SearchBox
+    function AddAndClearSelect(const S : string) : integer;       // добавить, ничего не выбирать, фильтр очистить
+    function AddAndSelect(const S : string) : integer;            // добавить, выбрать, фильтр очистить
+    function AddAndSaveOldSelect(const S : string) : integer;     // добавить, сохранить выбор, фильтр очистить
+    function AddAndSaveOldView(const S : string) : integer;       // добавить, сохранить выбор и фильтр, вернуть номер добавленного в отфильтрованном списке, или -1 если не попадает в фильтр
+    procedure DeleteItem(const i : integer = -1);                 // удалить по индексу. если индекс не указан то удалить выбранный
+    //procedure ReSort;
   end;
-
 implementation
 
-{procedure TListBoxHelper.RegisterSearchBox(searchBox : TSearchBox);
-begin
-  if searchBox is TSearchBox then seachbox_helper := searchBox else seachbox_helper := nil;
-end;}
 
 function TListBoxHelper.GetSearchBox : TSearchBox;
 var
@@ -46,7 +40,8 @@ begin
   Result := EmptyStr;
   s := Selected;
   sb := GetSearchBox;
-  if Assigned( sb ) then begin
+  if Assigned( sb ) then
+  begin
     Result  := sb.Text;
     sb.Text := EmptyStr;
   end;
@@ -54,20 +49,20 @@ begin
   if Assigned( s ) then ItemIndex := s.Index;
 end;
 
-function TListBoxHelper.AddAndClearSelect(s : string) : integer;
+function TListBoxHelper.AddAndClearSelect(const S : string) : integer;
 begin
   ClearSelection;
   ResetFilter;
   Result := Items.Add( s );
 end;
 
-function TListBoxHelper.AddAndSelect(s : string) : integer;
+function TListBoxHelper.AddAndSelect(const S : string) : integer;
 begin
   Result := AddAndClearSelect( s );
   if Result <> -1 then ItemIndex := Result;
 end;
 
-function TListBoxHelper.AddAndSaveOldSelect(s : string) : integer;
+function TListBoxHelper.AddAndSaveOldSelect(const S : string) : integer;
 var
   sel   : TListBoxItem;
 begin
@@ -76,7 +71,7 @@ begin
   if Assigned( sel ) then ItemIndex := sel.Index
 end;
 
-function TListBoxHelper.AddAndSaveOldView(s : string) : integer;
+function TListBoxHelper.AddAndSaveOldView(const S : string) : integer;
 var
   sb          : TSearchBox;
   iSel, iNew  : TListBoxItem;
@@ -90,14 +85,15 @@ begin
   Result := Items.Add( s );
   if Result <> -1 then iNew := ItemByIndex( Result );
   //
-  if flt <> EmptyStr then begin
+  if flt <> EmptyStr then
+  begin
     sb.Text := flt;
     if Assigned(iNew) then Result := iNew.Index;
   end;
   if Assigned( iSel ) then ItemIndex := iSel.Index;
 end;
 
-procedure TListBoxHelper.DeleteItem(i : integer = -1);
+procedure TListBoxHelper.DeleteItem(const i : integer = -1);
 var
   sb          : TSearchBox;
   flt         : string;
@@ -105,11 +101,13 @@ var
 begin
   if i > Count-1 then Exit;
   sb := GetSearchBox;
-  if i > -1 then begin
+  if i > -1 then
+  begin
       iSel := Selected;
       iDel  := ItemByIndex( i );
   end
-  else begin
+  else
+  begin
       iSel  := nil;
       iDel := Selected;
   end;
@@ -119,5 +117,20 @@ begin
   if flt <> EmptyStr then sb.Text := flt;
   if Assigned( iSel ) then ItemIndex := iSel.Index;
 end;
+
+{
+procedure TListBoxHelper.ReSort;
+var i   : integer;
+    sel : TListBoxItem;
+begin
+  // реселлект для обновления списка
+  sel := Selected;
+  if Assigned(sel) then
+  begin
+    for i := 0 to Count-1 do ItemIndex := i;  //тупой перебор для сброска обибочного выбора
+    ItemIndex := sel.Index;
+  end;
+end;
+}
 
 end.
