@@ -3,7 +3,8 @@ unit common;
 interface
 
 uses
-  System.SysUtils, FMX.Platform, FireDAC.Comp.Client, System.Classes, datamod;
+  System.SysUtils, FMX.Platform, FireDAC.Comp.Client, System.Classes, FireDAC.Stan.Param,
+  datamod;
 
 procedure DBUpdate(typePack : shortint);
 function GetLocale  : string;
@@ -107,10 +108,30 @@ begin
       DM.FDQuery3.SQL.Text := 'SELECT np FROM packet WHERE packname=:PN;';
 
       //
-      if typePack=0 then  //системное обновление? тогда сохраняем версию текущего обновления
+      if typePack=0 then  // системное обновление? тогда сохраняем версию текущего обновления
         DM.FDDatabese.ExecSQL('UPDATE version SET updv='+IntToStr(updv));
       // отключить триггер cards_update
       DM.FDDatabese.ExecSQL('DROP TRIGGER IF EXISTS cards_update;');
+      // удаляем указанные обьекты
+      with DM.FDMemTable3 do
+      begin
+        First;
+        while not Eof do  // перебор таблицы пачек
+        begin
+          if FieldByName('type').AsString = 'packet' then // удаление пачки
+          begin
+            DM.FDDatabese.ExecSQL('DELETE FROM packet WHERE uid=:UID;',[FieldByName('uid').AsString]);
+          end
+          else if FieldByName('type').AsString = 'card' then  // удаление каторчки
+          begin
+            DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE question1=:QUESTION1 AND np IN '+
+                                  '(SELECT np FROM packet WHERE uid=:UID);',
+                                  [FieldByName('contents').AsString, FieldByName('uid').AsString]);
+          end;
+          Next;  // переход к следующиму обьекту для удаления
+        end;
+      end;
+      //
       DM.FDMemTable1.First;
       while not DM.FDMemTable1.Eof do  // перебор таблицы пачек
       begin

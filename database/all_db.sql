@@ -24,6 +24,12 @@ CREATE TABLE IF NOT EXISTS cards (
 	question1	TEXT UNIQUE,
 	question2	TEXT NOT NULL,
 	version		default CURRENT_TIMESTAMP);
+	
+-- таблица удаленных обьектов
+CREATE TABLE IF NOT EXISTS content_delete (
+	uid 		TEXT NOT NULL,	-- удикальный uid обьекта
+	type		TEXT,		-- тип удаляемого обьекта (card, packet)
+	contents	TEXT);	-- что удалять
 
 -- SELECT datetime('now');	-- для version
 
@@ -196,12 +202,12 @@ SELECT p.np,p.uid,p.version,max(c.version) AS cversion, count(c.nc) AS ccount,
 -- то же, но через view
 SELECT p.np, p.uid, p.version, datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
 	FROM packet p
-	LEFT JOIN pack_stats s ON s.np=p.np GROUP BY s.np;	-- можно без GROUP???
+	LEFT JOIN pack_stats s ON s.np=p.np GROUP BY s.np;	-- можно без GROUP???
 -- то же через view по одной пачке
 SELECT p.np, p.uid, p.version, datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
 	FROM packet p
-	LEFT JOIN pack_stats s ON s.np=p.np
-		WHERE p.np=3;	
+	LEFT JOIN pack_stats s ON s.np=p.np
+		WHERE p.np=3;	
 	
 
 -- отбор информации по карточкам со статистикой
@@ -224,8 +230,9 @@ select version, datetime(version,'localtime') from packet;
 SELECT p.lang, datetime(p.version,'localtime') AS version,
   datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
   FROM packet p LEFT JOIN pack_stats s ON s.np=p.np 
-  WHERE p.np=3;
-  
-  
-
+  WHERE p.np=3;
   
+  
+
+  
+select * from cards where question2 like '%e%';  

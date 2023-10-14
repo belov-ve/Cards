@@ -25,6 +25,7 @@ type
     FDStat: TFDQuery;
     FDMemTable1: TFDMemTable;
     FDMemTable2: TFDMemTable;
+    FDMemTable3: TFDMemTable;
   private
     { Private declarations }
   public

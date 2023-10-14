@@ -9,7 +9,8 @@ uses
   FMX.ListView, FMX.Colors, Xml.XMLIntf, Data.DB, datamod, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, common;
+  FireDAC.Comp.Client, common, FMX.ListView.Appearances,
+  FMX.ListView.Adapters.Base;
 
 type
   TImport = class(TForm)
@@ -24,7 +25,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FileListButtonClick(const Sender: TObject;
-      const AItem: TListViewItem; const AObject: TListItemSimpleControl);
+      const AItem: TListItem; const AObject: TListItemSimpleControl);
   private
     { Private declarations }
   public
@@ -45,7 +46,7 @@ implementation
 {$R *.fmx}
 
 procedure TImport.FileListButtonClick(const Sender: TObject;
-  const AItem: TListViewItem; const AObject: TListItemSimpleControl);
+  const AItem: TListItem; const AObject: TListItemSimpleControl);
 var
   i, i1                  : integer;
   count_pack, count_card : integer;    // счетчики количества
