@@ -3,4 +3,4 @@
  
  Version  v1.0.5
 
-### RAD STUDIO XE8
+### RAD STUDIO XE10
