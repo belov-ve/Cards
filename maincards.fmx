@@ -58,7 +58,8 @@ object Form1: TForm1
       end
       object btnBack: TSpeedButton
         Align = Left
-        Position.X = 48.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Position.X = 53.000000000000000000
         Size.Width = 73.000000000000000000
         Size.Height = 44.000000000000000000
         Size.PlatformDefault = False
@@ -276,15 +277,15 @@ object Form1: TForm1
             end
             item
               Key = 0.200000002980232200
-              Value = 0.699999988079071000
+              Value = 0.699999988079071100
             end
             item
               Key = 0.500000000000000000
               Value = 1.000000000000000000
             end
             item
-              Key = 0.800000011920929000
-              Value = 0.699999988079071000
+              Key = 0.800000011920928900
+              Value = 0.699999988079071100
             end
             item
               Key = 1.000000000000000000
@@ -13234,7 +13235,7 @@ object Form1: TForm1
                   9ACF9F02C3F80BB36E7C4D62763DF20000000049454E44AE426082}
               end>
             Align = Left
-            Opacity = 0.699999988079071000
+            Opacity = 0.699999988079071100
             Position.X = 160.000000000000000000
             Size.Width = 50.000000000000000000
             Size.Height = 48.000000000000000000
@@ -13547,8 +13548,8 @@ object Form1: TForm1
           object PanelPack: TPanel
             Align = Client
             HitTest = False
-            Size.Width = 50.000000000000000000
-            Size.Height = 50.000000000000000000
+            Size.Width = 400.000000000000000000
+            Size.Height = 596.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 2
             TabStop = False
@@ -13561,7 +13562,8 @@ object Form1: TForm1
               Margins.Left = 5.000000000000000000
               Margins.Top = 5.000000000000000000
               Margins.Right = 5.000000000000000000
-              Size.Width = 40.000000000000000000
+              Size.Width = 390.000000000000000000
+              Size.Height = 367.000000000000000000
               Size.PlatformDefault = False
               TabOrder = 1
               TabStop = False
@@ -13574,13 +13576,13 @@ object Form1: TForm1
               RowCount = 4
               RowHeight = 40.000000000000000000
               OnGetValue = CardsGridGetValue
-              Viewport.Width = 32.000000000000000000
-              Viewport.Height = 0.000000000000000000
+              Viewport.Width = 390.000000000000000000
+              Viewport.Height = 327.000000000000000000
               object Question: TStringColumn
                 Header = 'Question'
                 ReadOnly = True
                 Size.Width = 100.000000000000000000
-                Size.Height = 40.000000000000000000
+                Size.Height = 160.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 0
                 TabStop = False
@@ -13590,7 +13592,7 @@ object Form1: TForm1
                 Position.X = 100.000000000000000000
                 ReadOnly = True
                 Size.Width = 200.000000000000000000
-                Size.Height = 40.000000000000000000
+                Size.Height = 160.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 1
                 TabStop = False
@@ -13598,7 +13600,7 @@ object Form1: TForm1
               object VisibleDirect: TImageColumn
                 Position.X = 300.000000000000000000
                 Size.Width = 24.000000000000000000
-                Size.Height = 40.000000000000000000
+                Size.Height = 160.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 2
                 TabStop = False
@@ -13606,7 +13608,7 @@ object Form1: TForm1
               object VisibleReverse: TImageColumn
                 Position.X = 324.000000000000000000
                 Size.Width = 24.000000000000000000
-                Size.Height = 40.000000000000000000
+                Size.Height = 160.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 4
                 TabStop = False
@@ -13615,7 +13617,7 @@ object Form1: TForm1
                 Header = 'Progress'
                 Position.X = 348.000000000000000000
                 Size.Width = 200.000000000000000000
-                Size.Height = 40.000000000000000000
+                Size.Height = 160.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 3
                 TabStop = False
@@ -13626,8 +13628,8 @@ object Form1: TForm1
               Align = MostBottom
               Locked = True
               Padding.Top = 5.000000000000000000
-              Position.Y = -3.000000000000000000
-              Size.Width = 50.000000000000000000
+              Position.Y = 543.000000000000000000
+              Size.Width = 400.000000000000000000
               Size.Height = 53.000000000000000000
               Size.PlatformDefault = False
               TabOrder = 2
@@ -13640,7 +13642,7 @@ object Form1: TForm1
                 Margins.Left = 2.000000000000000000
                 Margins.Top = 7.000000000000000000
                 Margins.Right = 2.000000000000000000
-                Size.Width = 46.000000000000000000
+                Size.Width = 396.000000000000000000
                 Size.Height = 41.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 0
@@ -13648,7 +13650,7 @@ object Form1: TForm1
                 object GridPanelPack: TGridPanelLayout
                   Align = Client
                   Locked = True
-                  Size.Width = 46.000000000000000000
+                  Size.Width = 396.000000000000000000
                   Size.Height = 41.000000000000000000
                   Size.PlatformDefault = False
                   TabOrder = 0
@@ -13658,13 +13660,13 @@ object Form1: TForm1
                       Value = 25.000002291906570000
                     end
                     item
-                      Value = 24.999973280597460000
+                      Value = 24.999973280597470000
                     end
                     item
                       Value = 25.000011221938330000
                     end
                     item
-                      Value = 25.000013205557630000
+                      Value = 25.000013205557640000
                     end>
                   ControlCollection = <
                     item
@@ -13702,7 +13704,7 @@ object Form1: TForm1
                   end
                   object btnDeleteCard: TSpeedButton
                     Align = Center
-                    Size.Width = 48.000030517578130000
+                    Size.Width = 48.000030517578120000
                     Size.Height = 44.000000000000000000
                     Size.PlatformDefault = False
                     StyleLookup = 'stoptoolbutton'
@@ -13731,7 +13733,7 @@ object Form1: TForm1
             end
             object PanelPackInfo: TPanel
               Align = Top
-              Size.Width = 50.000000000000000000
+              Size.Width = 400.000000000000000000
               Size.Height = 171.000000000000000000
               Size.PlatformDefault = False
               TabOrder = 0
@@ -13769,12 +13771,12 @@ object Form1: TForm1
                 Margins.Right = 6.000000000000000000
                 Position.X = 121.000000000000000000
                 Position.Y = 48.000000000000000000
-                Size.Width = -77.000000000000000000
+                Size.Width = 273.000000000000000000
                 Size.Height = 77.000000000000000000
                 Size.PlatformDefault = False
                 TabOrder = 1
-                Viewport.Width = 42.000000000000000000
-                Viewport.Height = 42.000000000000000000
+                Viewport.Width = 265.000000000000000000
+                Viewport.Height = 69.000000000000000000
               end
               object PackName: TEdit
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -13785,7 +13787,7 @@ object Form1: TForm1
                 Position.Y = 9.000000000000000000
                 Margins.Left = 120.000000000000000000
                 Margins.Right = 5.000000000000000000
-                Size.Width = -75.000000000000000000
+                Size.Width = 275.000000000000000000
                 Size.Height = 30.000000000000000000
                 Size.PlatformDefault = False
                 StyledSettings = [Family, Style, FontColor]
@@ -13812,7 +13814,7 @@ object Form1: TForm1
                 Position.X = 5.000000000000000000
                 Position.Y = 135.000000000000000000
                 ShowCheck = False
-                Size.Width = 40.000000000000000000
+                Size.Width = 390.000000000000000000
                 Size.Height = 134.000000000000000000
                 Size.PlatformDefault = False
                 Text = 'Statistics'
@@ -13876,6 +13878,7 @@ object Form1: TForm1
                   Margins.Right = 10.000000000000000000
                   Position.X = 160.000000000000000000
                   Position.Y = 46.000000000000000000
+                  Size.Width = 220.000000000000000000
                   Size.Height = 4.000000000000000000
                   Size.PlatformDefault = False
                   Value = 50.000000000000000000
@@ -13887,6 +13890,7 @@ object Form1: TForm1
                   Margins.Right = 10.000000000000000000
                   Position.X = 160.000000000000000000
                   Position.Y = 78.000000000000000000
+                  Size.Width = 220.000000000000000000
                   Size.Height = 4.000000000000000000
                   Size.PlatformDefault = False
                   Value = 50.000000000000000000
@@ -13894,8 +13898,8 @@ object Form1: TForm1
                 object btnDeleteStatistics: TSpeedButton
                   Position.X = 351.000000000000000000
                   Position.Y = -22.000000000000000000
-                  Scale.X = 0.800000011920929000
-                  Scale.Y = 0.800000011920929000
+                  Scale.X = 0.800000011920928900
+                  Scale.Y = 0.800000011920928900
                   Size.Width = 48.000000000000000000
                   Size.Height = 44.000000000000000000
                   Size.PlatformDefault = False
@@ -13927,7 +13931,7 @@ object Form1: TForm1
             Margins.Right = 10.000000000000000000
             Position.X = 25.000000000000000000
             Position.Y = 16.000000000000000000
-            Size.Width = 15.000000000000000000
+            Size.Width = 365.000000000000000000
             Size.Height = 42.000000000000000000
             Size.PlatformDefault = False
             TextSettings.Font.Style = [fsBold]
@@ -13964,7 +13968,7 @@ object Form1: TForm1
             Position.Y = 85.000000000000000000
             Margins.Left = 110.000000000000000000
             Margins.Right = 10.000000000000000000
-            Size.Width = -70.000000000000000000
+            Size.Width = 280.000000000000000000
             Size.Height = 30.000000000000000000
             Size.PlatformDefault = False
             StyledSettings = [Family, Style, FontColor]
@@ -13982,12 +13986,12 @@ object Form1: TForm1
             Margins.Right = 11.000000000000000000
             Position.X = 111.000000000000000000
             Position.Y = 124.000000000000000000
-            Size.Width = -72.000000000000000000
+            Size.Width = 278.000000000000000000
             Size.Height = 73.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 2
-            Viewport.Width = 42.000000000000000000
-            Viewport.Height = 42.000000000000000000
+            Viewport.Width = 270.000000000000000000
+            Viewport.Height = 65.000000000000000000
           end
           object EditDirectHide: TCheckBox
             Align = Horizontal
@@ -13995,6 +13999,7 @@ object Form1: TForm1
             Margins.Right = 5.000000000000000000
             Position.X = 110.000000000000000000
             Position.Y = 200.000000000000000000
+            Size.Width = 285.000000000000000000
             Size.Height = 23.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 3
@@ -14007,6 +14012,7 @@ object Form1: TForm1
             Margins.Right = 5.000000000000000000
             Position.X = 110.000000000000000000
             Position.Y = 228.000000000000000000
+            Size.Width = 285.000000000000000000
             Size.Height = 23.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 4
@@ -14020,7 +14026,7 @@ object Form1: TForm1
             Margins.Right = 5.000000000000000000
             Position.X = 25.000000000000000000
             Position.Y = 61.000000000000000000
-            Size.Width = 20.000000000000000000
+            Size.Width = 370.000000000000000000
             Size.Height = 22.000000000000000000
             Size.PlatformDefault = False
             TextSettings.FontColor = claRed
@@ -14032,7 +14038,7 @@ object Form1: TForm1
             StyledSettings = [Family, Size, Style]
             Margins.Left = 250.000000000000000000
             Margins.Right = 10.000000000000000000
-            Position.X = 3804.000000000000000000
+            Position.X = 4504.000000000000000000
             Position.Y = 200.000000000000000000
             Size.Width = 86.000000000000000000
             Size.Height = 24.000000000000000000
@@ -14047,7 +14053,7 @@ object Form1: TForm1
             StyledSettings = [Family, Size, Style]
             Margins.Left = 250.000000000000000000
             Margins.Right = 10.000000000000000000
-            Position.X = 3812.000000000000000000
+            Position.X = 4512.000000000000000000
             Position.Y = 228.000000000000000000
             Size.Width = 78.000000000000000000
             Size.Height = 24.000000000000000000
@@ -33012,7 +33018,6 @@ object Form1: TForm1
             end
             object GridPanelOprosSwitch: TGridPanelLayout
               Align = Horizontal
-              HitTest = False
               Position.Y = 280.000000000000000000
               Size.Width = 400.000000000000000000
               Size.Height = 65.000000000000000000
@@ -33051,19 +33056,36 @@ object Form1: TForm1
                   Column = 3
                   Control = LabelAutoSwitch
                   Row = 0
+                end
+                item
+                  Column = 0
+                  Control = LabelSpeedHigh
+                  Row = 1
+                end
+                item
+                  Column = 1
+                  ColumnSpan = 2
+                  Control = SpeedSelector
+                  Row = 1
+                end
+                item
+                  Column = 3
+                  Control = LabelSpeedLow
+                  Row = 1
                 end>
               ExpandStyle = FixedSize
               RowCollection = <
                 item
-                  Value = 100.000000000000000000
+                  Value = 50.000004470348220000
+                end
+                item
+                  Value = 49.999995529651770000
                 end>
               object SwitchRandom: TSwitch
                 Align = Right
-                ControlType = Platform
                 IsChecked = False
                 Margins.Right = 5.000000000000000000
                 Position.X = 40.000000000000000000
-                Position.Y = 15.000000000000000000
                 Size.Width = 55.000000000000000000
                 Size.Height = 35.000000000000000000
                 Size.PlatformDefault = False
@@ -33071,11 +33093,9 @@ object Form1: TForm1
               end
               object SwitchAuto: TSwitch
                 Align = Right
-                ControlType = Platform
                 IsChecked = False
                 Margins.Right = 5.000000000000000000
                 Position.X = 240.000000000000000000
-                Position.Y = 15.000000000000000000
                 Size.Width = 55.000000000000000000
                 Size.Height = 35.000000000000000000
                 Size.PlatformDefault = False
@@ -33087,7 +33107,7 @@ object Form1: TForm1
                 AutoSize = True
                 Position.X = 100.000000000000000000
                 Size.Width = 107.000000000000000000
-                Size.Height = 65.000000000000000000
+                Size.Height = 32.500373840332030000
                 Size.PlatformDefault = False
                 TextSettings.WordWrap = False
                 Text = 'Random order'
@@ -33097,10 +33117,45 @@ object Form1: TForm1
                 AutoSize = True
                 Position.X = 300.000000000000000000
                 Size.Width = 90.000000000000000000
-                Size.Height = 65.000000000000000000
+                Size.Height = 32.500373840332030000
                 Size.PlatformDefault = False
                 TextSettings.WordWrap = False
                 Text = 'Auto switch'
+              end
+              object LabelSpeedLow: TLabel
+                Align = Left
+                AutoSize = True
+                Position.X = 300.000000000000000000
+                Position.Y = 32.500003814697270000
+                Size.Width = 55.000000000000000000
+                Size.Height = 32.499996185302730000
+                Size.PlatformDefault = False
+                TextSettings.WordWrap = False
+                Text = 'Slower'
+              end
+              object LabelSpeedHigh: TLabel
+                Align = Right
+                AutoSize = True
+                Position.X = 49.000000000000000000
+                Position.Y = 32.500003814697270000
+                Size.Width = 51.000000000000000000
+                Size.Height = 32.499996185302730000
+                Size.PlatformDefault = False
+                TextSettings.WordWrap = False
+                Text = 'Faster'
+              end
+              object SpeedSelector: TTrackBar
+                Align = Client
+                CanParentFocus = True
+                Max = 10000.000000000000000000
+                Min = 1000.000000000000000000
+                Orientation = Horizontal
+                Size.Width = 200.000000000000000000
+                Size.Height = 36.000000000000000000
+                Size.PlatformDefault = False
+                TabOrder = 4
+                Value = 5000.000000000000000000
+                OnChange = SpeedSelectorChange
               end
             end
             object btnDirection: TSpeedButton
@@ -33130,7 +33185,7 @@ object Form1: TForm1
                 Align = Client
                 Locked = True
                 HitTest = False
-                Opacity = 0.800000011920929000
+                Opacity = 0.800000011920928900
                 Size.Width = 44.000000000000000000
                 Size.Height = 44.000000000000000000
                 Size.PlatformDefault = False
@@ -33187,8 +33242,8 @@ object Form1: TForm1
           object PanelExpressOpros: TPanel
             Align = Client
             HitTest = False
-            Size.Width = 50.000000000000000000
-            Size.Height = 50.000000000000000000
+            Size.Width = 400.000000000000000000
+            Size.Height = 596.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 0
             TabStop = False
@@ -33565,6 +33620,7 @@ object Form1: TForm1
               Margins.Right = 10.000000000000000000
               Position.X = 162.000000000000000000
               Position.Y = 13.000000000000000000
+              Size.Width = 228.000000000000000000
               Size.Height = 43.000000000000000000
               Size.PlatformDefault = False
               TextSettings.Font.Style = [fsBold]
@@ -33590,9 +33646,9 @@ object Form1: TForm1
                 end>
               Align = Horizontal
               HitTest = False
-              Opacity = 0.800000011920929000
+              Opacity = 0.800000011920928900
               Position.Y = 159.000000000000000000
-              Size.Width = 50.000000000000000000
+              Size.Width = 400.000000000000000000
               Size.Height = 44.000000000000000000
               Size.PlatformDefault = False
             end
