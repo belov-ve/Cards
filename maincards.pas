@@ -11,7 +11,8 @@ uses
   FMX.TabControl, FMX.MultiView, FMX.ListBox, FMX.Ani, FMX.Controls.Presentation,
   FMX.Edit, FMX.SearchBox, FMX.Objects, System.Actions, FMX.ActnList, FMX.Memo,
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
-  Xml.XMLDoc, System.IOUtils, FMX.Platform, FMX.ScrollBox, FireDAC.Stan.Param;
+  Xml.XMLDoc, System.IOUtils, FMX.Platform, FMX.ScrollBox, FireDAC.Stan.Param,
+  DateUtils;
 
 
 type
@@ -194,6 +195,9 @@ type
     btnDirectAnimation: TFloatAnimation;
     btnStartStudy: TSpeedButton;
     Memo1: TMemo;
+    LabelSpeedLow: TLabel;
+    LabelSpeedHigh: TLabel;
+    SpeedSelector: TTrackBar;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -276,6 +280,7 @@ type
     procedure Timer1Opros(Sender: TObject);
     procedure btnStartStudyClick(Sender: TObject);
     procedure mAboutClick(Sender: TObject);
+    procedure SpeedSelectorChange(Sender: TObject);
   private
     { Private declarations }
     //procedure ImportXML(f_name : string);
@@ -354,8 +359,8 @@ var aTime     :TDateTime;
 begin
   msec  :=  milliseconds mod 1000;
   sec   :=  milliseconds div 1000;
-  atime :=now+encodetime(0,0,sec,msec);
-  while now<=atime do
+  atime :=  Now + encodetime(0,0,sec,msec);
+  while Now <= atime do
   begin
     Application.ProcessMessages;
     Sleep(10);
@@ -730,34 +735,36 @@ end;
 
 procedure TForm1.btnBackClick(Sender: TObject);
 begin
-  case TabControl1.ActiveTab.Index of
-    1:  case Pack.Tag of  // если 1, то обработка состояний формы Pack
-      // форма в режиме ReadOnly - возврат с панели Pack на PackList
-          0,4: ChangeTabActionPackList.ExecuteTarget(self);  //TabControl1.ActiveTab := PackList;
-      // форма в режиме редактирования - отмена изменений
-          1: begin
-              if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откат транзакции (выход без сохранения)
-              Pack.Tag := 0;
-              TabControl1Change(nil);   // обновление элементов формы
-             end;
-          2: begin
-              if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
-              ChangeTabActionPackList.ExecuteTarget(self);
-             end;
-        end;
-    2:    // если 2, то возврат с панели Card на Pack
-          ChangeTabActionPack.ExecuteTarget(self);  //TabControl1.ActiveTab := Pack;
-    3: // если 3 то возврат с панели Opros на PackList
-        begin
-          if Timer1.Enabled then Timer1.Enabled := cFalse;
-          pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));  //обновление статистики
-          ChangeTabActionPackList.ExecuteTarget(self);
-        end;
-    4:  begin // если 3,4 то возврат с панели Opros на PackList
-          if Timer1.Enabled then Timer1.Enabled := cFalse;
-          ChangeTabActionPackList.ExecuteTarget(self);
-        end;
-  end;
+    case TabControl1.ActiveTab.Index of
+      1:  case Pack.Tag of  // если 1, то обработка состояний формы Pack
+        // форма в режиме ReadOnly - возврат с панели Pack на PackList
+            0,4: ChangeTabActionPackList.ExecuteTarget(self);  //TabControl1.ActiveTab := PackList;
+        // форма в режиме редактирования - отмена изменений
+            1: begin
+                if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откат транзакции (выход без сохранения)
+                Pack.Tag := 0;
+                TabControl1Change(nil);   // обновление элементов формы
+               end;
+            2: begin
+                if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
+                ChangeTabActionPackList.ExecuteTarget(self);
+               end;
+          end;
+      2:    // если 2, то возврат с панели Card на Pack
+            ChangeTabActionPack.ExecuteTarget(self);  //TabControl1.ActiveTab := Pack;
+      3: // если 3 то возврат с панели Opros на PackList
+          begin
+            case Opros.Tag of
+              0,1:  pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));  //обновление статистики
+              2:    if Timer1.Enabled then Timer1.Enabled := cFalse;
+            end;
+            ChangeTabActionPackList.ExecuteTarget(self);
+          end;
+      4:  begin // если 3,4 то возврат с панели Opros на PackList
+            if Timer1.Enabled then Timer1.Enabled := cFalse;
+            ChangeTabActionPackList.ExecuteTarget(self);
+          end;
+    end;
 end;
 
 procedure TForm1.btnDeleteCardClick(Sender: TObject);
@@ -941,13 +948,11 @@ begin
       2: //режим изучения
         begin
           // ждем завершения предыдущей анимации
-          while QuestionAnimationScale.Running or QuestionAnimationPosition.Running do Delay(100);
-          while AnswerAnimationScale.Running or AnswerAnimationPosition.Running do Delay(100);
-          // эмитация псевдо переворота карты
-          QuestionAnimationScale.Start;
-          AnswerAnimationScale.Start;
-          QuestionAnimationPosition.Start;
-          AnswerAnimationPosition.Start;
+          while not Application.Terminated and (QuestionAnimationScale.Running or QuestionAnimationPosition.Running) do Delay(100);
+          while not Application.Terminated and (AnswerAnimationScale.Running or AnswerAnimationPosition.Running) do Delay(100);
+          // эмитация псевдо переворота карты (показываем карточки)
+          AnimationQuestion;
+          AnimationAnswer;
         end;
     end;
   end;
@@ -1058,14 +1063,14 @@ begin
   end;
 
   // если необходимо ждем завершения анимации и закрываем карточки
-  while QuestionAnimationPosition.Running or QuestionAnimationScale.Running do Delay(100);
+  while not Application.Terminated and (QuestionAnimationPosition.Running or QuestionAnimationScale.Running) do Delay(100);
   if not ImageQ.Visible then AnimationQuestion;
-  while AnswerAnimationPosition.Running or AnswerAnimationScale.Running do Delay(100);
+  while not Application.Terminated and (AnswerAnimationPosition.Running or AnswerAnimationScale.Running) do Delay(100);
   if not ImageA.Visible then AnimationAnswer;
 
   // ждем завершения закрытия
-  while QuestionAnimationPosition.Running or QuestionAnimationScale.Running
-        or AnswerAnimationPosition.Running or AnswerAnimationScale.Running do Delay(100);
+  while not Application.Terminated and (QuestionAnimationPosition.Running or QuestionAnimationScale.Running
+        or AnswerAnimationPosition.Running or AnswerAnimationScale.Running) do Delay(100);
 
   // обновляем форму для нового направления
   TabControl1Change(nil);
@@ -1453,7 +1458,7 @@ begin
   {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
     Form1.Width  := ini_width;
     Form1.Height := ini_height;
-   {$ENDIF}
+  {$ENDIF}
   //
 
   //-------------------- инициализация переменных ------------------------------
@@ -1558,6 +1563,7 @@ begin
   {$ENDIF}
   //-------------------------------------------------------------------
 
+Memo1.Lines.Add( Format('Version = %s', [app_version]) );
 Memo1.Lines.Add( Format('DB = %s', [db_work]) );
 Memo1.Lines.Add( Format('Upd DB = %s', [db_update]) );
 Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
@@ -1703,7 +1709,7 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
     end;
   end;
 
-Memo1.Lines.Add( Format('Версия базы данных = %d', [updv]) );
+Memo1.Lines.Add( Format('Database version = %d', [updv]) );
 
   // проверка наличия файла обновления
   try
@@ -1713,7 +1719,7 @@ Memo1.Lines.Add( Format('Версия базы данных = %d', [updv]) );
       DM.FDQuery1.SQL.Text := 'Select updv from version;';
       DM.FDQuery1.OpenOrExecute;
 
-Memo1.Lines.Add( Format('Версия обновления = %d', [DM.FDQuery1.FieldByName('updv').AsInteger]) );
+Memo1.Lines.Add( Format('Version update = %d', [DM.FDQuery1.FieldByName('updv').AsInteger]) );
 
       if updv < DM.FDQuery1.FieldByName('updv').AsInteger then
       begin
@@ -1759,7 +1765,7 @@ Memo1.Lines.Add( Format('Версия обновления = %d', [DM.FDQuery1.FieldByName('updv
 
       // зафиксировать изменения
       DM.FDTransaction1.Commit;
-Memo1.Lines.Add( 'Обновление базы пачек проведено' );
+Memo1.Lines.Add( 'Database update packs completed' );
 
     except
       on E: Exception do
@@ -2278,6 +2284,7 @@ end;
 procedure TForm1.mAboutClick(Sender: TObject);
 begin
   Memo1.Visible := not Memo1.Visible;
+  MasterPanel.HideMaster;
 end;
 
 procedure TForm1.mItemMouseLeave(Sender: TObject);
@@ -2550,7 +2557,7 @@ begin
           // открываем все карточки
           for i := 0 to length(mt)-1 do
           begin
-            while mas[i].Running do Delay(100);
+            //while mas[i].Running do Delay(100); ??? зачем проверял, если ждал завершения анимации в цикле выше
             map[i].Start;
             mas[i].Start;
           end;
@@ -2585,7 +2592,7 @@ end;
 procedure TForm1.AnimationQuestion;
 begin
   // ждем завершения предыдущей анимации
-  while QuestionAnimationScale.Running or QuestionAnimationPosition.Running do Delay(100);
+  while not Application.Terminated and (QuestionAnimationScale.Running or QuestionAnimationPosition.Running) do Delay(100);
   // эмитация псевдо переворота карты
   QuestionAnimationScale.Start;
   QuestionAnimationPosition.Start;
@@ -2595,7 +2602,7 @@ end;
 procedure TForm1.AnimationAnswer;
 begin
   // ждем завершения предыдущей анимации
-  while AnswerAnimationScale.Running or AnswerAnimationPosition.Running do Delay(100);
+  while not Application.Terminated and (AnswerAnimationScale.Running or AnswerAnimationPosition.Running) do Delay(100);
   // эмитация псевдо переворота карты
   AnswerAnimationScale.Start;
   AnswerAnimationPosition.Start;
@@ -2651,22 +2658,26 @@ begin
   2: //режим изучения
     begin
        // защита от "много тыканья"
-       if QuestionAnimationScale.Running or QuestionAnimationPosition.Running then Exit;
+       if QuestionAnimationScale.Running or QuestionAnimationPosition.Running or
+          AnswerAnimationScale.Running or AnswerAnimationPosition.Running then Exit;
 
       // прячим карточки
       AnimationQuestion;
       Delay(200); //задержка для рассинхронизации переворота карточек (для красоты)
       AnimationAnswer;
+      // Ожидаем завершения анимации карточек
+      Delay(600);
 
       // перезапускаем таймер, если необходимо (на случай, если карточку поменяли вручную)
-      if SwitchAuto.IsChecked then
+      if SwitchAuto.IsChecked and (TabControl1.ActiveTab.Index = 3) then
       begin
         Timer1.Enabled := cFalse;
+        Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
+        Timer1.Interval := Round(SpeedSelector.Value) + 1200;
         Timer1.Enabled := cTrue;
-      end;
+      end
+      else if TabControl1.ActiveTab.Index <> 3 then Exit; // закладку уже поменяли
 
-      // Ожидаем завершения анимации панели
-      Delay(600);
 
       // поменять карточки
       SelectNewCardToOpros;
@@ -2709,6 +2720,20 @@ begin
   ini_fontExpress := mt[0].TextSettings.Font.Size;
 end;
 
+procedure TForm1.SpeedSelectorChange(Sender: TObject);
+var timerEnd  : TDateTime;
+begin
+  timerEnd    := IncMilliSecond(StrToDateTime(Timer1.TagString), Round(SpeedSelector.Value));
+  // проверяем, не пора ли сменить карточки для нового установленного интервала
+  if CompareDateTime(timerEnd, Now) = -1 then ClickToContinue(nil)  // пора менять карточки
+  else
+  begin // установить таймер на остаток интервала
+    Timer1.Enabled  := cFalse;
+    Timer1.Interval := MilliSecondsBetween( timerEnd, Now );
+    Timer1.Enabled  := cTrue;
+  end;
+end;
+
 procedure TForm1.StatisticsClick(Sender: TObject);
 begin
   Statistics.IsExpanded := not Statistics.IsExpanded;
@@ -2718,18 +2743,36 @@ procedure TForm1.SwitchAutoClick(Sender: TObject);
 begin
 end;
 
+// установка состояния элемнов управления скорости прокрутки
+procedure ShowSpeedControl(const setState : boolean);
+begin
+  with Form1 do
+  begin
+    SpeedSelector.Enabled := setState;
+    LabelSpeedLow.Enabled  := setState;
+    LabelSpeedHigh.Enabled  := setState;
+  end;
+end;
+
 // включение/выключение режима автопереключения карточек при изучении
 procedure TForm1.SwitchAutoSwitch(Sender: TObject);
 begin
   if SwitchAuto.IsChecked then
   begin
+    // включени регулятора скорости прокрутки
+    ShowSpeedControl(cTrue);
     // включение таймера переключения карточек
+    Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
     Timer1.Enabled := cTrue;
     ClickToContinue(nil);  // закрыть карточки и выбрать новые (эмуляция нажатия)
   end
   else
-    //остановка автоматического переключения карточек
+  begin
+    // отключение регулятора скорости
+    ShowSpeedControl(cFalse);
+    // остановка автоматического переключения карточек
     Timer1.Enabled := cFalse;
+  end;
 end;
 
 procedure TForm1.btnDeleteStatisticsClick(Sender: TObject);
@@ -2765,13 +2808,15 @@ begin
 end;
 
 procedure TForm1.TabControl1Change(Sender: TObject);
+var i : integer;
 begin
-  //FormResize(nil);  // пересчет панелей ранее скрытых элементов // после перехода на RX переношу в изменение событие размеров панелей
 
+  btnTools.Visible := cFalse;
   // Настройка элементов для различных TabControl
   case TabControl1.ActiveTab.Index of
     // Форма PackList
     0:  begin
+          btnTools.Visible := cTrue;
           // если пачка в списке уже выбрана, то запомнить ее хешь (для "Tap"), иначе сбросить
           if Listpacks.ItemIndex<>-1 then last_tap := ListPacks.Selected.GetHashCode
           else last_tap := -1;                // сброс номера последней выбранной пачки (для "Tap")
@@ -2987,7 +3032,7 @@ begin
               end;
 
               // настройка параметров таймера
-              Timer1.Interval     := 5000+600;        // 5 секунды срабатывания + время анимации карточек
+              Timer1.Interval     := Round( SpeedSelector.Value ) + 1200; // время срабатывания + время анимации карточек
               Timer1.OnTimer      := Timer1Opros; // назначение обработчика на таймер (переключение карточек)
 
             end;
@@ -3046,7 +3091,13 @@ begin
               if DM.FDQuery2.RecNo < 2 then GridPanelOprosSwitch.Visible := cFalse;
 
               SelectNewCardToOpros;
-              if SwitchAuto.IsChecked then Timer1.Enabled := cTrue; // запуск авто смены карточек, если это включено
+              if SwitchAuto.IsChecked then
+              begin
+                ShowSpeedControl(cTrue);  // включение элекменов панели выбора скорости перебора
+                Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
+                Timer1.Enabled := cTrue;  // запуск авто смены карточек, если это включено
+              end
+              else ShowSpeedControl(cFalse);  // отключение элекменов панели выбора скорости перебора
             end;
           end;
     // End Opros
@@ -3088,6 +3139,10 @@ begin
           Timer1.Enabled      := cTrue;
           LabelTimer.Visible  := cTrue;
 
+          // закрываем карточки. если это необходимо
+          for i := 0 to length(mp)-1 do if not mp[i].Visible then mp[i].Visible := cTrue;
+
+          // заполняем карточки
           SetExpressField;
     // End ExpresOpros
     end;

@@ -13,6 +13,7 @@ function CheckAndCorrect(const str : string) : string;
 
 const
   app_name        : string = 'Cards';
+  app_version     : string = '1.0.3';
   exp_fname       : string = 'export';
   exp_ext         : string = '.xml';
   cTrue           : Boolean = True;
