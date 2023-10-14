@@ -13,7 +13,7 @@ function CheckAndCorrect(const str : string) : string;
 
 const
   app_name        : string = 'Cards';
-  app_version     : string = '1.0.3';
+  app_version     : string = '1.0.4';
   exp_fname       : string = 'export';
   exp_ext         : string = '.xml';
   cTrue           : Boolean = True;
@@ -109,29 +109,35 @@ begin
       DM.FDQuery3.SQL.Text := 'SELECT np FROM packet WHERE packname=:PN;';
 
       //
-      if typePack=0 then  // системное обновление? тогда сохраняем версию текущего обновления
-        DM.FDDatabese.ExecSQL('UPDATE version SET updv='+IntToStr(updv));
+      if typePack=0 then  // системное обновление?
+      begin
+        DM.FDDatabese.ExecSQL('UPDATE version SET updv='+IntToStr(updv)); //тогда сохраняем версию текущего обновления
+
+        // удаляем указанные в обновлении обьекты
+        with DM.FDMemTable3 do
+        begin
+          First;
+          while not Eof do  // перебор таблицы пачек
+          begin
+            if FieldByName('type').AsString = 'packet' then // удаление пачки
+            begin
+              DM.FDDatabese.ExecSQL('DELETE FROM packet WHERE uid=:UID;',[FieldByName('uid').AsString]);
+            end
+            else if FieldByName('type').AsString = 'card' then  // удаление каторчки
+            begin
+              DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE question1=:QUESTION1 AND np IN '+
+                                    '(SELECT np FROM packet WHERE uid=:UID);',
+                                    [FieldByName('contents').AsString, FieldByName('uid').AsString]);
+            end;
+            Next;  // переход к следующиму обьекту для удаления
+          end;
+        end;
+        //
+
+      end;
+
       // отключить триггер cards_update
       DM.FDDatabese.ExecSQL('DROP TRIGGER IF EXISTS cards_update;');
-      // удаляем указанные обьекты
-      with DM.FDMemTable3 do
-      begin
-        First;
-        while not Eof do  // перебор таблицы пачек
-        begin
-          if FieldByName('type').AsString = 'packet' then // удаление пачки
-          begin
-            DM.FDDatabese.ExecSQL('DELETE FROM packet WHERE uid=:UID;',[FieldByName('uid').AsString]);
-          end
-          else if FieldByName('type').AsString = 'card' then  // удаление каторчки
-          begin
-            DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE question1=:QUESTION1 AND np IN '+
-                                  '(SELECT np FROM packet WHERE uid=:UID);',
-                                  [FieldByName('contents').AsString, FieldByName('uid').AsString]);
-          end;
-          Next;  // переход к следующиму обьекту для удаления
-        end;
-      end;
       //
       DM.FDMemTable1.First;
       while not DM.FDMemTable1.Eof do  // перебор таблицы пачек
@@ -145,6 +151,7 @@ begin
         DM.FDQuery1.ParamByName('UID').AsString := DM.FDMemTable1.FieldByName('uid').AsString;
         DM.FDQuery1.Prepare;
         DM.FDQuery1.Active := cTrue;
+
         if DM.FDQuery1.RecordCount<>0 then // найдена пачка с совпадающим uid, необходимо обновить карточки
         begin
           // если версия обновления больше текущего (только для системный обновлений), начинаем обновлять

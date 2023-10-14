@@ -198,6 +198,8 @@ type
     LabelSpeedLow: TLabel;
     LabelSpeedHigh: TLabel;
     SpeedSelector: TTrackBar;
+    SwitchHideLearned: TSwitch;
+    LabelHideLearned: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -281,6 +283,7 @@ type
     procedure btnStartStudyClick(Sender: TObject);
     procedure mAboutClick(Sender: TObject);
     procedure SpeedSelectorChange(Sender: TObject);
+    procedure SwitchHideLearnedSwitch(Sender: TObject);
   private
     { Private declarations }
     //procedure ImportXML(f_name : string);
@@ -739,13 +742,15 @@ begin
       1:  case Pack.Tag of  // если 1, то обработка состояний формы Pack
         // форма в режиме ReadOnly - возврат с панели Pack на PackList
             0,4: ChangeTabActionPackList.ExecuteTarget(self);  //TabControl1.ActiveTab := PackList;
-        // форма в режиме редактирования - отмена изменений
-            1: begin
+            1:  // форма в режиме редактирования - отмена изменений
+              begin
                 if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откат транзакции (выход без сохранения)
                 Pack.Tag := 0;
+                CardsGrid.Repaint;
                 TabControl1Change(nil);   // обновление элементов формы
-               end;
-            2: begin
+              end;
+            2: // в режиме добавления новой карточки
+              begin
                 if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
                 ChangeTabActionPackList.ExecuteTarget(self);
                end;
@@ -1338,6 +1343,7 @@ end;
 procedure SetNewHide(FieldName: string);
 begin
   DM.FDQuery2.RecNo := CardsGrid.Selected+1;
+  if not DM.FDDatabese.InTransaction then DM.FDTransaction1.StartTransaction;
   DM.FDDatabese.ExecSQL('UPDATE cards SET '+FieldName+'='+SetNewFieldHide(DM.FDQuery2.FieldByName(FieldName).AsInteger)+' WHERE nc='+DM.FDQuery2.FieldByname('nc').AsString+';');
   DM.FDQuery2.Refresh;
   CardsGrid.Repaint;
@@ -1395,16 +1401,6 @@ begin
   CardsGrid.BeginUpdate;
   if Form1.Width>Form1.Height then
   begin
-          // отступы таблицы с карточками
-          CardsGrid.Margins.Bottom      := 0;
-          CardsGrid.Margins.Right       := ListPacks.Margins.Top;
-          // вид и ширина полей у списка карточек
-          Progress.Visible              := cFalse;
-          Question.Width                := CardsGrid.Width*0.3;
-          Answer.Width                  := CardsGrid.Width - Question.Width - 56;
-  end
-  else
-  begin
           CardsGrid.Margins.Bottom      := ListPacks.Margins.Top;
           CardsGrid.Margins.Right       := 0;
           // вид и ширина полей у списка карточек
@@ -1412,6 +1408,16 @@ begin
           Progress.Width                := Round(CardsGrid.Width*0.2);
           Question.Width                := Round(CardsGrid.Width*0.25);
           Answer.Width                  := CardsGrid.Width - Question.Width - Progress.Width - 56;
+  end
+  else
+  begin
+          // отступы таблицы с карточками
+          CardsGrid.Margins.Bottom      := 0;
+          CardsGrid.Margins.Right       := ListPacks.Margins.Top;
+          // вид и ширина полей у списка карточек
+          Progress.Visible              := cFalse;
+          Question.Width                := CardsGrid.Width*0.3;
+          Answer.Width                  := CardsGrid.Width - Question.Width - 56;
   end;
   CardsGrid.EndUpdate;
 end;
@@ -1854,7 +1860,7 @@ end;
 procedure TForm1.FormResize(Sender: TObject);
 var
   portrait        : boolean;
-  i               : single;
+  i, interv       : single;
 
 //  marging_st      : TBounds;   //(Left, Top, Right, Bottom: Single)
 
@@ -2008,6 +2014,8 @@ begin
     1:  begin
           SetCompanel(ComPanelPack, ColorBox2);
           GridPanelLayoutGorizontalSet( GridPanelPack );
+
+          // отступы таблицы с карточками
           btnDeleteStatistics.Position.X := Statistics.Width - btn_size-space;
     end;
     // Панель Opros
@@ -2016,16 +2024,29 @@ begin
 
           OprosPackName.Width := Form1.Width - 190;
           // Положение полей для вывода вопроса/ответа
-          i := TabControl1.Height*0.15;           // 15% от размера формы
+          i := Round( TabControl1.Height*0.15 );           // 15% от размера формы
           if i>90 then i := 90
           else if i<btn_size then i := btn_size;
-          OprosPackName.Height          := i;
 
-          i := TabControl1.Height*0.22;           // 22% от размера формы
-          if i < (OprosPackName.Height+28) then i:= OprosPackName.Height+28;  // но не менее
-          RectangleQuestion.Position.Y  := i;
-          RectangleQuestion.Height      := TabControl1.Height*0.25;
-          RectangleAnswer.Position.Y    := TabControl1.Height*0.6;
+          // ширина отступов между элементами
+          interv  := TabControl1.Height*0.03;  //3% от ширины
+
+          OprosPackName.Height  := i;
+
+          i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
+              - StatCard.Height - GridPanelOprosSwitch.Height - interv*6;
+          // если панель с кнопками видна, учесть ее размер (вычесть из доступного пространства)
+          if ComPanelOpros.Visible then i := i - ComPanelOpros.Height;
+
+          i := Round( i *0.5 );  // по 50% на панель
+
+          RectangleQuestion.Position.Y  := Round( OprosPackName.Position.Y + OprosPackName.Height + interv );
+          RectangleQuestion.Height      := i;
+
+          // Панель с переключателями режима обучения
+          GridPanelOprosSwitch.Position.Y := Round( RectangleQuestion.Position.Y + RectangleQuestion.Height + interv );
+
+          RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
           RectangleAnswer.Height        := RectangleQuestion.Height;
 
           // Установка параметров для панелей в анимации
@@ -2033,16 +2054,12 @@ begin
 
           // Статистика по карточке
           statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
-          statCard.Position.Y := RectangleAnswer.Position.Y + RectangleAnswer.Height+statCard.Height/2;
+          statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
 
           // Кнопка смены направления опроса
-          btnDirection.Position.Y := (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
-            + RectangleQuestion.Height)/2;
-          btnDirection.Position.X := (PanelOpros.Width - btn_size)/2;
-
-          // Панель с переключателями режима обучения
-          GridPanelOprosSwitch.Position.Y := (RectangleAnswer.Position.Y - GridPanelOprosSwitch.Height
-                              + RectangleQuestion.Position.Y + RectangleQuestion.Height)/2;
+          btnDirection.Position.Y := Round( (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
+            +RectangleQuestion.Height)/2 );
+          btnDirection.Position.X := Round( (PanelOpros.Width - btn_size)/2 );
 
           // Кнопки завершения опроса карточки
           GridPanelLayoutGorizontalSet( GridPanelOpros );
@@ -2104,37 +2121,42 @@ begin
     3:  begin
           SetCompanel(ComPanelOpros, ColorBox3);
 
-          OprosPackName.Width := Form1.Width - 190 - com_panel;
+          OprosPackName.Width := PanelOpros.Width - 210;
           // Положение полей для вывода вопроса/ответа
-          i := TabControl1.Height*0.15;           // 15% от размера формы
+          i := Round( PanelOpros.Height*0.15 );           // 15% от размера формы
           if i>90 then i := 90
           else if i<btn_size then i := btn_size;
-          OprosPackName.Height          := i;
 
-          i := TabControl1.Height*0.22;           // 22% от размера формы
-          if i < (OprosPackName.Height+28) then i:= OprosPackName.Height+28;  // но не менее
+          OprosPackName.Height := i;
 
-          RectangleQuestion.Position.Y  := i;
-          RectangleQuestion.Height      := TabControl1.Height*0.25;
+          // ширина отступов между элементами
+          interv  := TabControl1.Height*0.03;  //3% от ширины
 
-          RectangleAnswer.Position.Y    := (TabControl1.Height+com_panel)*0.6;
+          // свободное пространство для карт: (размер формы - фиксированные элементы - отступы)
+          i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height - StatCard.Height - GridPanelOprosSwitch.Height - interv * 6;
+          i := i *0.5;  // по 50% на панель
+
+          RectangleQuestion.Position.Y  := Round( OprosPackName.Position.Y + OprosPackName.Height + interv );
+          RectangleQuestion.Height      := Round( i );
+
+          // Панель с переключателями режима обучения
+          GridPanelOprosSwitch.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
+
+          RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
           RectangleAnswer.Height        := RectangleQuestion.Height;
 
           // Установка параметров для панелей в анимации
           PrepareAnimation;
 
           // Статистика по карточке
-          statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
-          statCard.Position.Y := RectangleAnswer.Position.Y + RectangleAnswer.Height+statCard.Height;
+          statCard.Position.X := Round( RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width );
+          statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
 
           // Кнопка смены направления опроса
-          btnDirection.Position.Y := (RectangleAnswer.Position.Y-btn_size+RectangleQuestion.Position.Y
-            +RectangleQuestion.Height)/2;
-          btnDirection.Position.X := (PanelOpros.Width - com_panel - btn_size)/2;
+          btnDirection.Position.Y := Round(  (RectangleAnswer.Position.Y - btn_size + RectangleQuestion.Position.Y
+            + RectangleQuestion.Height)/2 );
+          btnDirection.Position.X := Round(  (PanelOpros.Width - com_panel - btn_size)/2 );
 
-          // Панель с переключателями режима обучения
-          GridPanelOprosSwitch.Position.Y := (RectangleAnswer.Position.Y - GridPanelOprosSwitch.Height
-                              + RectangleQuestion.Position.Y + RectangleQuestion.Height)/2;
 
           // Кнопки завершения опроса карточки
           GridPanelLayoutVerticalSet( GridPanelOpros );
@@ -2215,7 +2237,7 @@ begin
     if not DM.FDStat.Prepared then DM.FDStat.Prepare;
     DM.FDStat.OpenOrExecute;
 
-    // кнопку изучения показываем тольк если больше 0 не скрытых карточек
+    // кнопку изучения показываем только если больше 0 не скрытых карточек
     if ((VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide1']))>0) or
        ((VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide2']))>0)
        then btnStartStudy.Visible := True;
@@ -2673,7 +2695,7 @@ begin
       begin
         Timer1.Enabled := cFalse;
         Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
-        Timer1.Interval := Round(SpeedSelector.Value) + 1200;
+        with SpeedSelector do Timer1.Interval := Round(Max + Min - Value) + 1200; //максимальное значение скорости в миниальную паузу
         Timer1.Enabled := cTrue;
       end
       else if TabControl1.ActiveTab.Index <> 3 then Exit; // закладку уже поменяли
@@ -2722,8 +2744,10 @@ end;
 
 procedure TForm1.SpeedSelectorChange(Sender: TObject);
 var timerEnd  : TDateTime;
+    speedRot  : Integer;
 begin
-  timerEnd    := IncMilliSecond(StrToDateTime(Timer1.TagString), Round(SpeedSelector.Value));
+  with SpeedSelector do speedRot := Round(Max + Min - Value) + 1200; //максимальное значение скорости в миниальную паузу
+  timerEnd    := IncMilliSecond(StrToDateTime(Timer1.TagString), speedRot);
   // проверяем, не пора ли сменить карточки для нового установленного интервала
   if CompareDateTime(timerEnd, Now) = -1 then ClickToContinue(nil)  // пора менять карточки
   else
@@ -2773,6 +2797,45 @@ begin
     // остановка автоматического переключения карточек
     Timer1.Enabled := cFalse;
   end;
+end;
+
+procedure TForm1.SwitchHideLearnedSwitch(Sender: TObject);
+var current_nc                : int64;
+    rest_timer, rest_record   : boolean;
+begin
+
+  // карточка уже выбрана, запоминаем уникальный номер значение
+  rest_record := DM.FDQuery2.Active;
+  if DM.FDQuery2.Active then current_nc := DM.FDQuery2.FieldByName('nc').AsInteger
+  else current_nc := 0; // чтоб убрать "warning" отладчика
+
+  // если таймер включен, то остановить
+  rest_timer := Timer1.Enabled;
+  if Timer1.Enabled then Timer1.Enabled := cFalse;
+
+  //
+  DM.FDQuery2.Close;  DM.FDQuery2.SQL.Clear;
+  DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
+  DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
+  if SwitchHideLearned.IsChecked then // показывать только не выученные карточки
+    DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND (c.hide1=0 OR c.hide2=0);')
+  else // показывать все карточки
+    DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+';');
+  //
+
+  // если необходимо восстанавливаем позицию записи в БД
+  if rest_record then
+  begin
+    DM.FDQuery2.OpenOrExecute;
+    DM.FDQuery2.Filter    := 'nc=' + IntToStr(current_nc);
+    DM.FDQuery2.Filtered  := cTrue;
+    DM.FDQuery2.FindFirst;
+    DM.FDQuery2.Filtered  := cFalse;
+  end;
+
+  // если нужно, восстанавливаем активность таймера
+  if rest_timer then Timer1.Enabled := rest_timer;
+
 end;
 
 procedure TForm1.btnDeleteStatisticsClick(Sender: TObject);
@@ -3032,7 +3095,8 @@ begin
               end;
 
               // настройка параметров таймера
-              Timer1.Interval     := Round( SpeedSelector.Value ) + 1200; // время срабатывания + время анимации карточек
+              // время срабатывания + время анимации карточек
+              with SpeedSelector do Timer1.Interval := Round(Max + Min - Value) + 1200; //максимальное значение скорости в миниальную паузу
               Timer1.OnTimer      := Timer1Opros; // назначение обработчика на таймер (переключение карточек)
 
             end;
@@ -3070,9 +3134,12 @@ begin
             end;
           2 : // режим обучения
             begin
+              SwitchHideLearnedSwitch(nil); // заполение селекта в зависимости от переключателя фильтра
+              {
               DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
               DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
               DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND (c.hide1=0 OR c.hide2=0);');
+              }
             end;
           end;
 
