@@ -1,4 +1,4 @@
-unit maincards;
+п»їunit maincards;
 
 interface
 
@@ -13,7 +13,7 @@ uses
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
   Xml.XMLDoc, System.IOUtils, FMX.ScrollBox, FireDAC.Stan.Param,
   DateUtils, FMX.Memo.Types, FMX.Grid.Style,
-  FMX.Dialogs, FMX.DialogService.Sync, FMX.Platform;
+  FMX.Dialogs, FMX.DialogService.Sync, FMX.Platform, FMX.Menus;
 
 
 type
@@ -201,6 +201,11 @@ type
     KeyDirectionAnimated180: TFloatKeyAnimation;
     mDelPack: TListBoxItem;
     LabelDelPack: TLabel;
+    PopupMenuCardsCrid: TPopupMenu;
+    MenuDirectShow: TMenuItem;
+    MenuDirectHide: TMenuItem;
+    MenuReverseShow: TMenuItem;
+    MenuReverseHide: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -221,13 +226,11 @@ type
     procedure btnSaveClick(Sender: TObject);
     procedure CardsGridGetValue(Sender: TObject; const Col, Row: Integer;
       var Value: TValue);
-    procedure CardsGridClick(Sender: TObject);
     procedure btnInfoCardClick(Sender: TObject);
     procedure CheckBoxReadOnly(Sender: TObject);
     procedure EditValidate(Sender: TObject; var Text: string);
     procedure EditTracking(Sender: TObject);
     procedure CardsGridTap(Sender: TObject; const Point: TPointF);
-    procedure CardsGridDblClick(Sender: TObject);
     procedure btnAddCardClick(Sender: TObject);
     procedure CardsGridMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Single);
@@ -286,48 +289,48 @@ type
     procedure CardsGridCellDblClick(const Column: TColumn; const Row: Integer);
     procedure CardsGridCellClick(const Column: TColumn; const Row: Integer);
     procedure OprosClick(Sender: TObject);
+    procedure ProgressGesture(Sender: TObject;
+      const EventInfo: TGestureEventInfo; var Handled: Boolean);
+    procedure SetHideFromPopMenu(f,t: integer);
+    procedure MenuDirectShowClick(Sender: TObject);
+    procedure MenuDirectHideClick(Sender: TObject);
+    procedure MenuDirectHideTap(Sender: TObject; const Point: TPointF);
+    procedure MenuDirectShowTap(Sender: TObject; const Point: TPointF);
+    procedure MenuReverseShowClick(Sender: TObject);
+    procedure MenuReverseShowTap(Sender: TObject; const Point: TPointF);
+    procedure MenuReverseHideClick(Sender: TObject);
+    procedure MenuReverseHideTap(Sender: TObject; const Point: TPointF);
   private
     { Private declarations }
-    //procedure ImportXML(f_name : string);
-    //procedure DBUpdate(typePack : shortint);
-    {
-    const
-      app_name  : string = 'Cards';
-      exp_fname : string = 'export.xml';
-      exp_ext   : string = '.xml';
-    }
   public
     { Public declarations }
-    //home_dir        : string;
   end;
 
 //const
-  //cTrue     : Boolean = True;
-  //cFalse    : Boolean = False;
 
 var
   Form1: TForm1;
   db_update       : string = 'update.s3db';
   db_work         : string = 'card.s3db';
-  langlist        : string;           // список возможных значений для поля Lang
+  langlist        : string;           // СЃРїРёСЃРѕРє РІРѕР·РјРѕР¶РЅС‹С… Р·РЅР°С‡РµРЅРёР№ РґР»СЏ РїРѕР»СЏ Lang
   txt,a,q         : string;
   need_upd        : boolean = False;
-  card_lastrow    : integer;          // последнее положение указателя над строкой
-  card_lastcol    : integer;          // последнее положение указателя над колонкой
-  last_tap        : integer;          // последний "tap" по обьекту
-  k_true          : integer;          // номер верного ответа или номер последнй карточки в экспресс опросе
-  direct          : byte;             // направление при экспресс опросе
-  new_rec         : byte;             // счетчик рекорда
-  pack_selected   : ^TListBoxItem;    // указатель на выбранный элемент
+  card_lastrow    : integer;          // РїРѕСЃР»РµРґРЅРµРµ РїРѕР»РѕР¶РµРЅРёРµ СѓРєР°Р·Р°С‚РµР»СЏ РЅР°Рґ СЃС‚СЂРѕРєРѕР№
+  card_lastcol    : integer;          // РїРѕСЃР»РµРґРЅРµРµ РїРѕР»РѕР¶РµРЅРёРµ СѓРєР°Р·Р°С‚РµР»СЏ РЅР°Рґ РєРѕР»РѕРЅРєРѕР№
+  last_tap        : integer;          // РїРѕСЃР»РµРґРЅРёР№ "tap" РїРѕ РѕР±СЊРµРєС‚Сѓ
+  k_true          : integer;          // РЅРѕРјРµСЂ РІРµСЂРЅРѕРіРѕ РѕС‚РІРµС‚Р° РёР»Рё РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅР№ РєР°СЂС‚РѕС‡РєРё РІ СЌРєСЃРїСЂРµСЃСЃ РѕРїСЂРѕСЃРµ
+  direct          : byte;             // РЅР°РїСЂР°РІР»РµРЅРёРµ РїСЂРё СЌРєСЃРїСЂРµСЃСЃ РѕРїСЂРѕСЃРµ
+  new_rec         : byte;             // СЃС‡РµС‚С‡РёРє СЂРµРєРѕСЂРґР°
+  pack_selected   : ^TListBoxItem;    // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РІС‹Р±СЂР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚
   mn              : array [0..3] of integer;
-  mr              : array [0..4] of ^TRectangle;      // панели с элементами формы ExpressOpros
+  mr              : array [0..4] of ^TRectangle;      // РїР°РЅРµР»Рё СЃ СЌР»РµРјРµРЅС‚Р°РјРё С„РѕСЂРјС‹ ExpressOpros
   mp              : array [0..4] of ^TImage;
   mt              : array [0..4] of ^TLabel;
-  mas             : array [0..4] of ^TFloatAnimation; // анимация масштабирования
-  map             : array [0..4] of ^TFloatAnimation; // анимация позиции
+  mas             : array [0..4] of ^TFloatAnimation; // Р°РЅРёРјР°С†РёСЏ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
+  map             : array [0..4] of ^TFloatAnimation; // Р°РЅРёРјР°С†РёСЏ РїРѕР·РёС†РёРё
   //
-  ini_maxanswer   : single = 5;       // максимальное количество хранимых ответов для одного направления ответа
-  ini_autohide    : single = 1;       // автоматически скрывать через... подряд верных ответов (0 не скрывать)
+  ini_maxanswer   : single = 5;       // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С…СЂР°РЅРёРјС‹С… РѕС‚РІРµС‚РѕРІ РґР»СЏ РѕРґРЅРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ РѕС‚РІРµС‚Р°
+  ini_autohide    : single = 1;       // Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЃРєСЂС‹РІР°С‚СЊ С‡РµСЂРµР·... РїРѕРґСЂСЏРґ РІРµСЂРЅС‹С… РѕС‚РІРµС‚РѕРІ (0 РЅРµ СЃРєСЂС‹РІР°С‚СЊ)
   ini_fontOpros   : single = 22;
   ini_fontExpress : single = 22;
   ini_height      : integer = 640;
@@ -358,7 +361,7 @@ uses
   FMX.VirtualKeyboard;
 
 
-// Приостановка процедуры без торможения всей программы
+// РџСЂРёРѕСЃС‚Р°РЅРѕРІРєР° РїСЂРѕС†РµРґСѓСЂС‹ Р±РµР· С‚РѕСЂРјРѕР¶РµРЅРёСЏ РІСЃРµР№ РїСЂРѕРіСЂР°РјРјС‹
 procedure Delay(milliseconds:integer);
 var aTime     :TDateTime;
     msec,sec  :word;
@@ -374,7 +377,7 @@ begin
 end;
 
 
-// Заполнение полей статистики формы Pack
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РїРѕР»РµР№ СЃС‚Р°С‚РёСЃС‚РёРєРё С„РѕСЂРјС‹ Pack
 procedure SetPackStatistics;
 begin
   with Form1 do
@@ -389,7 +392,7 @@ begin
       ReverseProgress.Value := ReverseProgress.Min;
 
       CardsGrid.RowCount := 0;
-      CardsGrid.Enabled := cTrue;
+      CardsGrid.Enabled := True;
     end
     else
     begin
@@ -403,7 +406,7 @@ begin
       CardsGrid.RowCount := DM.FDQuery2.RecordCount;
     end;
     if ((DirectProgress.Value=0) and (ReverseProgress.Value=0)) then btnDeleteStatistics.Visible := False
-    else btnDeleteStatistics.Visible := cTrue;
+    else btnDeleteStatistics.Visible := True;
   end;
 end;
 
@@ -413,7 +416,7 @@ begin
   else (Sender as TCheckBox).OnChange := nil;
 end;
 
-// получение строки Detail для пачки с указанным np
+// РїРѕР»СѓС‡РµРЅРёРµ СЃС‚СЂРѕРєРё Detail РґР»СЏ РїР°С‡РєРё СЃ СѓРєР°Р·Р°РЅРЅС‹Рј np
 function GetDetail(db_connect : TFDConnection; np : int64) : string;
 var query  : TFDQuery;
 begin
@@ -424,16 +427,16 @@ begin
     query.SQL.Add('SELECT p.lang, datetime(p.version,''localtime'') AS version,');
     query.SQL.Add('datetime(s.lastmod,''localtime'') AS lastmod, s.countcards, s.hide1, s.hide2');
     query.SQL.Add('FROM packet p LEFT JOIN pack_stats s ON s.np=p.np WHERE p.np='+IntToStr(np)+';');
-    query.Active := cTrue;
+    query.Active := True;
 
     Result := query.FieldByName('lang').AsString+'    Cards: ';
     //if VarIsNull(query.FieldByName('countcards').AsVariant) then Result := Result + '0'
     if VarIsNull(query['countcards']) then Result := Result + '0'
     else
     begin
-      Result := Result + query.FieldByName('countcards').AsString; // всего карточек
-      Result := Result + '/'+query.FieldByName('hide1').AsString;  // всего скрытых для прямого просмотра
-      Result := Result + '/'+query.FieldByName('hide2').AsString;  // всего скрытых для обратного просмотра
+      Result := Result + query.FieldByName('countcards').AsString; // РІСЃРµРіРѕ РєР°СЂС‚РѕС‡РµРє
+      Result := Result + '/'+query.FieldByName('hide1').AsString;  // РІСЃРµРіРѕ СЃРєСЂС‹С‚С‹С… РґР»СЏ РїСЂСЏРјРѕРіРѕ РїСЂРѕСЃРјРѕС‚СЂР°
+      Result := Result + '/'+query.FieldByName('hide2').AsString;  // РІСЃРµРіРѕ СЃРєСЂС‹С‚С‹С… РґР»СЏ РѕР±СЂР°С‚РЅРѕРіРѕ РїСЂРѕСЃРјРѕС‚СЂР°
     end;
     Result := Result +'  Last changes: ';
     if VarIsNull(query['lastmod']) then Result := Result + query.FieldByName('version').AsString
@@ -441,11 +444,11 @@ begin
 
     query.Close
   finally
-    query.DisposeOf;
+    query.Free;
   end;
 end;
 
-// скрытие элементов меню
+// СЃРєСЂС‹С‚РёРµ СЌР»РµРјРµРЅС‚РѕРІ РјРµРЅСЋ
 procedure ShowMenuElements(state  : Boolean);
 begin
   with Form1 do
@@ -459,7 +462,7 @@ begin
   end;
 end;
 
-// Установка элементов формы Pack в режим:
+// РЈСЃС‚Р°РЅРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹ Pack РІ СЂРµР¶РёРј:
 // state=True   - ReadOnly
 // state=False  - EditMode
 procedure SetPackReadOnly(state : boolean);
@@ -475,18 +478,20 @@ begin
     case Pack.Tag of
       0,2 :
             begin
-              btnAddCard.Visible    := cFalse;
-              btnDeleteCard.Visible := cFalse;
+              btnAddCard.Visible    := False;
+              btnDeleteCard.Visible := False;
+              CardsGrid.PopupMenu := nil;
             end;
       1 :
             begin
-              btnAddCard.Visible    := cTrue;
-              btnDeleteCard.Visible := cTrue;
+              btnAddCard.Visible    := True;
+              btnDeleteCard.Visible := True;
+              CardsGrid.PopupMenu := PopupMenuCardsCrid;
             end;
     end;
     if state then
     begin
-      LangEdit.Items.Clear;     // иначе не отключается выпадающий список
+      LangEdit.Items.Clear;     // РёРЅР°С‡Рµ РЅРµ РѕС‚РєР»СЋС‡Р°РµС‚СЃСЏ РІС‹РїР°РґР°СЋС‰РёР№ СЃРїРёСЃРѕРє
       TopLabel.Text           := EmptyStr;
       btnback.StyleLookup     := 'backtoolbutton';
       btnInfoCard.StyleLookup := 'arrowrighttoolbutton';
@@ -496,7 +501,7 @@ begin
     else
     begin
       LangEdit.Items.Text     := langlist;
-      Statistics.IsExpanded   := cFalse;
+      Statistics.IsExpanded   := False;
       case Pack.Tag of
         1: TopLabel.Text      := 'Edit';
         2: TopLabel.Text      := 'Insert';
@@ -509,7 +514,7 @@ begin
   end;
 end;
 
-// формирование уникальной строки для TStringList
+// С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ СѓРЅРёРєР°Р»СЊРЅРѕР№ СЃС‚СЂРѕРєРё РґР»СЏ TStringList
 function CheckItemText(ItemList : TStrings; const txt : string) : string;
 var i : ShortInt;
 begin
@@ -522,28 +527,28 @@ begin
   end;
 end;
 
-// Обновление (заполнение) списка пачек
+// РћР±РЅРѕРІР»РµРЅРёРµ (Р·Р°РїРѕР»РЅРµРЅРёРµ) СЃРїРёСЃРєР° РїР°С‡РµРє
 procedure TForm1.PackListUpdate;
 var i           : integer;
     nc_selected : string;
 begin
   try
 
-    if SearchBoxPack.Visible then SearchBoxPack.Visible := cFalse;
+    if SearchBoxPack.Visible then SearchBoxPack.Visible := False;
 
-    // если какой-нибудь элемент списка выбран, запоминаем его RowID из поля TagString, или ''
+    // РµСЃР»Рё РєР°РєРѕР№-РЅРёР±СѓРґСЊ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР° РІС‹Р±СЂР°РЅ, Р·Р°РїРѕРјРёРЅР°РµРј РµРіРѕ RowID РёР· РїРѕР»СЏ TagString, РёР»Рё ''
     if Assigned(pack_selected^) then nc_selected := pack_selected^.TagString
     else nc_selected := EmptyStr;
-    Listpacks.ItemIndex := -1; // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
+    Listpacks.ItemIndex := -1; // Р±РµР· СѓСЃС‚Р°РЅРѕРІРєРё BeginUpdate РІС‹Р·С‹РІР°РµС‚СЃСЏ onChange=ListPacksChange(nil)
     if Assigned(pack_selected) then pack_selected^ := nil;
 
     ListPacks.BeginUpdate;
-    ListPacks.ResetFilter;      // сбрасываем фильтр поиска
+    ListPacks.ResetFilter;      // СЃР±СЂР°СЃС‹РІР°РµРј С„РёР»СЊС‚СЂ РїРѕРёСЃРєР°
     ListPacks.Clear;
 
     //while ListPacks.Items.Count<>0 do ListPacks.DeleteItem(0);
 
-    //ListPacks.Sorted      := cFalse;
+    //ListPacks.Sorted      := False;
     ListPacks.ItemHeight  := com_panel;
 
     if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
@@ -551,24 +556,24 @@ begin
     DM.FDQuery1.Open('SELECT np, packname, type FROM packet ORDER BY np DESC;');
 
 //ListPacks.DefaultItemStyles.ItemStyle := 'listboxitembottomdetail';
-    // заполняем список пачек
+    // Р·Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРѕРє РїР°С‡РµРє
     while not DM.FDQuery1.Eof do
     begin
       i := ListPacks.Items.Add( CheckItemText( ListPacks.Items, DM.FDQuery1.FieldByName('packname').AsString ) );
-//стиль ()
+//СЃС‚РёР»СЊ ()
 //ListPacks.ListItems[i].StyleLookup := 'listboxitembottomdetail';
-      // заполняем строчку для Detail
+      // Р·Р°РїРѕР»РЅСЏРµРј СЃС‚СЂРѕС‡РєСѓ РґР»СЏ Detail
       ListPacks.ListItems[i].ItemData.Detail := GetDetail(DM.FDDatabese,DM.FDQuery1.FieldByName('np').AsLargeInt);
-      // RowID записи
+      // RowID Р·Р°РїРёСЃРё
       ListPacks.ListItems[i].TagString  := DM.FDQuery1.FieldByName('np').AsString;
-      // тип справочника
+      // С‚РёРї СЃРїСЂР°РІРѕС‡РЅРёРєР°
       Listpacks.ListItems[i].Tag := DM.FDQuery1.FieldByName('type').AsInteger;
 
-      // эта пачка была выбрана до обновления списка
+      // СЌС‚Р° РїР°С‡РєР° Р±С‹Р»Р° РІС‹Р±СЂР°РЅР° РґРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃРїРёСЃРєР°
       if ( nc_selected=ListPacks.ListItems[i].TagString ) then
       begin
-        ListPacks.ItemIndex := i;                     // восстанавливаем выбор
-        //  pack_selected^      := ListPacks.Selected;    // запоминаем ссылку на выбранную пачку
+        ListPacks.ItemIndex := i;                     // РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІС‹Р±РѕСЂ
+        //  pack_selected^      := ListPacks.Selected;    // Р·Р°РїРѕРјРёРЅР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РІС‹Р±СЂР°РЅРЅСѓСЋ РїР°С‡РєСѓ
         //  ListPacks.ListItems[i].ItemData.Accessory := TListBoxItemData.TAccessory.aMore;
         ListPacksChange(nil)
       end
@@ -580,7 +585,7 @@ begin
     DM.FDQuery1.Close;
 
   finally
-    //ListPacks.Sorted := cTrue;
+    //ListPacks.Sorted := True;
     ListPacks.EndUpdate;
     if not Assigned(pack_selected^) and DM.FDDatabese.Connected then DM.FDDatabese.Close;
   end;
@@ -590,25 +595,31 @@ end;
 
 procedure TForm1.PanelExpressOprosResize(Sender: TObject);
 begin
-  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+  FormResize(nil);  // РїРµСЂРµСЃС‡РµС‚ СЂР°Р·РјРµС‰РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїР°РЅРµР»Рё (Рё РІСЃРµРіРѕ TabControl)
 end;
 
 procedure TForm1.PanelOprosResize(Sender: TObject);
 begin
-  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+  FormResize(nil);  // РїРµСЂРµСЃС‡РµС‚ СЂР°Р·РјРµС‰РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїР°РЅРµР»Рё (Рё РІСЃРµРіРѕ TabControl)
 end;
 
 procedure TForm1.PanelPackListResize(Sender: TObject);
 begin
-  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+  FormResize(nil);  // РїРµСЂРµСЃС‡РµС‚ СЂР°Р·РјРµС‰РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїР°РЅРµР»Рё (Рё РІСЃРµРіРѕ TabControl)
 end;
 
 procedure TForm1.PanelPackResize(Sender: TObject);
 begin
-  FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
+  FormResize(nil);  // РїРµСЂРµСЃС‡РµС‚ СЂР°Р·РјРµС‰РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїР°РЅРµР»Рё (Рё РІСЃРµРіРѕ TabControl)
 end;
 
-// замена в строке str символа # на указанную подстроку substr
+procedure TForm1.ProgressGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+
+end;
+
+// Р·Р°РјРµРЅР° РІ СЃС‚СЂРѕРєРµ str СЃРёРјРІРѕР»Р° # РЅР° СѓРєР°Р·Р°РЅРЅСѓСЋ РїРѕРґСЃС‚СЂРѕРєСѓ substr
 function TForm1.ReplaceInStr(str, substr : string) : string;
 var i : integer;
 begin
@@ -617,9 +628,9 @@ begin
 end;
 
 
-// проверка на вхождение X в массив Y
-// возвращает номер первого вхождения в массив
-// или -1 если не входит
+// РїСЂРѕРІРµСЂРєР° РЅР° РІС…РѕР¶РґРµРЅРёРµ X РІ РјР°СЃСЃРёРІ Y
+// РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ РїРµСЂРІРѕРіРѕ РІС…РѕР¶РґРµРЅРёСЏ РІ РјР°СЃСЃРёРІ
+// РёР»Рё -1 РµСЃР»Рё РЅРµ РІС…РѕРґРёС‚
 function TForm1.InArray(x : integer; y : array of integer) : integer;
 var i : integer;
 begin
@@ -632,8 +643,8 @@ begin
     end;
 end;
 
-// Преобразование переменной Variant в varInt64
-// если null, или ошибка, то -> 0
+// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ Variant РІ varInt64
+// РµСЃР»Рё null, РёР»Рё РѕС€РёР±РєР°, С‚Рѕ -> 0
 function TForm1.VarToInt(v : Variant) : Smallint;
 begin
   try
@@ -650,7 +661,7 @@ begin
 end;
 
 
-// Установка элементов формы Card
+// РЈСЃС‚Р°РЅРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹ Card
 procedure SetCard;
 begin
   with Form1 do
@@ -661,21 +672,21 @@ begin
     EditAnswer.Text           := DM.FDQuery2.FieldByName('question2').AsString;
     //last_id                   := DM.FDQuery2.FieldByName('nc').AsLargeInt;
 
-    // разрешение изменения значений чекбоксов
-    SetReadOnly(cFalse,EditDirectHide);
-    SetReadOnly(cFalse,EditReverseHide);
-    if DM.FDQuery2.FieldByName('hide1').AsInteger=1 then EditDirectHide.IsChecked := cTrue
-    else EditDirectHide.IsChecked := cFalse;
-    if DM.FDQuery2.FieldByName('hide2').AsInteger=1 then EditReverseHide.IsChecked := cTrue
-    else EditReverseHide.IsChecked := cFalse;
+    // СЂР°Р·СЂРµС€РµРЅРёРµ РёР·РјРµРЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёР№ С‡РµРєР±РѕРєСЃРѕРІ
+    SetReadOnly(False,EditDirectHide);
+    SetReadOnly(False,EditReverseHide);
+    if DM.FDQuery2.FieldByName('hide1').AsInteger=1 then EditDirectHide.IsChecked := True
+    else EditDirectHide.IsChecked := False;
+    if DM.FDQuery2.FieldByName('hide2').AsInteger=1 then EditReverseHide.IsChecked := True
+    else EditReverseHide.IsChecked := False;
 
-    //статистика по выбранной карте
+    //СЃС‚Р°С‚РёСЃС‚РёРєР° РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ РєР°СЂС‚Рµ
     CorrectDir.Text := TrueOfSum(DM.FDQuery2['direct_true'],DM.FDQuery2['direct_false']);
     CorrectRev.Text := TrueOfSum(DM.FDQuery2['reverse_true'],DM.FDQuery2['reverse_false']);
   end;
 end;
 
-// Установка элементов формы Card в режим:
+// РЈСЃС‚Р°РЅРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹ Card РІ СЂРµР¶РёРј:
 // state=True   - ReadOnly
 // state=False  - EditMode
 procedure SetCardReadOnly(state : boolean);
@@ -684,7 +695,7 @@ begin
   begin
     EditQuestion.ReadOnly     := state;
     EditAnswer.ReadOnly       := state;
-    // запрет/разрешение изменения значений чекбоксов
+    // Р·Р°РїСЂРµС‚/СЂР°Р·СЂРµС€РµРЅРёРµ РёР·РјРµРЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёР№ С‡РµРєР±РѕРєСЃРѕРІ
     SetReadOnly(state,EditDirectHide);
     SetReadOnly(state,EditReverseHide);
     btnSave.Visible           := not state;
@@ -696,7 +707,7 @@ begin
     end
     else
     begin
-      //if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // открываем транзакцию редактирования
+      //if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // РѕС‚РєСЂС‹РІР°РµРј С‚СЂР°РЅР·Р°РєС†РёСЋ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
       TopLabel.Text := 'Edit';
       btnBack.Width := btn_big;
       btnBack.Text  := btn_cancel;
@@ -706,70 +717,72 @@ begin
 end;
 
 
-// Просмотр информации о пачке
+// РџСЂРѕСЃРјРѕС‚СЂ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РїР°С‡РєРµ
 procedure TForm1.btnInfoCardClick(Sender: TObject);
 begin
   // 1 - EditMode; 0 - ReadOnly;
-  if btnSave.Visible then // клавиша "Save" видна, открываем форму Card в режиме редактирования
+  if btnSave.Visible then // РєР»Р°РІРёС€Р° "Save" РІРёРґРЅР°, РѕС‚РєСЂС‹РІР°РµРј С„РѕСЂРјСѓ Card РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
         Card.Tag := 1
-  else                    // открываем форму Card в режиме просмотра
+  else                    // РѕС‚РєСЂС‹РІР°РµРј С„РѕСЂРјСѓ Card РІ СЂРµР¶РёРјРµ РїСЂРѕСЃРјРѕС‚СЂР°
         Card.Tag := 0;
 
-  ChangeTabActionCard.ExecuteTarget(self);  // с анимацией
+  ChangeTabActionCard.ExecuteTarget(self);  // СЃ Р°РЅРёРјР°С†РёРµР№
   //TabControl1.ActiveTab := Card;
 end;
 
 procedure TForm1.btnAddCardClick(Sender: TObject);
 begin
-  Card.Tag := 2; // открывать форму в режиме добавления новой карты
-  ChangeTabActionCard.ExecuteTarget(self);  // с анимацией
+  Card.Tag := 2; // РѕС‚РєСЂС‹РІР°С‚СЊ С„РѕСЂРјСѓ РІ СЂРµР¶РёРјРµ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕР№ РєР°СЂС‚С‹
+  ChangeTabActionCard.ExecuteTarget(self);  // СЃ Р°РЅРёРјР°С†РёРµР№
   //TabControl1.ActiveTab := Card;
 end;
 
 procedure TForm1.btnAppendClick(Sender: TObject);
 begin
   case TabControl1.ActiveTab.Index of
-    // Форма PackList
+    // Р¤РѕСЂРјР° PackList
     0:  begin
-          Pack.Tag := 2;                            // 2 - открыть в режиме Add New pack
+          Pack.Tag := 2;                            // 2 - РѕС‚РєСЂС‹С‚СЊ РІ СЂРµР¶РёРјРµ Add New pack
           ChangeTabActionPack.ExecuteTarget(self);  // TabControl1.ActiveTab := Pack;
     end;
-    // форма ExpressOpros
-    4:  TabControl1Change(nil);                     // перезапуск опроса
+    // С„РѕСЂРјР° ExpressOpros
+    4:  TabControl1Change(nil);                     // РїРµСЂРµР·Р°РїСѓСЃРє РѕРїСЂРѕСЃР°
   end;
 end;
 
 procedure TForm1.btnBackClick(Sender: TObject);
 begin
     case TabControl1.ActiveTab.Index of
-      1:  case Pack.Tag of  // если 1, то обработка состояний формы Pack
-        // форма в режиме ReadOnly - возврат с панели Pack на PackList
+      1:  case Pack.Tag of  // РµСЃР»Рё 1, С‚Рѕ РѕР±СЂР°Р±РѕС‚РєР° СЃРѕСЃС‚РѕСЏРЅРёР№ С„РѕСЂРјС‹ Pack
+        // С„РѕСЂРјР° РІ СЂРµР¶РёРјРµ ReadOnly - РІРѕР·РІСЂР°С‚ СЃ РїР°РЅРµР»Рё Pack РЅР° PackList
             0,4: ChangeTabActionPackList.ExecuteTarget(self);  //TabControl1.ActiveTab := PackList;
-            1:  // форма в режиме редактирования - отмена изменений
+            1:  // С„РѕСЂРјР° РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ - РѕС‚РјРµРЅР° РёР·РјРµРЅРµРЅРёР№
               begin
-                if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откат транзакции (выход без сохранения)
+                if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // РѕС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё (РІС‹С…РѕРґ Р±РµР· СЃРѕС…СЂР°РЅРµРЅРёСЏ)
                 Pack.Tag := 0;
-                CardsGrid.Repaint;
-                TabControl1Change(nil);   // обновление элементов формы
+                CardsGrid.BeginUpdate;
+                //CardsGrid.Repaint;
+                TabControl1Change(nil);   // РѕР±РЅРѕРІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹
+                CardsGrid.EndUpdate;
               end;
-            2: // в режиме добавления новой карточки
+            2: // РІ СЂРµР¶РёРјРµ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕР№ РєР°СЂС‚РѕС‡РєРё
               begin
                 if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
                 ChangeTabActionPackList.ExecuteTarget(self);
                end;
           end;
-      2:    // если 2, то возврат с панели Card на Pack
+      2:    // РµСЃР»Рё 2, С‚Рѕ РІРѕР·РІСЂР°С‚ СЃ РїР°РЅРµР»Рё Card РЅР° Pack
             ChangeTabActionPack.ExecuteTarget(self);  //TabControl1.ActiveTab := Pack;
-      3: // если 3 то возврат с панели Opros на PackList
+      3: // РµСЃР»Рё 3 С‚Рѕ РІРѕР·РІСЂР°С‚ СЃ РїР°РЅРµР»Рё Opros РЅР° PackList
           begin
             case Opros.Tag of
-              0,1:  pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));  //обновление статистики
-              2:    if Timer1.Enabled then Timer1.Enabled := cFalse;
+              0,1:  pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));  //РѕР±РЅРѕРІР»РµРЅРёРµ СЃС‚Р°С‚РёСЃС‚РёРєРё
+              2:    if Timer1.Enabled then Timer1.Enabled := False;
             end;
             ChangeTabActionPackList.ExecuteTarget(self);
           end;
-      4:  begin // если 3,4 то возврат с панели Opros на PackList
-            if Timer1.Enabled then Timer1.Enabled := cFalse;
+      4:  begin // РµСЃР»Рё 3,4 С‚Рѕ РІРѕР·РІСЂР°С‚ СЃ РїР°РЅРµР»Рё Opros РЅР° PackList
+            if Timer1.Enabled then Timer1.Enabled := False;
             ChangeTabActionPackList.ExecuteTarget(self);
           end;
     end;
@@ -777,18 +790,20 @@ end;
 
 procedure TForm1.btnDeleteCardClick(Sender: TObject);
 begin
-  // удаление выбранной карточки
+  // СѓРґР°Р»РµРЅРёРµ РІС‹Р±СЂР°РЅРЅРѕР№ РєР°СЂС‚РѕС‡РєРё
   if CardsGrid.Selected<>-1 then
   begin
+    CardsGrid.BeginUpdate;
     try
-      if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // открываем транзакцию для возможности отката удаления
+      if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // РѕС‚РєСЂС‹РІР°РµРј С‚СЂР°РЅР·Р°РєС†РёСЋ РґР»СЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РѕС‚РєР°С‚Р° СѓРґР°Р»РµРЅРёСЏ
       DM.FDQuery2.RecNo := CardsGrid.Selected+1;
-      DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE nc='+DM.FDQuery2.FieldByName('nc').AsString);
+      DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE nc=' + DM.FDQuery2.FieldByName('nc').AsString);
     finally
       DM.FDQuery1.Refresh;
       DM.FDQuery2.Refresh;
       SetPackStatistics;
     end;
+    CardsGrid.EndUpdate;
   end;
 end;
 
@@ -797,75 +812,31 @@ var
   ASyncService : IFMXDialogServiceASync;
 begin
   if ListPacks.Index<>-1 then
-    {* Метод устарел
+    {* РњРµС‚РѕРґ СѓСЃС‚Р°СЂРµР»
     MessageDlg(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],0,TMsgDlgBtn.mbNo,CloseDlgDeletePack);
     *}
 
-    {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
-    // FMX.DialogService.Sync.TDialogServiceSync.MessageDialog
-
-    //TDialogService.MessageDialog(txt_question2, TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo, 0);
-    //TDialogService.MessageDialog(
-    FMX.DialogService.Sync.MessageDialog(
+//    {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
+    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+     ASyncService.MessageDialogAsync(
       txt_question2,
       TMsgDlgType.mtConfirmation,
       [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],
-      TMsgDlgBtn.mbNo as TMsgDlgBtn,
-      0 );
-
-      {*
-
-
-class procedure MessageDialog(
-  const AMessage: string;
-  const ADialogType: TMsgDlgType;
-  const AButtons: TMsgDlgButtons;
-  const ADefaultButton: TMsgDlgBtn;
-  const AHelpCtx: THelpContext;
-  const ACloseDialogProc: TInputCloseDialogProc); overload;
-
-class procedure MessageDialog(
-  const AMessage: string;
-  const ADialogType: TMsgDlgType;
-  const AButtons: TMsgDlgButtons;
-  const ADefaultButton: TMsgDlgBtn; const AHelpCtx: THelpContext;
-  const ACloseDialogEvent: TInputCloseDialogEvent;
-  const AContext: TObject = nil); overload;
+      TMsgDlgBtn.mbNo,
+      0,
+      CloseDlgDeletePack
+    );
 
 
-MessageDialog(
-  const AMessage: string;
-  const ADialogType: TMsgDlgType;
-  const AButtons: TMsgDlgButtons;
-  const ADefaultButton: TMsgDlgBtn;
-  const AHelpCtx: THelpContext): Integer;
-
-      *}
-
-
-
-    //  if ( TDialogService.MessageDialog(txt_question2, TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo, 0) = TMsgDlgBtn.mbYes ) then
-    //    CloseDlgDeletePack( mrYes );
-
-
-
-    {$ELSEIF DEFINED(ANDROID) or DEFINED(IOS)}
-    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
-        ASyncService.MessageDialogAsync(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],TMsgDlgBtn.mbNo,0, CloseDlgDeletePack);
-
-    {$ENDIF}
-
-  { Пример новой функции  FMX (Android не поддерживается - Уже поддерживается?)
-  var
-  ASyncService : IFMXDialogServiceASync;
-    ...
-    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
-        ASyncService.MessageDialogAsync(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],TMsgDlgBtn.mbNo,0, CloseDlgDeletePack);
-   }
+//    {$ELSEIF DEFINED(ANDROID) or DEFINED(IOS)}
+//    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+//        ASyncService.MessageDialogAsync(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],TMsgDlgBtn.mbNo,0, CloseDlgDeletePack);
+//
+//    {$ENDIF}
 
 end;
 
-// обработчик MessageDlg (требоване для Non-blocking вызова OS)
+// РѕР±СЂР°Р±РѕС‚С‡РёРє MessageDlg (С‚СЂРµР±РѕРІР°РЅРµ РґР»СЏ Non-blocking РІС‹Р·РѕРІР° OS)
 procedure TForm1.CloseDlgDeletePack(const AResult: TModalResult);
 begin
   if AResult=mrYes then
@@ -873,7 +844,7 @@ begin
     if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
     DM.FDTransaction1.StartTransaction;
     try
-      // Удаляем Packet (констрыйны очистят Cards и Answers)
+      // РЈРґР°Р»СЏРµРј Packet (РєРѕРЅСЃС‚СЂС‹Р№РЅС‹ РѕС‡РёСЃС‚СЏС‚ Cards Рё Answers)
       DM.FDDatabese.ExecSQL('DELETE FROM Packet WHERE np='+pack_selected^.TagString+';');
       ListPacks.DeleteItem;           //ListPacks.Items.Delete(ListPacks.ItemIndex);
       DM.FDTransaction1.Commit;
@@ -883,14 +854,14 @@ begin
       begin
         if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
         DM.FDDatabese.Close;
-        ShowMessage(txt_error4);      // E.Message - если нужно текст ошибки
+        ShowMessage(txt_error4);      // E.Message - РµСЃР»Рё РЅСѓР¶РЅРѕ С‚РµРєСЃС‚ РѕС€РёР±РєРё
       end;
     end;
 {
     Statistics.IsExpanded := not Statistics.IsExpanded;
     DM.FDQuery1.Refresh;
     DM.FDQuery2.Refresh;
-    SetPackStatistics;      // обновление полей статистики
+    SetPackStatistics;      // РѕР±РЅРѕРІР»РµРЅРёРµ РїРѕР»РµР№ СЃС‚Р°С‚РёСЃС‚РёРєРё
     CardsGrid.Repaint
 }
   end;
@@ -899,108 +870,122 @@ end;
 procedure TForm1.btnEditClick(Sender: TObject);
 begin
   case TabControl1.ActiveTab.Index of
-    // кнопка нажата на форме Pack
+    // РєРЅРѕРїРєР° РЅР°Р¶Р°С‚Р° РЅР° С„РѕСЂРјРµ Pack
     1:  begin
-          Pack.Tag := 1;  //форма в режиме редактирования
-          SetPackReadOnly(cFalse);
-          btnAddCard.Visible := cTrue;
+          Pack.Tag := 1;  //С„РѕСЂРјР° РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+          SetPackReadOnly(False);
+          btnAddCard.Visible := True;
           if CardsGrid.Selected = -1 then btnDeleteCard.Visible := not btnAddCard.Visible;
-          //  PackName.SetFocus // установку фокуса убрал. на планшете включается клавиатура, что не удобно
+          //  PackName.SetFocus // СѓСЃС‚Р°РЅРѕРІРєСѓ С„РѕРєСѓСЃР° СѓР±СЂР°Р». РЅР° РїР»Р°РЅС€РµС‚Рµ РІРєР»СЋС‡Р°РµС‚СЃСЏ РєР»Р°РІРёР°С‚СѓСЂР°, С‡С‚Рѕ РЅРµ СѓРґРѕР±РЅРѕ
     end;
-    // кнопка нажата на форме Card
+    // РєРЅРѕРїРєР° РЅР°Р¶Р°С‚Р° РЅР° С„РѕСЂРјРµ Card
     2:  begin
-          Card.Tag := 1;  // переводим форму Card в режим редактирования
-          Pack.Tag := 1;  //форма в режиме редактирования
-          SetCardReadOnly(cFalse);
+          Card.Tag := 1;  // РїРµСЂРµРІРѕРґРёРј С„РѕСЂРјСѓ Card РІ СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+          Pack.Tag := 1;  //С„РѕСЂРјР° РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+          SetCardReadOnly(False);
     end;
   end;
 end;
 
 procedure TForm1.btnInfoPack1Click(Sender: TObject);
 begin
-  Pack.Tag := 0;                            // 0 - открыть в режиме ReadOnly
-  //Statistics.IsExpanded := True;          // развернуть блок со статистикой
+  Pack.Tag := 0;                            // 0 - РѕС‚РєСЂС‹С‚СЊ РІ СЂРµР¶РёРјРµ ReadOnly
+  //Statistics.IsExpanded := True;          // СЂР°Р·РІРµСЂРЅСѓС‚СЊ Р±Р»РѕРє СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№
   ChangeTabActionPack.ExecuteTarget(self);  // TabControl1.ActiveTab := Pack;
 end;
 
 procedure TForm1.btnMenuAnimationFinish(Sender: TObject);
 begin
   BtnMenuAnimation.Inverse := not BtnMenuAnimation.Inverse;
-  BtnMenuAnimation.Enabled := cFalse;
+  BtnMenuAnimation.Enabled := False;
 end;
 
 procedure TForm1.btnMinusClick(Sender: TObject);
 begin
 end;
 
-// обработчик MessageDlg (требоване для Non-blocking вызова OS)
+// РѕР±СЂР°Р±РѕС‚С‡РёРє MessageDlg (С‚СЂРµР±РѕРІР°РЅРµ РґР»СЏ Non-blocking РІС‹Р·РѕРІР° OS)
 procedure SelectNewDirection(const AResult: TModalResult);
 begin
   if AResult=mrYes then
   begin
-    //Form1.DM.FDQuery3.Refresh;                         // обновляем данные отбора по статистике пачки
-    DM.FDStat.Refresh;                         // обновляем данные отбора по статистике пачки
-    Form1.TabControl1Change(nil);                   // Перезагрузка панели с новыми параметрами
+    //Form1.DM.FDQuery3.Refresh;                         // РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ РѕС‚Р±РѕСЂР° РїРѕ СЃС‚Р°С‚РёСЃС‚РёРєРµ РїР°С‡РєРё
+    DM.FDStat.Refresh;                         // РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ РѕС‚Р±РѕСЂР° РїРѕ СЃС‚Р°С‚РёСЃС‚РёРєРµ РїР°С‡РєРё
+    Form1.TabControl1Change(nil);                   // РџРµСЂРµР·Р°РіСЂСѓР·РєР° РїР°РЅРµР»Рё СЃ РЅРѕРІС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё
   end
   else Form1.btnBackClick(nil);
 end;
 
-// Чтение и установка новой карты для формы Opros в режиме проверки
+// Р§С‚РµРЅРёРµ Рё СѓСЃС‚Р°РЅРѕРІРєР° РЅРѕРІРѕР№ РєР°СЂС‚С‹ РґР»СЏ С„РѕСЂРјС‹ Opros РІ СЂРµР¶РёРјРµ РїСЂРѕРІРµСЂРєРё
 procedure SelectNewCardToOpros;
-var i,j : integer;
+var
+  i,j : integer;
+  ASyncService : IFMXDialogServiceASync;
 begin
   with Form1 do
   begin
     case Opros.tag of
-    0,1 : //режим проверки
+    0,1 : //СЂРµР¶РёРј РїСЂРѕРІРµСЂРєРё
       begin
           DM.FDQuery2.Refresh;
-          //DM.FDQuery2.Last;   //избыточное действие (Refresh корректно обновляет RecNo)
+          //DM.FDQuery2.Last;   //РёР·Р±С‹С‚РѕС‡РЅРѕРµ РґРµР№СЃС‚РІРёРµ (Refresh РєРѕСЂСЂРµРєС‚РЅРѕ РѕР±РЅРѕРІР»СЏРµС‚ RecNo)
           //
           if DM.FDQuery2.RecordCount>1 then
-          begin //осталось карт >1
-            //выбираем номер показываемой карточки
+          begin //РѕСЃС‚Р°Р»РѕСЃСЊ РєР°СЂС‚ >1
+            //РІС‹Р±РёСЂР°РµРј РЅРѕРјРµСЂ РїРѕРєР°Р·С‹РІР°РµРјРѕР№ РєР°СЂС‚РѕС‡РєРё
             DM.FDQuery2.RecNo := Random(DM.FDQuery2.RecordCount)+1;
             while VarToStr(DM.FDQuery2['question1'])=last_card do DM.FDQuery2.RecNo := Random(DM.FDQuery2.RecordCount)+1;
-            //TopLabel.Text := IntToStr(DM.FDQuery2.RecNo); //для проверки ошибки 1.0.1.2N
+            //TopLabel.Text := IntToStr(DM.FDQuery2.RecNo); //РґР»СЏ РїСЂРѕРІРµСЂРєРё РѕС€РёР±РєРё 1.0.1.2N
           end
           else
           if DM.FDQuery2.RecordCount=1 then
-          begin // осталась 1 карта или меньше
+          begin // РѕСЃС‚Р°Р»Р°СЃСЊ 1 РєР°СЂС‚Р° РёР»Рё РјРµРЅСЊС€Рµ
             DM.FDQuery2.First;
             TopLabel.Text := txt_warning1;
-            //повторный проход по последней карточке. меняем цвет текста на красный
+            //РїРѕРІС‚РѕСЂРЅС‹Р№ РїСЂРѕС…РѕРґ РїРѕ РїРѕСЃР»РµРґРЅРµР№ РєР°СЂС‚РѕС‡РєРµ. РјРµРЅСЏРµРј С†РІРµС‚ С‚РµРєСЃС‚Р° РЅР° РєСЂР°СЃРЅС‹Р№
             if last_card=VarToStr(DM.FDQuery2['question1']) then TopLabel.TextSettings.FontColor := $FFFF0000;  // red
           end
           else
-          begin //карточки для выбранного направления закончились
-            if (Opros.Tag=0) and btnDirection.HitTest then Opros.Tag := 1 // меняем направление на обратое
+          begin //РєР°СЂС‚РѕС‡РєРё РґР»СЏ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ Р·Р°РєРѕРЅС‡РёР»РёСЃСЊ
+            if (Opros.Tag=0) and btnDirection.HitTest then Opros.Tag := 1 // РјРµРЅСЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РѕР±СЂР°С‚РѕРµ
             else
-            if (Opros.Tag=1) and btnDirection.HitTest then Opros.Tag := 0 // меняем направление на прямое
+            if (Opros.Tag=1) and btnDirection.HitTest then Opros.Tag := 0 // РјРµРЅСЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РїСЂСЏРјРѕРµ
             else
-            begin //сообщить об окончании всей пачки и выйти
+            begin //СЃРѕРѕР±С‰РёС‚СЊ РѕР± РѕРєРѕРЅС‡Р°РЅРёРё РІСЃРµР№ РїР°С‡РєРё Рё РІС‹Р№С‚Рё
               ShowMessage(txt_warning2);
               btnBackClick(nil);
               Exit
             end;
 
-            // Предложить поменять направления перебора
+            // РџСЂРµРґР»РѕР¶РёС‚СЊ РїРѕРјРµРЅСЏС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµР±РѕСЂР°
+            { 'MessageDlg' is deprecated: 'Use FMX.DialogService methods'
             MessageDlg(txt_warning2+'. '+txt_warning3,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],0,TMsgDlgBtn.mbYes,SelectNewDirection);
+            }
+            if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+             ASyncService.MessageDialogAsync(
+              txt_warning2+'. '+txt_warning3,
+              TMsgDlgType.mtConfirmation,
+              [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],
+              TMsgDlgBtn.mbYes,
+              0,
+              SelectNewDirection
+            );
+
             Exit;
           end;
       end;
-    2 : // режим изучения
+    2 : // СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ
       begin
-        // переходим к следующй карточке
-        i := DM.FDQuery2.RecNo; //запоминаем текущую
+        // РїРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰Р№ РєР°СЂС‚РѕС‡РєРµ
+        i := DM.FDQuery2.RecNo; //Р·Р°РїРѕРјРёРЅР°РµРј С‚РµРєСѓС‰СѓСЋ
         if SwitchRandom.IsChecked and (DM.FDQuery2.RecNo > 1) then
-        begin //случайный перебор
-          repeat  // генерация номера новой карточки, не равной текущей
+        begin //СЃР»СѓС‡Р°Р№РЅС‹Р№ РїРµСЂРµР±РѕСЂ
+          repeat  // РіРµРЅРµСЂР°С†РёСЏ РЅРѕРјРµСЂР° РЅРѕРІРѕР№ РєР°СЂС‚РѕС‡РєРё, РЅРµ СЂР°РІРЅРѕР№ С‚РµРєСѓС‰РµР№
             j := Random(DM.FDQuery2.RecordCount)+1;
           until (i<>j);
           DM.FDQuery2.RecNo := j;
         end
-        else //по порядку
+        else //РїРѕ РїРѕСЂСЏРґРєСѓ
         begin
           DM.FDQuery2.Next;
           if DM.FDQuery2.Eof then DM.FDQuery2.First;
@@ -1010,22 +995,22 @@ begin
     end;
 
 
-    // запоминаем номер выбранной карточки
+    // Р·Р°РїРѕРјРёРЅР°РµРј РЅРѕРјРµСЂ РІС‹Р±СЂР°РЅРЅРѕР№ РєР°СЂС‚РѕС‡РєРё
     last_card           := VarToStr(DM.FDQuery2['question1']);
-    // назначаем значения для полей вопрос/ответ
+    // РЅР°Р·РЅР°С‡Р°РµРј Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РїРѕР»РµР№ РІРѕРїСЂРѕСЃ/РѕС‚РІРµС‚
     OprosQuestion.Text  := VarToStr(DM.FDQuery2['question1']);
     OprosAnswer.Text    := VarToStr(DM.FDQuery2['question2']);
     statCard.Text       := TrueOfSum(DM.FDQuery2['true'],DM.FDQuery2['false']);
-    // С анимацией показываем вопрос или ответ
+    // РЎ Р°РЅРёРјР°С†РёРµР№ РїРѕРєР°Р·С‹РІР°РµРј РІРѕРїСЂРѕСЃ РёР»Рё РѕС‚РІРµС‚
     case Opros.tag of
       0: AnimationQuestion;
       1: AnimationAnswer;
-      2: //режим изучения
+      2: //СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ
         begin
-          // ждем завершения предыдущей анимации
+          // Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ РїСЂРµРґС‹РґСѓС‰РµР№ Р°РЅРёРјР°С†РёРё
           while not Application.Terminated and (QuestionAnimationScale.Running or QuestionAnimationPosition.Running) do Delay(100);
           while not Application.Terminated and (AnswerAnimationScale.Running or AnswerAnimationPosition.Running) do Delay(100);
-          // эмитация псевдо переворота карты (показываем карточки)
+          // СЌРјРёС‚Р°С†РёСЏ РїСЃРµРІРґРѕ РїРµСЂРµРІРѕСЂРѕС‚Р° РєР°СЂС‚С‹ (РїРѕРєР°Р·С‹РІР°РµРј РєР°СЂС‚РѕС‡РєРё)
           AnimationQuestion;
           AnimationAnswer;
         end;
@@ -1050,35 +1035,35 @@ begin
 end;
 
 begin
-  if TSPeedButton(Sender).Visible then  // защита от повторного вызова (по признаку видимости нажатой кнопки)
+  if TSPeedButton(Sender).Visible then  // Р·Р°С‰РёС‚Р° РѕС‚ РїРѕРІС‚РѕСЂРЅРѕРіРѕ РІС‹Р·РѕРІР° (РїРѕ РїСЂРёР·РЅР°РєСѓ РІРёРґРёРјРѕСЃС‚Рё РЅР°Р¶Р°С‚РѕР№ РєРЅРѕРїРєРё)
   begin
-    // Прячем кнопки
-    HideButtonOpros(cTrue);
+    // РџСЂСЏС‡РµРј РєРЅРѕРїРєРё
+    HideButtonOpros(True);
 
     try
       if TSPeedButton(Sender).Tag=3 then
-        // нажата кнопка "скрыть карточку"
-        // Opros.Tag=0 - обновляем поле карточки hide1, Opros.Tag=1 - обновляем поле hide2
+        // РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "СЃРєСЂС‹С‚СЊ РєР°СЂС‚РѕС‡РєСѓ"
+        // Opros.Tag=0 - РѕР±РЅРѕРІР»СЏРµРј РїРѕР»Рµ РєР°СЂС‚РѕС‡РєРё hide1, Opros.Tag=1 - РѕР±РЅРѕРІР»СЏРµРј РїРѕР»Рµ hide2
         HideCard(Opros.Tag,DM.FDQuery2.FieldByname('nc').AsString)
-      else // нажата кнока "верно" или "неверно"
+      else // РЅР°Р¶Р°С‚Р° РєРЅРѕРєР° "РІРµСЂРЅРѕ" РёР»Рё "РЅРµРІРµСЂРЅРѕ"
       begin
-        //сохраняем ответ в БД
+        //СЃРѕС…СЂР°РЅСЏРµРј РѕС‚РІРµС‚ РІ Р‘Р”
         DM.FDDatabese.ExecSQL('INSERT INTO answers (nc,direct,answer) VALUES ('+DM.FDQuery2.FieldByName('nc').AsString+
             ','+IntToStr(Opros.Tag)+','+IntToStr(TSpeedButton(Sender).Tag)+');');
 
-        //если нажали кнопку верного ответа, проверка на авто скрытие карточке при верном ответе
+        //РµСЃР»Рё РЅР°Р¶Р°Р»Рё РєРЅРѕРїРєСѓ РІРµСЂРЅРѕРіРѕ РѕС‚РІРµС‚Р°, РїСЂРѕРІРµСЂРєР° РЅР° Р°РІС‚Рѕ СЃРєСЂС‹С‚РёРµ РєР°СЂС‚РѕС‡РєРµ РїСЂРё РІРµСЂРЅРѕРј РѕС‚РІРµС‚Рµ
         if (TSpeedButton(Sender).Tag=1) and (ini_autohide<>0) and (VarToInt(DM.FDQuery2['true'])+1>=ini_maxanswer) then
-          // Opros.Tag=0 - обновляем поле карточки hide1, Opros.Tag=1 - обновляем поле hide2
+          // Opros.Tag=0 - РѕР±РЅРѕРІР»СЏРµРј РїРѕР»Рµ РєР°СЂС‚РѕС‡РєРё hide1, Opros.Tag=1 - РѕР±РЅРѕРІР»СЏРµРј РїРѕР»Рµ hide2
           HideCard(Opros.Tag,DM.FDQuery2.FieldByname('nc').AsString);
       end;
 
     finally
-      // Скрываем панели
+      // РЎРєСЂС‹РІР°РµРј РїР°РЅРµР»Рё
       AnimationQuestion;
       AnimationAnswer;
-      // Ждем завершения анимации, чтобы не были выдны новые ответы
+      // Р–РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё, С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рё РІС‹РґРЅС‹ РЅРѕРІС‹Рµ РѕС‚РІРµС‚С‹
       Delay(600);
-      // Отображаем новую карточку
+      // РћС‚РѕР±СЂР°Р¶Р°РµРј РЅРѕРІСѓСЋ РєР°СЂС‚РѕС‡РєСѓ
       SelectNewCardToOpros;
 //      isActive := False;
     end;
@@ -1088,93 +1073,94 @@ end;
 
 procedure TForm1.btnOprosMouseLeave(Sender: TObject);
 begin
-  // без этого при клике по кнопке и сразу по TabControle кнопка переходит с выключенное состояние
-  // почему не понял
+  // Р±РµР· СЌС‚РѕРіРѕ РїСЂРё РєР»РёРєРµ РїРѕ РєРЅРѕРїРєРµ Рё СЃСЂР°Р·Сѓ РїРѕ TabControle РєРЅРѕРїРєР° РїРµСЂРµС…РѕРґРёС‚ СЃ РІС‹РєР»СЋС‡РµРЅРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+  // РїРѕС‡РµРјСѓ РЅРµ РїРѕРЅСЏР»
   if not TSpeedButton(Sender).Enabled then TSpeedButton(Sender).Enabled := not TSpeedButton(Sender).Enabled;
 end;
 
 procedure TForm1.btnOprosMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
-  // эмуляция нажатия кнопки
+  // СЌРјСѓР»СЏС†РёСЏ РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё
   if TSpeedButton(Sender).Enabled then TSpeedButton(Sender).Enabled := not TSpeedButton(Sender).Enabled;
 end;
 
 procedure TForm1.btnOprosMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 begin
-  // эмуляция отжатия кнопки
+  // СЌРјСѓР»СЏС†РёСЏ РѕС‚Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё
   if not TSpeedButton(Sender).Enabled then TSpeedButton(Sender).Enabled := not TSpeedButton(Sender).Enabled;
+  btnOprosClick(Sender);
 end;
 
 procedure TForm1.btnAaClick(Sender: TObject);
 begin
   if (OprosQuestion.TextSettings.Font.Size<6) then Exit;
-  // изменить размер шрифта
+  // РёР·РјРµРЅРёС‚СЊ СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р°
   OprosQuestion.TextSettings.Font.Size  := OprosQuestion.TextSettings.Font.Size + TSpeedButton(Sender).Tag;
   OprosAnswer.TextSettings.Font.Size    := OprosQuestion.TextSettings.Font.Size;
 
-  // Сохранить в файле ini
+  // РЎРѕС…СЂР°РЅРёС‚СЊ РІ С„Р°Р№Р»Рµ ini
   ini_fontOpros := OprosQuestion.TextSettings.Font.Size;
 end;
 
 procedure TForm1.btnDirectAnimationFinish(Sender: TObject);
 begin
-  // изменение направления анимации после завершения цикла
+  // РёР·РјРµРЅРµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ Р°РЅРёРјР°С†РёРё РїРѕСЃР»Рµ Р·Р°РІРµСЂС€РµРЅРёСЏ С†РёРєР»Р°
   btnDirectAnimation.Inverse := not btnDirectAnimation.Inverse;
 end;
 
 procedure TForm1.btnDirectionOldClick(Sender: TObject);
 begin
-  if btnDirectAnimation.Running then Exit  // кнопка нажата и обрабатывается
+  if btnDirectAnimation.Running then Exit  // РєРЅРѕРїРєР° РЅР°Р¶Р°С‚Р° Рё РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ
   else btnDirectAnimation.Start;
 
-  DM.FDStat.Refresh;   // обновляем данные статистики по пачке
+  DM.FDStat.Refresh;   // РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РїР°С‡РєРµ
 
-  // меняем направление перебора
+  // РјРµРЅСЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµР±РѕСЂР°
   case Opros.Tag of
     0 : Opros.Tag := 1;
     1 : Opros.Tag := 0;
   end;
 
-  // если необходимо ждем завершения анимации и закрываем карточки
+  // РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё Рё Р·Р°РєСЂС‹РІР°РµРј РєР°СЂС‚РѕС‡РєРё
   while not Application.Terminated and (QuestionAnimationPosition.Running or QuestionAnimationScale.Running) do Delay(100);
   if not ImageQ.Visible then AnimationQuestion;
   while not Application.Terminated and (AnswerAnimationPosition.Running or AnswerAnimationScale.Running) do Delay(100);
   if not ImageA.Visible then AnimationAnswer;
 
-  // ждем завершения закрытия
+  // Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ Р·Р°РєСЂС‹С‚РёСЏ
   while not Application.Terminated and (QuestionAnimationPosition.Running or QuestionAnimationScale.Running
         or AnswerAnimationPosition.Running or AnswerAnimationScale.Running) do Delay(100);
 
-  // обновляем форму для нового направления
+  // РѕР±РЅРѕРІР»СЏРµРј С„РѕСЂРјСѓ РґР»СЏ РЅРѕРІРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
   TabControl1Change(nil);
 end;
 
 procedure TForm1.btnSaveClick(Sender: TObject);
 var i : integer;
-// Преобразование Bool в Integer
+// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ Bool РІ Integer
 function BoolToInt(x : boolean) : Smallint;
 begin
   if x then Result := 1 else Result := 0;
 end;
-// Установка курсора в CardsGrin указанный номер nc
+// РЈСЃС‚Р°РЅРѕРІРєР° РєСѓСЂСЃРѕСЂР° РІ CardsGrin СѓРєР°Р·Р°РЅРЅС‹Р№ РЅРѕРјРµСЂ nc
 procedure SetPosCardsGrid(x : int64);
 begin
   with DM.FDQuery2 do
   begin
     Refresh;
     Filter    := 'nc='+IntToStr(x);
-    Filtered  := cTrue;  //установка курсора на последнюю обработанную запись
+    Filtered  := True;  //СѓСЃС‚Р°РЅРѕРІРєР° РєСѓСЂСЃРѕСЂР° РЅР° РїРѕСЃР»РµРґРЅСЋСЋ РѕР±СЂР°Р±РѕС‚Р°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ
     Filtered  := not Filtered;
     CardsGrid.Selected  := RecNo-1;
   end;
 end;
 //
 begin
-  if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // открываем транзакцию редактирования
+  if not DM.FDTransaction1.Active then DM.FDTransaction1.StartTransaction;  // РѕС‚РєСЂС‹РІР°РµРј С‚СЂР°РЅР·Р°РєС†РёСЋ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
   case TabControl1.ActiveTab.Index of
-    // нажата Save на форме Pack
+    // РЅР°Р¶Р°С‚Р° Save РЅР° С„РѕСЂРјРµ Pack
     1:  begin
           PackName.Text         := Trim(PackName.Text);
           PackDescription.Text  := Trim(PackDescription.Text);
@@ -1184,14 +1170,14 @@ begin
             PackName.SetFocus;
             Exit
           end;
-          // обновляем запись в базе данных
+          // РѕР±РЅРѕРІР»СЏРµРј Р·Р°РїРёСЃСЊ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
           try
             if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
 
             case Pack.Tag of
-              // Редактирование существующей
+              // Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµР№
               1:  begin
-                    // проверка на изменение имени
+                    // РїСЂРѕРІРµСЂРєР° РЅР° РёР·РјРµРЅРµРЅРёРµ РёРјРµРЅРё
                     DM.FDQuery1.SQL.Clear;
                     DM.FDQuery1.SQL.Add('SELECT np FROM packet WHERE packname='''+
                         PackName.Text +''';');
@@ -1199,7 +1185,7 @@ begin
                     if ( DM.FDQuery1.RecordCount > 1 ) or
                        ( VarToStr(DM.FDQuery1['np']) <> pack_selected^.TagString ) then
                             PackName.Text := CheckItemText( ListPacks.Items, PackName.Text );
-                    // обновление
+                    // РѕР±РЅРѕРІР»РµРЅРёРµ
                     DM.FDQuery1.SQL.Clear;
                     DM.FDQuery1.SQL.Add('UPDATE packet SET packname=:p,');
                     DM.FDQuery1.SQL.Add('descript=:d,lang=:l');
@@ -1213,35 +1199,35 @@ begin
                     pack_selected^.ItemData.Text := PackName.Text;
                     pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));
               end;
-              // Добавление новой пачки
+              // Р”РѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕР№ РїР°С‡РєРё
               2:  begin
                     PackName.Text := CheckItemText( ListPacks.Items, PackName.Text );
                     try
-                      DM.FDQuery1.Open('SELECT hex(randomblob(16));');    // формирование уникального uid ддя новой пачки
+                      DM.FDQuery1.Open('SELECT hex(randomblob(16));');    // С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ uid РґРґСЏ РЅРѕРІРѕР№ РїР°С‡РєРё
 
                       DM.FDDatabese.ExecSQL( 'INSERT INTO packet (uid,lang,packname,descript, version) '
                         + 'VALUES (''' + DM.FDQuery1.Fields.Fields[0].AsString + ''',''' + LangEdit.Text
                         + ''',''' + CheckAndCorrect( PackName.Text ) + ''','''
                         + CheckAndCorrect( PackDescription.Text ) + ''',datetime());' );
 
-                      // получение last_row_id (np для packet)
+                      // РїРѕР»СѓС‡РµРЅРёРµ last_row_id (np РґР»СЏ packet)
                       last_id := LastRowID(DM.FDDatabese);
 
-                      // добавление описания новой пачки в спискок
+                      // РґРѕР±Р°РІР»РµРЅРёРµ РѕРїРёСЃР°РЅРёСЏ РЅРѕРІРѕР№ РїР°С‡РєРё РІ СЃРїРёСЃРєРѕРє
                       {
-                      ListPacks.ItemIndex := -1;          // без установки BeginUpdate вызывается onChange=ListPacksChange(nil)
+                      ListPacks.ItemIndex := -1;          // Р±РµР· СѓСЃС‚Р°РЅРѕРІРєРё BeginUpdate РІС‹Р·С‹РІР°РµС‚СЃСЏ onChange=ListPacksChange(nil)
                       i := ListPacks.Items.Add(PackName.Text);
                       }
                       i := ListPacks.AddAndClearSelect( PackName.Text );
                       if i<>-1 then
                       begin
-                        // заполняем строчку для Detail
+                        // Р·Р°РїРѕР»РЅСЏРµРј СЃС‚СЂРѕС‡РєСѓ РґР»СЏ Detail
                         ListPacks.ListItems[i].ItemData.Detail := GetDetail(DM.FDDatabese,last_id);
-                        // запоминаем RowID и тип пачки
+                        // Р·Р°РїРѕРјРёРЅР°РµРј RowID Рё С‚РёРї РїР°С‡РєРё
                         ListPacks.ListItems[i].TagString := IntToStr(last_id);
-                        ListPacks.ListItems[i].Tag       := 1;    // 1 - локальная пачка
-                        // установка курсора в списке на новую добавленую строчку
-                        ListPacks.ItemIndex              := i;  // без установки BeginUpdate вызывается onChange=ListPacksChange(nil);
+                        ListPacks.ListItems[i].Tag       := 1;    // 1 - Р»РѕРєР°Р»СЊРЅР°СЏ РїР°С‡РєР°
+                        // СѓСЃС‚Р°РЅРѕРІРєР° РєСѓСЂСЃРѕСЂР° РІ СЃРїРёСЃРєРµ РЅР° РЅРѕРІСѓСЋ РґРѕР±Р°РІР»РµРЅСѓСЋ СЃС‚СЂРѕС‡РєСѓ
+                        ListPacks.ItemIndex              := i;  // Р±РµР· СѓСЃС‚Р°РЅРѕРІРєРё BeginUpdate РІС‹Р·С‹РІР°РµС‚СЃСЏ onChange=ListPacksChange(nil);
                       end
                       else
                       begin
@@ -1251,7 +1237,7 @@ begin
                     except
                       on E: Exception do
                       begin
-                        ShowMessage(txt_error3);      // E.Message - если нужно текст ошибки
+                        ShowMessage(txt_error3);      // E.Message - РµСЃР»Рё РЅСѓР¶РЅРѕ С‚РµРєСЃС‚ РѕС€РёР±РєРё
                         if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
                         Exit
                       end;
@@ -1259,13 +1245,13 @@ begin
               end;
             end;
           finally
-            if DM.FDTransaction1.Active then DM.FDTransaction1.Commit;  // сохранение транзакции
+            if DM.FDTransaction1.Active then DM.FDTransaction1.Commit;  // СЃРѕС…СЂР°РЅРµРЅРёРµ С‚СЂР°РЅР·Р°РєС†РёРё
           end;
 
-          Pack.Tag := 0;            // перевод формы в режим ReadOnly
-          TabControl1Change(nil);   // обновление элементов формы
+          Pack.Tag := 0;            // РїРµСЂРµРІРѕРґ С„РѕСЂРјС‹ РІ СЂРµР¶РёРј ReadOnly
+          TabControl1Change(nil);   // РѕР±РЅРѕРІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹
     end;
-    // нажата Continue на форме Card
+    // РЅР°Р¶Р°С‚Р° Continue РЅР° С„РѕСЂРјРµ Card
     2:  begin
           EditQuestion.Text := Trim(EditQuestion.Text);
           EditAnswer.Text   := Trim(EditAnswer.Text);
@@ -1280,12 +1266,12 @@ begin
           DM.FDQuery3.SQL.Clear;
           try
             case Card.Tag of
-            // Форма Card открыта в режиме редактирования существующей
+            // Р¤РѕСЂРјР° Card РѕС‚РєСЂС‹С‚Р° РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµР№
               1:  begin
-                    // установка курсора на редактируемую запись в БД
+                    // СѓСЃС‚Р°РЅРѕРІРєР° РєСѓСЂСЃРѕСЂР° РЅР° СЂРµРґР°РєС‚РёСЂСѓРµРјСѓСЋ Р·Р°РїРёСЃСЊ РІ Р‘Р”
                     DM.FDQuery2.RecNo := CardsGrid.Selected+1;
 
-                    // проверка необходимости обновления записи БД
+                    // РїСЂРѕРІРµСЂРєР° РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РѕР±РЅРѕРІР»РµРЅРёСЏ Р·Р°РїРёСЃРё Р‘Р”
                     if (DM.FDQuery2.FieldByName('question1').AsString <> EditQuestion.Text) or
                       (DM.FDQuery2.FieldByName('question2').AsString <> EditAnswer.Text)then
                     begin
@@ -1298,8 +1284,8 @@ begin
                       DM.FDQuery2.Refresh;
                     end;
 
-                    // если установлены, сохраняем поля hide1 и hide2
-                    // из-за наличия Constrain необходимо сохранять отдельно от question1 и question2
+                    // РµСЃР»Рё СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹, СЃРѕС…СЂР°РЅСЏРµРј РїРѕР»СЏ hide1 Рё hide2
+                    // РёР·-Р·Р° РЅР°Р»РёС‡РёСЏ Constrain РЅРµРѕР±С…РѕРґРёРјРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ РѕС‚РґРµР»СЊРЅРѕ РѕС‚ question1 Рё question2
                     if (DM.FDQuery2.FieldByName('hide1').AsInteger <> BoolToInt(EditDirectHide.IsChecked)) or
                       (DM.FDQuery2.FieldByName('hide2').AsInteger <> BoolToInt(EditReverseHide.IsChecked)) then
                     begin
@@ -1313,12 +1299,12 @@ begin
                       DM.FDQuery3.ExecSQL;
                     end;
 
-                    //установка курсора в CardsGrin на обновленую запись
+                    //СѓСЃС‚Р°РЅРѕРІРєР° РєСѓСЂСЃРѕСЂР° РІ CardsGrin РЅР° РѕР±РЅРѕРІР»РµРЅСѓСЋ Р·Р°РїРёСЃСЊ
                     SetPosCardsGrid(DM.FDQuery2.FieldByName('nc').AsInteger);
 
                     ChangeTabActionPack.ExecuteTarget(self);  //TabControl1.ActiveTab := Pack;
                 end;
-              // Форма Card открыта в режиме добавленя новой карточки
+              // Р¤РѕСЂРјР° Card РѕС‚РєСЂС‹С‚Р° РІ СЂРµР¶РёРјРµ РґРѕР±Р°РІР»РµРЅСЏ РЅРѕРІРѕР№ РєР°СЂС‚РѕС‡РєРё
               2:  begin
                     DM.FDQuery3.SQL.Add('INSERT INTO cards (np,question1,question2,version)');
                     DM.FDQuery3.SQL.Add('VALUES ('+pack_selected^.TagString+',:q1,:q2,datetime());');
@@ -1327,11 +1313,11 @@ begin
                     DM.FDQuery3.Prepare;
                     DM.FDQuery3.ExecSQL;
 
-                    last_id := LastRowID(DM.FDDatabese);            // получение last_row_id
-                    CardsGrid.RowCount  := CardsGrid.RowCount + 1;  // +1 карточка в таблице
+                    last_id := LastRowID(DM.FDDatabese);            // РїРѕР»СѓС‡РµРЅРёРµ last_row_id
+                    CardsGrid.RowCount  := CardsGrid.RowCount + 1;  // +1 РєР°СЂС‚РѕС‡РєР° РІ С‚Р°Р±Р»РёС†Рµ
 
-                    // если установлены, сохраняем поля hide1 и hide2
-                    // из-за наличия Constrain необходимо сохранять отдельно от question1 и question2
+                    // РµСЃР»Рё СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹, СЃРѕС…СЂР°РЅСЏРµРј РїРѕР»СЏ hide1 Рё hide2
+                    // РёР·-Р·Р° РЅР°Р»РёС‡РёСЏ Constrain РЅРµРѕР±С…РѕРґРёРјРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ РѕС‚РґРµР»СЊРЅРѕ РѕС‚ question1 Рё question2
                     if EditDirectHide.IsChecked or EditReverseHide.IsChecked then
                     begin
                       if DM.FDQuery3.Active then DM.FDQuery3.Close;
@@ -1344,13 +1330,13 @@ begin
                       DM.FDQuery3.ExecSQL;
                     end;
 
-                    // установка курсора на последнюю добавленную запись
+                    // СѓСЃС‚Р°РЅРѕРІРєР° РєСѓСЂСЃРѕСЂР° РЅР° РїРѕСЃР»РµРґРЅСЋСЋ РґРѕР±Р°РІР»РµРЅРЅСѓСЋ Р·Р°РїРёСЃСЊ
                     SetPosCardsGrid(last_id);
 
                     ChangeTabActionPack.ExecuteTarget(self);  //TabControl1.ActiveTab := Pack;
               end;
             end;
-          //обработка ошибок и сообщений триггеров
+          //РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє Рё СЃРѕРѕР±С‰РµРЅРёР№ С‚СЂРёРіРіРµСЂРѕРІ
           except
             on E: EDatabaseError do
               if Pos('Duplicate question1',E.Message)>0 then ErrorMessage.Text := txt_error2
@@ -1382,7 +1368,7 @@ end;
 
 procedure TForm1.btnStartStudyClick(Sender: TObject);
 begin
-  Opros.Tag := 2; // закладка Opros в режиме изучения
+  Opros.Tag := 2; // Р·Р°РєР»Р°РґРєР° Opros РІ СЂРµР¶РёРјРµ РёР·СѓС‡РµРЅРёСЏ
   ChangeTabActionOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := Opros;
 end;
 
@@ -1391,52 +1377,43 @@ begin
   ChangeTabActionExpressOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := ExpressOpros;
 end;
 
-procedure TForm1.CardsGridClick(Sender: TObject);
+procedure TForm1.CardsGridCellClick(const Column: TColumn; const Row: Integer);
 begin
-  Statistics.IsExpanded := cFalse; // Кликнули по таблице - скрыть статистику
+  Statistics.IsExpanded := False; // РљР»РёРєРЅСѓР»Рё РїРѕ С‚Р°Р±Р»РёС†Рµ - СЃРєСЂС‹С‚СЊ СЃС‚Р°С‚РёСЃС‚РёРєСѓ
   //
   if CardsGrid.Selected <> -1 then
   begin
-    btnInfoCard.Visible := cTrue;
-    if btnSave.Visible then btnDeletecard.Visible := cTrue;
+    btnInfoCard.Visible := True;
+    if btnSave.Visible then btnDeletecard.Visible := True;
   end;
-end;
-
-//Old CardsGridClick
-procedure TForm1.CardsGridCellClick(const Column: TColumn; const Row: Integer);
-begin
-  CardsGridClick(nil);
 end;
 
 //Old CardsGridDblClick
 procedure TForm1.CardsGridCellDblClick(const Column: TColumn;
   const Row: Integer);
-begin
-  CardsGridDblClick(nil);
-end;
 
-procedure TForm1.CardsGridDblClick(Sender: TObject);
-//функция возвращает обратное значение для поля Hide
-function SetNewFieldHide(x : integer) : string;
-begin
-  if x=0 then Result := '1'
-  else Result := '0';
-end;
-//
-procedure SetNewHide(FieldName: string);
-begin
-  DM.FDQuery2.RecNo := CardsGrid.Selected+1;
-  if not DM.FDDatabese.InTransaction then DM.FDTransaction1.StartTransaction;
-  DM.FDDatabese.ExecSQL('UPDATE cards SET '+FieldName+'='+SetNewFieldHide(DM.FDQuery2.FieldByName(FieldName).AsInteger)+' WHERE nc='+DM.FDQuery2.FieldByname('nc').AsString+';');
-  DM.FDQuery2.Refresh;
-  CardsGrid.Repaint;
-end;
-//
-begin
-  if btnInfoCard.Visible then   //карточка выбрана
+  //С„СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РѕР±СЂР°С‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїРѕР»СЏ Hide
+  function SetNewFieldHide(x : integer) : string;
   begin
-    // есил пачка редактируется, и кликнули по колонками Hide1 или Hid2 (видимость пачек), то меняем их соостояние на обратное
-    // иначе открываем форму с полями карты
+    if x=0 then Result := '1'
+    else Result := '0';
+  end;
+  //
+  procedure SetNewHide(FieldName: string);
+  begin
+    CardsGrid.BeginUpdate;
+    DM.FDQuery2.RecNo := CardsGrid.Selected+1;
+    if not DM.FDDatabese.InTransaction then DM.FDTransaction1.StartTransaction;
+    DM.FDDatabese.ExecSQL('UPDATE cards SET '+FieldName+'='+SetNewFieldHide(DM.FDQuery2.FieldByName(FieldName).AsInteger)+' WHERE nc='+DM.FDQuery2.FieldByname('nc').AsString+';');
+    DM.FDQuery2.Refresh;
+    CardsGrid.EndUpdate;
+  end;
+  //
+begin
+  if btnInfoCard.Visible then   //РєР°СЂС‚РѕС‡РєР° РІС‹Р±СЂР°РЅР°
+  begin
+    // РµСЃР»Рё РїР°С‡РєР° СЂРµРґР°РєС‚РёСЂСѓРµС‚СЃСЏ, Рё РєР»РёРєРЅСѓР»Рё РїРѕ РєРѕР»РѕРЅРєР°РјРё Hide1 РёР»Рё Hid2 (РІРёРґРёРјРѕСЃС‚СЊ РїР°С‡РµРє), С‚Рѕ РјРµРЅСЏРµРј РёС… СЃРѕРѕСЃС‚РѕСЏРЅРёРµ РЅР° РѕР±СЂР°С‚РЅРѕРµ
+    // РёРЅР°С‡Рµ РѕС‚РєСЂС‹РІР°РµРј С„РѕСЂРјСѓ СЃ РїРѕР»СЏРјРё РєР°СЂС‚С‹
     if (Pack.Tag=1) and (CardsGrid.ColumnIndex=2) then SetNewHide('hide1')
     else
     if (Pack.Tag=1) and (CardsGrid.ColumnIndex=3) then SetNewHide('hide2')
@@ -1486,19 +1463,19 @@ begin
   begin
           CardsGrid.Margins.Bottom      := ListPacks.Margins.Top;
           CardsGrid.Margins.Right       := 0;
-          // вид и ширина полей у списка карточек
-          Progress.Visible              := cTrue;
+          // РІРёРґ Рё С€РёСЂРёРЅР° РїРѕР»РµР№ Сѓ СЃРїРёСЃРєР° РєР°СЂС‚РѕС‡РµРє
+          Progress.Visible              := True;
           Progress.Width                := Round(CardsGrid.Width*0.2);
           Question.Width                := Round(CardsGrid.Width*0.25);
           Answer.Width                  := CardsGrid.Width - Question.Width - Progress.Width - 56;
   end
   else
   begin
-          // отступы таблицы с карточками
+          // РѕС‚СЃС‚СѓРїС‹ С‚Р°Р±Р»РёС†С‹ СЃ РєР°СЂС‚РѕС‡РєР°РјРё
           CardsGrid.Margins.Bottom      := 0;
           CardsGrid.Margins.Right       := ListPacks.Margins.Top;
-          // вид и ширина полей у списка карточек
-          Progress.Visible              := cFalse;
+          // РІРёРґ Рё С€РёСЂРёРЅР° РїРѕР»РµР№ Сѓ СЃРїРёСЃРєР° РєР°СЂС‚РѕС‡РµРє
+          Progress.Visible              := False;
           Question.Width                := CardsGrid.Width*0.3;
           Answer.Width                  := CardsGrid.Width - Question.Width - 56;
   end;
@@ -1510,14 +1487,14 @@ begin
   //TopLabel.Text := '(Tap) RowTap='+IntToStr(card_lastrow)+'  RowSelected='+IntToStr(CardsGrid.Selected);
   CardsGrid.Selected  := card_lastrow;
   CardsGrid.ColumnIndex := card_lastcol;
-  if Statistics.IsExpanded then Statistics.IsExpanded := cFalse
+  if Statistics.IsExpanded then Statistics.IsExpanded := False
   else
-  if btnInfoCard.Visible then CardsGridDblClick(nil);
+  if btnInfoCard.Visible then CardsGridCellDblClick(nil, 0);
 end;
 
 procedure TForm1.CheckBoxReadOnly(Sender: TObject);
 begin
-  // запрет смены состояния (свойство ReadOnly отсутствует)
+  // Р·Р°РїСЂРµС‚ СЃРјРµРЅС‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ (СЃРІРѕР№СЃС‚РІРѕ ReadOnly РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚)
   (Sender as TCheckBox).OnChange := nil;
   (Sender as TCheckBox).IsChecked := not (Sender as TCheckBox).IsChecked;
   (Sender as TCheckBox).OnChange := CheckBoxReadOnly;
@@ -1525,23 +1502,23 @@ end;
 
 procedure TForm1.EditTracking(Sender: TObject);
 begin
-   // сброс чекбоксов скрытия карточки при просмотре
-  EditDirectHide.IsChecked  := cFalse;
-  EditReverseHide.IsChecked := cFalse;
+   // СЃР±СЂРѕСЃ С‡РµРєР±РѕРєСЃРѕРІ СЃРєСЂС‹С‚РёСЏ РєР°СЂС‚РѕС‡РєРё РїСЂРё РїСЂРѕСЃРјРѕС‚СЂРµ
+  EditDirectHide.IsChecked  := False;
+  EditReverseHide.IsChecked := False;
   ErrorMessage.Text := EmptyStr;
-  //EditAnswer.SetFocus;  // возврат фокуса ввода
+  //EditAnswer.SetFocus;  // РІРѕР·РІСЂР°С‚ С„РѕРєСѓСЃР° РІРІРѕРґР°
 end;
 
 procedure TForm1.EditValidate(Sender: TObject; var Text: string);
 begin
-    Form1.EditTracking(nil);  // сброс чекбоксов скрытия карточки при просмотре
+    Form1.EditTracking(nil);  // СЃР±СЂРѕСЃ С‡РµРєР±РѕРєСЃРѕРІ СЃРєСЂС‹С‚РёСЏ РєР°СЂС‚РѕС‡РєРё РїСЂРё РїСЂРѕСЃРјРѕС‚СЂРµ
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var i : Integer;
 begin
 
-  // потом из ini файла
+  // РїРѕС‚РѕРј РёР· ini С„Р°Р№Р»Р°
   OprosQuestion.TextSettings.Font.Size := ini_fontOpros;
   OprosAnswer.TextSettings.Font.Size := ini_fontOpros;
   {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
@@ -1550,9 +1527,9 @@ begin
   {$ENDIF}
   //
 
-  //-------------------- инициализация переменных ------------------------------
+  //-------------------- РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРµСЂРµРјРµРЅРЅС‹С… ------------------------------
   //
-  Image_Hide.Visible := cFalse;
+  Image_Hide.Visible := False;
   New(pack_selected);  pack_selected^ := nil;
 
   ImageQ.Bitmap := Textura1.Bitmap;
@@ -1562,7 +1539,7 @@ begin
   mp[1] := @ImageEA1; mp[2] := @ImageEA2; mp[3] := @ImageEA3; mp[4] := @ImageEA4;
   for i := 0 to length(mp)-1 do mp[i].Bitmap := Textura1.Bitmap;
 
-  Textura1.DisposeOf;
+  Textura1.Free;
 
   mt[0] := @ExpressQ;
   mt[1] := @ExpressA1;  mt[2] := @ExpressA2;  mt[3] := @ExpressA3;  mt[4] := @ExpressA4;
@@ -1576,26 +1553,26 @@ begin
   mr[0] := @RectangleExpressQ;  mr[1] := @RectangleExpressA1; mr[2] := @RectangleExpressA2;
   mr[3] := @RectangleExpressA3; mr[4] := @RectangleExpressA4;
 
-  // список с типами языка для пачек
+  // СЃРїРёСЃРѕРє СЃ С‚РёРїР°РјРё СЏР·С‹РєР° РґР»СЏ РїР°С‡РµРє
   langlist := 'Ru-Ru'+sLineBreak+'Ru-En'+sLineBreak+'Ru-De'+sLineBreak+'En-En'+sLineBreak+
               'En-Ru'+sLineBreak+'En-De'+sLineBreak+'De-De'+sLineBreak+'De-Ru'+sLineBreak+
               'De-En'+sLineBreak+'Other';
 
-  // установка внешнего вида и поведения левого меню
+  // СѓСЃС‚Р°РЅРѕРІРєР° РІРЅРµС€РЅРµРіРѕ РІРёРґР° Рё РїРѕРІРµРґРµРЅРёСЏ Р»РµРІРѕРіРѕ РјРµРЅСЋ
   MasterPanel.Mode := TMultiViewMode(3);
-  // сброс состояния элементов управления
-  SearchBoxPack.Visible := cFalse;
-  //скрытие меню
-  mExport.Enabled  := cFalse;
-  mExport.HitTest  := cFalse;
-  mDelPack.Enabled  := cFalse;
-  mDelPack.HitTest  := cFalse;
+  // СЃР±СЂРѕСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ
+  SearchBoxPack.Visible := False;
+  //СЃРєСЂС‹С‚РёРµ РјРµРЅСЋ
+  mExport.Enabled  := False;
+  mExport.HitTest  := False;
+  mDelPack.Enabled  := False;
+  mDelPack.HitTest  := False;
 
 
-  // ------------------- подготовка данных -----------------------------
+  // ------------------- РїРѕРґРіРѕС‚РѕРІРєР° РґР°РЅРЅС‹С… -----------------------------
   //
-  // триггер установки значения поля версии (даты) при изменеии карточки
-  // (отключается при обновлении БД)
+  // С‚СЂРёРіРіРµСЂ СѓСЃС‚Р°РЅРѕРІРєРё Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЏ РІРµСЂСЃРёРё (РґР°С‚С‹) РїСЂРё РёР·РјРµРЅРµРёРё РєР°СЂС‚РѕС‡РєРё
+  // (РѕС‚РєР»СЋС‡Р°РµС‚СЃСЏ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё Р‘Р”)
   script1 := TStringList.Create;
   with script1 do
   begin
@@ -1606,79 +1583,81 @@ begin
   end;
 
 
-  // активация путей к БД для разных ОС
+  // Р°РєС‚РёРІР°С†РёСЏ РїСѓС‚РµР№ Рє Р‘Р” РґР»СЏ СЂР°Р·РЅС‹С… РћРЎ
   {$IF DEFINED(MSWINDOWS)}
-    // Проверка существования рабочей директории
+    // РџСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ СЂР°Р±РѕС‡РµР№ РґРёСЂРµРєС‚РѕСЂРёРё
     home_dir := TPath.Combine(TPath.GetHomePath,app_name);
     if not DirectoryExists(home_dir) then CreateDir(home_dir);  // C:\Users\<username>\AppData\Roaming\Cards
-    // Путь к БД
+    // РџСѓС‚СЊ Рє Р‘Р”
     db_work := TPath.Combine(home_dir,db_work);
-    // Путь к БД обновлениия
+    // РџСѓС‚СЊ Рє Р‘Р” РѕР±РЅРѕРІР»РµРЅРёРёСЏ
     db_update := TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),db_update);
-    // Путь к файлам импорта/экспорта
+    // РџСѓС‚СЊ Рє С„Р°Р№Р»Р°Рј РёРјРїРѕСЂС‚Р°/СЌРєСЃРїРѕСЂС‚Р°
     export_dir := TPath.GetDocumentsPath;
   {$ENDIF}
   //
   {$IF DEFINED(ANDROID)}
-    // Путь к БД обновлениия ( (Deployment.RemotePath=assets\internal\) ??? проверить
+    // РџСѓС‚СЊ Рє Р‘Р” РѕР±РЅРѕРІР»РµРЅРёРёСЏ ( (Deployment.RemotePath=assets\internal\) ??? РїСЂРѕРІРµСЂРёС‚СЊ
     db_update := TPath.Combine(TPath.GetDocumentsPath,db_update);
-    // Путь к БД
+    // РџСѓС‚СЊ Рє Р‘Р”
     db_work := TPath.Combine(TPath.GetHomePath,db_work);
-    // Путь к файлам импорта/экспорта
+    // РџСѓС‚СЊ Рє С„Р°Р№Р»Р°Рј РёРјРїРѕСЂС‚Р°/СЌРєСЃРїРѕСЂС‚Р°
     export_dir := TPath.GetSharedDownloadsPath;
   {$ENDIF}
   //
   {$IF DEFINED(MACOS)}
-    // Проверка существования рабочей директории
+    // РџСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ СЂР°Р±РѕС‡РµР№ РґРёСЂРµРєС‚РѕСЂРёРё
     home_dir := TPath.Combine(TPath.GetLibraryPath,DM.app_name);
-//надо посмотреть еще глубже на уровено в ....\Application Support\Card
+//РЅР°РґРѕ РїРѕСЃРјРѕС‚СЂРµС‚СЊ РµС‰Рµ РіР»СѓР±Р¶Рµ РЅР° СѓСЂРѕРІРµРЅРѕ РІ ....\Application Support\Card
     if not DirectoryExists(home_dir) then CreateDir(home_dir);
-    //Путь к БД
+    //РџСѓС‚СЊ Рє Р‘Р”
     db_work := TPath.Combine(home_dir,db_work);
-    // Путь к БД обновлениия (Deployment.RemotePath=Contents\MacOS\ - внутри .apk)
+    // РџСѓС‚СЊ Рє Р‘Р” РѕР±РЅРѕРІР»РµРЅРёРёСЏ (Deployment.RemotePath=Contents\MacOS\ - РІРЅСѓС‚СЂРё .apk)
     db_update := TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),db_update);
-    // Путь к файлам импорта/экспорта
+    // РџСѓС‚СЊ Рє С„Р°Р№Р»Р°Рј РёРјРїРѕСЂС‚Р°/СЌРєСЃРїРѕСЂС‚Р°
     export_dir := TPath.GetSharedDownloadsPath;
   {$ENDIF}
   //
   {$IF DEFINED(IOS)}
-    // Путь к БД обновлениия (Deployment.RemotePath=.\)
-    //!!! на эмуляторе Deployment.RemotePath=.\ размещает файл в корне .app
-    //    на реальном устройстве проверить пока не могу
-    // GetDirectoryName(ParamStr(0)) аналогичен TPath.GetDocumentsPath, если путь готовить в TPath.Combine
+    // РџСѓС‚СЊ Рє Р‘Р” РѕР±РЅРѕРІР»РµРЅРёРёСЏ (Deployment.RemotePath=.\)
+    //!!! РЅР° СЌРјСѓР»СЏС‚РѕСЂРµ Deployment.RemotePath=.\ СЂР°Р·РјРµС‰Р°РµС‚ С„Р°Р№Р» РІ РєРѕСЂРЅРµ .app
+    //    РЅР° СЂРµР°Р»СЊРЅРѕРј СѓСЃС‚СЂРѕР№СЃС‚РІРµ РїСЂРѕРІРµСЂРёС‚СЊ РїРѕРєР° РЅРµ РјРѕРіСѓ
+    // GetDirectoryName(ParamStr(0)) Р°РЅР°Р»РѕРіРёС‡РµРЅ TPath.GetDocumentsPath, РµСЃР»Рё РїСѓС‚СЊ РіРѕС‚РѕРІРёС‚СЊ РІ TPath.Combine
     db_update := TPath.Combine(TPath.GetDocumentsPath,db_update);
-    // Путь к БД
+    // РџСѓС‚СЊ Рє Р‘Р”
     db_work := TPath.Combine(TPath.GetHomePath,db_work);
-    // Путь к файлам импорта/экспорта
+    // РџСѓС‚СЊ Рє С„Р°Р№Р»Р°Рј РёРјРїРѕСЂС‚Р°/СЌРєСЃРїРѕСЂС‚Р°
     export_dir := TPath.GetSharedDownloadsPath;
   {$ENDIF}
   //-------------------------------------------------------------------
 
-Memo1.Lines.Add( Format('Version = %s', [app_version]) );
-Memo1.Lines.Add( Format('DB = %s', [db_work]) );
-Memo1.Lines.Add( Format('Upd DB = %s', [db_update]) );
-Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
+  Memo1.Lines.Add( Format('Version = %s', [app_version]) );
+  Memo1.Lines.Add( Format('DB = %s', [db_work]) );
+  Memo1.Lines.Add( Format('Upd DB = %s', [db_update]) );
+  Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
 
 
-  // проверка наличия файла БД и чтение версии структуры БД и последнего обновления
+  // РїСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ С„Р°Р№Р»Р° Р‘Р” Рё С‡С‚РµРЅРёРµ РІРµСЂСЃРёРё СЃС‚СЂСѓРєС‚СѓСЂС‹ Р‘Р” Рё РїРѕСЃР»РµРґРЅРµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ
   DM.FDDatabese.Params.Database := db_work;
   if FileExists(db_work) then
   begin
     try
-      DM.FDDatabese.Connected := cTrue; //открываем соединение
+      DM.FDDatabese.Connected := True; //РѕС‚РєСЂС‹РІР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ
       DM.FDQuery1.SQL.Text := 'Select dbv, updv from version;';
       DM.FDQuery1.OpenOrExecute;
-      //dbv   :=  DM.FDQuery1.FieldByName('dbv').AsInteger;
+      dbv   :=  DM.FDQuery1.FieldByName('dbv').AsInteger;
       updv  :=  DM.FDQuery1.FieldByName('updv').AsInteger;
-      // Тут можно проверить версию структуры базы данных и если необходимо выполнить обновление
+      // РўСѓС‚ РјРѕР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ РІРµСЂСЃРёСЋ СЃС‚СЂСѓРєС‚СѓСЂС‹ Р±Р°Р·С‹ РґР°РЅРЅС‹С… Рё РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ РІС‹РїРѕР»РЅРёС‚СЊ РѕР±РЅРѕРІР»РµРЅРёРµ
+      // Р’РµСЂСЃРёСЏ Р‘Р”: dbv
       //..
+      Memo1.Lines.Add( Format('Database version = %d', [dbv]) );
       DM.FDDatabese.Close;
     except
-      // что-то не то с базой данных
+      // С‡С‚Рѕ-С‚Рѕ РЅРµ С‚Рѕ СЃ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С…
       on E: Exception do
       begin
-        ShowMessage(txt_error0 + E.Message); //потом вывод сообщения убрать
-        // Закрыть приложение
+        ShowMessage(txt_error0 + E.Message); //РїРѕС‚РѕРј РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ СѓР±СЂР°С‚СЊ
+        // Р—Р°РєСЂС‹С‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ
         Application.Terminate;
         Application.ProcessMessages;
         Exit;
@@ -1687,30 +1666,30 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
   end
   else
   begin
-    // Скрипт создания структуры данных
+    // РЎРєСЂРёРїС‚ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С…
     with DM.FDScript1 do
     begin
       SQLScripts.Clear;
       SQLScripts.Add;
       with SQLScripts[0].SQL do
       begin
-      // таблица пачек
+      // С‚Р°Р±Р»РёС†Р° РїР°С‡РµРє
         Add('CREATE TABLE IF NOT EXISTS packet (');
         Add('np INTEGER PRIMARY KEY, uid TEXT UNIQUE, type INTEGER DEFAULT 1,');
         Add('lang TEXT DEFAULT "", packname TEXT NOT NULL, descript TEXT,');
         Add('version DEFAULT CURRENT_TIMESTAMP, record INTEGER DEFAULT 0, pdata TEXT);');
-      // таблица карточек
+      // С‚Р°Р±Р»РёС†Р° РєР°СЂС‚РѕС‡РµРє
         Add('CREATE TABLE IF NOT EXISTS cards (');
         Add('nc INTEGER PRIMARY KEY, np INTEGER REFERENCES packet (np) ON DELETE CASCADE ON UPDATE CASCADE,');
         Add('question1 TEXT NOT NULL, question2 TEXT NOT NULL,');
         Add('hide1 INTEGER DEFAULT 0, hide2 INTEGER DEFAULT 0,');
         Add('version DEFAULT CURRENT_TIMESTAMP, cdata TEXT);');
-      // индекс для карточек
+      // РёРЅРґРµРєСЃ РґР»СЏ РєР°СЂС‚РѕС‡РµРє
         Add('CREATE INDEX IF NOT EXISTS card_np on cards (np ASC);');
         Add('CREATE INDEX IF NOT EXISTS card_question on cards (question1 ASC);');
-      // триггер установки значения поля версии (даты) при изменеии карточки
+      // С‚СЂРёРіРіРµСЂ СѓСЃС‚Р°РЅРѕРІРєРё Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЏ РІРµСЂСЃРёРё (РґР°С‚С‹) РїСЂРё РёР·РјРµРЅРµРёРё РєР°СЂС‚РѕС‡РєРё
         Add(script1.Text);
-      // триггер проверки дублирования поля question1+np при изменеии карточки
+      // С‚СЂРёРіРіРµСЂ РїСЂРѕРІРµСЂРєРё РґСѓР±Р»РёСЂРѕРІР°РЅРёСЏ РїРѕР»СЏ question1+np РїСЂРё РёР·РјРµРЅРµРёРё РєР°СЂС‚РѕС‡РєРё
         Add('CREATE TRIGGER IF NOT EXISTS cards_update_question AFTER UPDATE OF question1 ON cards');
         Add('BEGIN');
         Add('  SELECT');
@@ -1719,7 +1698,7 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
         Add('   END');
         Add('  FROM cards WHERE np||question1=new.np||new.question1;');
         Add('END;');
-      //  триггер проверки дублирования поля question1+np при добавлении карточки
+      //  С‚СЂРёРіРіРµСЂ РїСЂРѕРІРµСЂРєРё РґСѓР±Р»РёСЂРѕРІР°РЅРёСЏ РїРѕР»СЏ question1+np РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РєР°СЂС‚РѕС‡РєРё
         Add('CREATE TRIGGER IF NOT EXISTS cards_insert_question BEFORE INSERT ON cards');
         Add('BEGIN');
         Add(' SELECT');
@@ -1728,21 +1707,21 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
         Add('   END');
         Add(' FROM cards WHERE np||question1=new.np||new.question1;');
         Add('END;');
-      // таблица статистики ответов
+      // С‚Р°Р±Р»РёС†Р° СЃС‚Р°С‚РёСЃС‚РёРєРё РѕС‚РІРµС‚РѕРІ
         Add('CREATE TABLE IF NOT EXISTS answers (');
         Add('nc	INTEGER REFERENCES cards (nc) ON DELETE CASCADE ON UPDATE CASCADE,');
         Add('direct INTEGER NOT NULL, answer INTEGER	NOT NULL,');
         Add('atime default CURRENT_TIMESTAMP);');
-      // индексы для ответов
+      // РёРЅРґРµРєСЃС‹ РґР»СЏ РѕС‚РІРµС‚РѕРІ
         Add('CREATE INDEX IF NOT EXISTS answers_atime on answers (atime ASC);');
         Add('CREATE INDEX IF NOT EXISTS answers_nc on answers (nc ASC);');
         Add('CREATE INDEX IF NOT EXISTS answers_direct on answers (direct ASC);');
-      // триггер установки значения поля даты при добавлении статистики (избыточный контролль)
+      // С‚СЂРёРіРіРµСЂ СѓСЃС‚Р°РЅРѕРІРєРё Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЏ РґР°С‚С‹ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё СЃС‚Р°С‚РёСЃС‚РёРєРё (РёР·Р±С‹С‚РѕС‡РЅС‹Р№ РєРѕРЅС‚СЂРѕР»Р»СЊ)
         Add('CREATE TRIGGER IF NOT EXISTS answers_update_time AFTER INSERT ON answers');
         Add('BEGIN');
         Add(' UPDATE answers SET atime=datetime("now") where rowid=new.rowid;');
         Add('END;');
-      // триггер очистки ответов для одной карточки
+      // С‚СЂРёРіРіРµСЂ РѕС‡РёСЃС‚РєРё РѕС‚РІРµС‚РѕРІ РґР»СЏ РѕРґРЅРѕР№ РєР°СЂС‚РѕС‡РєРё
         Add('CREATE TRIGGER IF NOT EXISTS answer_count_clear AFTER INSERT ON answers');
         Add('BEGIN');
         Add(' DELETE FROM answers WHERE rowid IN (');
@@ -1750,19 +1729,19 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
         Add('  WHERE nc=new.nc and direct=new.direct');
         Add('  ORDER BY atime DESC LIMIT -1 OFFSET 10);');
         Add('END;');
-      // триггер очистки статистики при изменении содержания карточки
+      // С‚СЂРёРіРіРµСЂ РѕС‡РёСЃС‚РєРё СЃС‚Р°С‚РёСЃС‚РёРєРё РїСЂРё РёР·РјРµРЅРµРЅРёРё СЃРѕРґРµСЂР¶Р°РЅРёСЏ РєР°СЂС‚РѕС‡РєРё
         Add('CREATE TRIGGER IF NOT EXISTS answers_clear AFTER UPDATE OF question1,question2 ON cards');
         Add('BEGIN');
         Add(' DELETE FROM answers WHERE nc=old.nc;');
         Add(' UPDATE cards SET  hide1=0, hide2=0 WHERE nc=old.nc;');
         Add('END;');
-      // представление для отбора статистике по пачкам
+      // РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РґР»СЏ РѕС‚Р±РѕСЂР° СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РїР°С‡РєР°Рј
         Add('CREATE VIEW IF NOT EXISTS pack_stats AS');
         Add(' SELECT np, count(np) AS countcards, max(version) AS lastmod,');
         Add('   (SELECT count(c2.np) FROM cards c2 WHERE c2.np=c1.np and c2.hide1=1) AS hide1,');
         Add('   (SELECT count(c2.np) FROM cards c2 WHERE c2.np=c1.np and c2.hide2=1) AS hide2');
         Add('FROM cards c1 GROUP BY np;');
-      // представление для отбора статистики по карточке
+      // РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РґР»СЏ РѕС‚Р±РѕСЂР° СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РєР°СЂС‚РѕС‡РєРµ
         Add('CREATE VIEW IF NOT EXISTS card_stats AS');
         Add(' SELECT	nc,');
         Add('   count(nc) AS countanswers,');
@@ -1771,7 +1750,7 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
         Add('   (SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=1 and c2.answer=1) AS reverse_true,');
         Add('   (SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=1 and c2.answer=0) AS reverse_false');
         Add(' FROM answers c1 GROUP BY nc;');
-      // запись текущей версии структрубы базы данных
+      // Р·Р°РїРёСЃСЊ С‚РµРєСѓС‰РµР№ РІРµСЂСЃРёРё СЃС‚СЂСѓРєС‚СЂСѓР±С‹ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
         Add('CREATE TABLE IF NOT EXISTS version (dbv INTEGER DEFAULT 1, updv INTEGER DEFAULT 0);');
         Add('INSERT INTO version DEFAULT VALUES;');
       end;
@@ -1779,14 +1758,14 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
       try
         if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
         DM.FDTransaction1.StartTransaction;
-        DM.FDScript1.ExecuteAll;    // выполнить скрипт создания БД
+        DM.FDScript1.ExecuteAll;    // РІС‹РїРѕР»РЅРёС‚СЊ СЃРєСЂРёРїС‚ СЃРѕР·РґР°РЅРёСЏ Р‘Р”
         if DM.FDScript1.TotalErrors > 0 then
         begin
           DM.FDTransaction1.Rollback;
           DM.FDDatabese.Close;
-          //удаляем новый файл БД. скрипт инициализации не прошел
+          //СѓРґР°Р»СЏРµРј РЅРѕРІС‹Р№ С„Р°Р№Р» Р‘Р”. СЃРєСЂРёРїС‚ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РЅРµ РїСЂРѕС€РµР»
           if FileExists(db_work) then DeleteFile(db_work);
-          //завершаем работу программы
+          //Р·Р°РІРµСЂС€Р°РµРј СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹
           Application.Terminate;
           Application.ProcessMessages;
           Exit;
@@ -1800,23 +1779,22 @@ Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
     end;
   end;
 
-Memo1.Lines.Add( Format('Database version = %d', [updv]) );
-
-  // проверка наличия файла обновления
+  // РїСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ С„Р°Р№Р»Р° РѕР±РЅРѕРІР»РµРЅРёСЏ
   try
       if DM.FDDatabese.Connected then DM.FDDatabese.Close;
       DM.FDDatabese.Params.Database := db_update;
-      DM.FDDatabese.Connected := cTrue;
+      DM.FDDatabese.Connected := True;
       DM.FDQuery1.SQL.Text := 'Select updv from version;';
       DM.FDQuery1.OpenOrExecute;
 
       Memo1.Lines.Add( Format('Version update = %d', [DM.FDQuery1.FieldByName('updv').AsInteger]) );
 
+      //
       if updv < DM.FDQuery1.FieldByName('updv').AsInteger then
       begin
-        //запомним номер обновления для сохранения в БД
+        //Р·Р°РїРѕРјРЅРёРј РЅРѕРјРµСЂ РѕР±РЅРѕРІР»РµРЅРёСЏ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РІ Р‘Р”
         updv := DM.FDQuery1.FieldByName('updv').AsInteger;
-        //отбор данных для обновления
+        //РѕС‚Р±РѕСЂ РґР°РЅРЅС‹С… РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ
         DM.FDQuery1.SQL.Text := 'Select * from packet;';
         DM.FDQuery1.Open;
         DM.FDQuery1.FetchAll;
@@ -1832,18 +1810,18 @@ Memo1.Lines.Add( Format('Database version = %d', [updv]) );
         DM.FDQuery1.FetchAll;
         DM.FDMemTable3.Data := DM.FDQuery1.Data;
         //
-        need_upd := cTrue; // применить обновление к карточкам
+        need_upd := True; // РїСЂРёРјРµРЅРёС‚СЊ РѕР±РЅРѕРІР»РµРЅРёРµ Рє РєР°СЂС‚РѕС‡РєР°Рј
       end
-      else need_upd := cFalse; // обновление уже применялось, пропускаем его
+      else need_upd := False; // РѕР±РЅРѕРІР»РµРЅРёРµ СѓР¶Рµ РїСЂРёРјРµРЅСЏР»РѕСЃСЊ, РїСЂРѕРїСѓСЃРєР°РµРј РµРіРѕ
       if DM.FDDatabese.Connected then DM.FDDatabese.Close;
 
   except
-      need_upd := cFalse;  // ошибка работы с файлолм обновления (или его нет) - пропускаем обновление
+      need_upd := False;  // РѕС€РёР±РєР° СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»РѕР»Рј РѕР±РЅРѕРІР»РµРЅРёСЏ (РёР»Рё РµРіРѕ РЅРµС‚) - РїСЂРѕРїСѓСЃРєР°РµРј РѕР±РЅРѕРІР»РµРЅРёРµ
       if DM.FDDatabese.Connected then DM.FDDatabese.Close;
   end;
 
 
-  // если необходимо сравнение и обновление таблиц БД из таблиц обновения
+  // РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂРѕРІРѕРґРёРј СЃСЂР°РІРЅРµРЅРёРµ Рё РѕР±РЅРѕРІР»РµРЅРёРµ С‚Р°Р±Р»РёС† Р‘Р” РёР· С‚Р°Р±Р»РёС† РѕР±РЅРѕРІРµРЅРёСЏ
   if DM.FDDatabese.Connected then DM.FDDatabese.Close;
   DM.FDDatabese.Params.Database := db_work;
   DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
@@ -1852,42 +1830,44 @@ Memo1.Lines.Add( Format('Database version = %d', [updv]) );
   begin
     try
       DM.FDTransaction1.StartTransaction;
-      DBUpdate(0);     // применение обновления
+      DBUpdate(0);     // РїСЂРёРјРµРЅРµРЅРёРµ РѕР±РЅРѕРІР»РµРЅРёСЏ
 
-      // зафиксировать изменения
+      // Р·Р°С„РёРєСЃРёСЂРѕРІР°С‚СЊ РёР·РјРµРЅРµРЅРёСЏ
       DM.FDTransaction1.Commit;
-Memo1.Lines.Add( 'Database update packs completed' );
+      Memo1.Lines.Add( 'Database update packs completed' );
 
     except
       on E: Exception do
       begin
-        ShowMessage(txt_error0 + E.Message); //потом вывод сообщения убрать (а можно и оставить)
+        ShowMessage(txt_error0 + E.Message); //РїРѕС‚РѕРј РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ СѓР±СЂР°С‚СЊ (Р° РјРѕР¶РЅРѕ Рё РѕСЃС‚Р°РІРёС‚СЊ)
         DM.FDTransaction1.Rollback;
       end;
     end;
-    // проверка обновления завершена
+    // РїСЂРѕРІРµСЂРєР° РѕР±РЅРѕРІР»РµРЅРёСЏ Р·Р°РІРµСЂС€РµРЅР°
     if DM.FDDatabese.Connected then DM.FDDatabese.Close;
     DM.FDMemTable1.Free;
     DM.FDMemTable2.Free;
     DM.FDMemTable3.Free;
   end;
 
-  //удалаем файл обновления
-  //if DeleteFile(db_update) then ShowMessage('Файл обновления '+db_update+' удален') else ShowMessage('Файл обновления '+db_update+' не удален');
-  {$IF DEFINED(MSWINDOWS) OR DEFINED(ANDROID)}
-  try
-    DeleteFile(db_update);
-  except
-  end;
-  {$ENDIF}
+  // РЈРґР°Р»СЏСЋ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ:
+  //  Android - СЃРѕСЃС‚Р°РІ РїР°РєРµС‚Р° РёР·РјРµРЅСЏС‚СЊ РЅРµР»СЊР·СЏ
+  //  Windows - РµСЃР»Рё РѕР±РЅРѕР»РІРµРЅРѕ, РїРѕРІС‚РѕСЂРЅРѕ РЅРµ Р±СѓРґРµС‚ РІС‹РїРѕР»РЅРµРЅРѕ
+  //
+  //  //СѓРґР°Р»Р°РµРј С„Р°Р№Р» РѕР±РЅРѕРІР»РµРЅРёСЏ
+  //  {$IF DEFINED(MSWINDOWS) OR DEFINED(ANDROID)}
+  //    try
+  //      DeleteFile(db_update);
+  //    except
+  //    end;
+  //  {$ENDIF}
 
-
-  // заполнение списка пачек
+  // Р·Р°РїРѕР»РЅРµРЅРёРµ СЃРїРёСЃРєР° РїР°С‡РµРє
   PackListUpdate;
 
-  // Активация нужного tab
+  // РђРєС‚РёРІР°С†РёСЏ РЅСѓР¶РЅРѕРіРѕ tab
   TabControl1.ActiveTab := PackList;
-  TabControl1Change(TabControl1); // для обновления элементов управления
+  TabControl1Change(TabControl1); // РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -1895,7 +1875,7 @@ begin
   if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;
   if DM.FDDatabese.Connected then DM.FDDatabese.Close;
   Dispose(pack_selected);
-  script1.DisposeOf;
+  script1.Free;
 end;
 
 procedure TForm1.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
@@ -1906,8 +1886,8 @@ begin
   if TPlatformServices.Current.SupportsPlatformService( IFMXVirtualKeyboardService, IInterface( Keyboard ) ) then
     if not (TVirtualKeyboardState.Visible in Keyboard.GetVirtualKeyBoardState) then
     begin
-      // экранная клавиатура не видна, обрабатываем нажатие
-      // Обработка аппаратной кнопки "Menu"
+      // СЌРєСЂР°РЅРЅР°СЏ РєР»Р°РІРёР°С‚СѓСЂР° РЅРµ РІРёРґРЅР°, РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РЅР°Р¶Р°С‚РёРµ
+      // РћР±СЂР°Р±РѕС‚РєР° Р°РїРїР°СЂР°С‚РЅРѕР№ РєРЅРѕРїРєРё "Menu"
       if Key = vkMenu then
       begin
         if MasterPanel.IsShowed then MasterPanel.HideMaster
@@ -1916,7 +1896,7 @@ begin
       end;
       //
 
-      // Обработка аппаратной клавиши "Back"
+      // РћР±СЂР°Р±РѕС‚РєР° Р°РїРїР°СЂР°С‚РЅРѕР№ РєР»Р°РІРёС€Рё "Back"
       if Key = vkHardwareBack then
       begin
         if MasterPanel.IsShowed then
@@ -1924,13 +1904,13 @@ begin
           MasterPanel.HideMaster;
           Key := 0;
         end
-        //если активна 1-я панель (Pack), показан блок со статистикой, то сркываем Statistics
+        //РµСЃР»Рё Р°РєС‚РёРІРЅР° 1-СЏ РїР°РЅРµР»СЊ (Pack), РїРѕРєР°Р·Р°РЅ Р±Р»РѕРє СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№, С‚Рѕ СЃСЂРєС‹РІР°РµРј Statistics
         else if (TabControl1.ActiveTab.Index=1) and Statistics.IsExpanded then
         begin
           Statistics.IsExpanded := not Statistics.IsExpanded;
           Key := 0;
         end
-        // если активна любая панель, кроме 0-й то обрабатываем как кнопку "Back"
+        // РµСЃР»Рё Р°РєС‚РёРІРЅР° Р»СЋР±Р°СЏ РїР°РЅРµР»СЊ, РєСЂРѕРјРµ 0-Р№ С‚Рѕ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РєР°Рє РєРЅРѕРїРєСѓ "Back"
         else if (TabControl1.ActiveTab.Index<>0) then
         begin
           btnBackClick(Sender);
@@ -1949,17 +1929,17 @@ var
 
 //  marging_st      : TBounds;   //(Left, Top, Right, Bottom: Single)
 
-// Настройка парамеров для панели с элементами управления
+// РќР°СЃС‚СЂРѕР№РєР° РїР°СЂР°РјРµСЂРѕРІ РґР»СЏ РїР°РЅРµР»Рё СЃ СЌР»РµРјРµРЅС‚Р°РјРё СѓРїСЂР°РІР»РµРЅРёСЏ
 procedure SetCompanel(var panel : TCalloutPanel; colbox : TColorBox);
 var   marging_colbox  : TBounds;
       padding_clear   : TBounds;
 begin
-  // Установка значений полей отступов в зависимости от ориентации формы
+  // РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РїРѕР»РµР№ РѕС‚СЃС‚СѓРїРѕРІ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РѕСЂРёРµРЅС‚Р°С†РёРё С„РѕСЂРјС‹
   //if portrait then marging_colbox  := TBounds.Create(TRectF.Create(2,7,2,2))
   //else marging_colbox  := TBounds.Create(TRectF.Create(7,2,2,2));
   if portrait then marging_colbox  := TBounds.Create(TRectF.Create(0,0,0,0))
   else marging_colbox  := TBounds.Create(TRectF.Create(0,0,0,0));
-  padding_clear := TBounds.Create(TRectF.Create(0,0,0,0));  // для заглушки. см.ниже
+  padding_clear := TBounds.Create(TRectF.Create(0,0,0,0));  // РґР»СЏ Р·Р°РіР»СѓС€РєРё. СЃРј.РЅРёР¶Рµ
 
   //
   panel.BeginUpdate;
@@ -1975,7 +1955,7 @@ begin
     panel.Width             := com_panel;
     panel.CalloutPosition   := TCalloutPosition.Left;
   end;
-  panel.Padding             := padding_clear;          // заглушка, почему-то среда разработки устанавливает Bottom=5
+  panel.Padding             := padding_clear;          // Р·Р°РіР»СѓС€РєР°, РїРѕС‡РµРјСѓ-С‚Рѕ СЃСЂРµРґР° СЂР°Р·СЂР°Р±РѕС‚РєРё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Bottom=5
   colbox.Margins            := marging_colbox;
   panel.EndUpdate;
 
@@ -1983,7 +1963,7 @@ begin
   padding_clear.Free;
 end;
 
-// Установка параметров для панелей в анимации Opros
+// РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РїР°РЅРµР»РµР№ РІ Р°РЅРёРјР°С†РёРё Opros
 procedure PrepareAnimation;
 begin
   with Form1 do
@@ -1995,7 +1975,7 @@ begin
   end;
 end;
 
-// Установка параметров для панелей в анимации формы ExpressOpros
+// РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РїР°РЅРµР»РµР№ РІ Р°РЅРёРјР°С†РёРё С„РѕСЂРјС‹ ExpressOpros
 procedure PrepareAnimation1;
 var i : integer;
 begin
@@ -2009,7 +1989,7 @@ begin
   end;
 end;
 
-// растановка элементов на панеле GridPanelLayout вертикально
+// СЂР°СЃС‚Р°РЅРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ РЅР° РїР°РЅРµР»Рµ GridPanelLayout РІРµСЂС‚РёРєР°Р»СЊРЅРѕ
 procedure GridPanelLayoutVerticalSet(GPanel : TGridPanelLayout);
 var i : integer;
 begin
@@ -2020,22 +2000,22 @@ begin
       //
       GPanel.BeginUpdate;
 
-      // добавляем необходимое количество строк в грид
+      // РґРѕР±Р°РІР»СЏРµРј РЅРµРѕР±С…РѕРґРёРјРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє РІ РіСЂРёРґ
       while GPanel.RowCollection.Count <> GPanel.ColumnCollection.Count do
         GPanel.RowCollection.Add;
 
-      // устанавливаем нужные размеры строк в %
+      // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅСѓР¶РЅС‹Рµ СЂР°Р·РјРµСЂС‹ СЃС‚СЂРѕРє РІ %
       for i := 0 to GPanel.RowCollection.Count-1 do
         GPanel.RowCollection.Items[i].Value := 100/GPanel.RowCollection.Count;
 
-      // переносим контролы
+      // РїРµСЂРµРЅРѕСЃРёРј РєРѕРЅС‚СЂРѕР»С‹
       for i := 0 to GPanel.ControlCollection.Count-1 do
       begin
         GPanel.ControlCollection.Items[i].Row     := i;
         GPanel.ControlCollection.Items[i].Column  := 0;
       end;
 
-      // удаляем колонки грида, кроме первой
+      // СѓРґР°Р»СЏРµРј РєРѕР»РѕРЅРєРё РіСЂРёРґР°, РєСЂРѕРјРµ РїРµСЂРІРѕР№
       while GPanel.ColumnCollection.Count <> 1 do
         GPanel.ColumnCollection.Delete( GPanel.ColumnCollection.Count-1 );
 
@@ -2045,7 +2025,7 @@ begin
   end;
 end;
 
-// растановка элементов на панеле GridPanelLayout горизонтально
+// СЂР°СЃС‚Р°РЅРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ РЅР° РїР°РЅРµР»Рµ GridPanelLayout РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕ
 procedure GridPanelLayoutGorizontalSet(GPanel : TGridPanelLayout);
 var i : integer;
 begin
@@ -2056,22 +2036,22 @@ begin
       //
       GPanel.BeginUpdate;
 
-      // добавляем необходимое количество строк в грид
+      // РґРѕР±Р°РІР»СЏРµРј РЅРµРѕР±С…РѕРґРёРјРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє РІ РіСЂРёРґ
       while GPanel.RowCollection.Count <> GPanel.ColumnCollection.Count do
         GPanel.ColumnCollection.Add;
 
-      // устанавливаем нужные размеры колонок в %
+      // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅСѓР¶РЅС‹Рµ СЂР°Р·РјРµСЂС‹ РєРѕР»РѕРЅРѕРє РІ %
       for i := 0 to GPanel.ColumnCollection.Count-1 do
         GPanel.ColumnCollection.Items[i].Value := 100/GPanel.ColumnCollection.Count;
 
-      // переносим контролы
+      // РїРµСЂРµРЅРѕСЃРёРј РєРѕРЅС‚СЂРѕР»С‹
       for i := 0 to GPanel.ControlCollection.Count-1 do
       begin
         GPanel.ControlCollection.Items[i].Column  := i;
         GPanel.ControlCollection.Items[i].Row     := 0;
       end;
 
-      // удаляем колонки грида, кроме первой
+      // СѓРґР°Р»СЏРµРј РєРѕР»РѕРЅРєРё РіСЂРёРґР°, РєСЂРѕРјРµ РїРµСЂРІРѕР№
       while GPanel.RowCollection.Count <> 1 do
         GPanel.RowCollection.Delete( GPanel.RowCollection.Count-1 );
 
@@ -2082,103 +2062,103 @@ begin
 end;
 
 begin
-  if Form1.Width>Form1.Height then portrait := cFalse
-  else portrait := cTrue;
+  if Form1.Width>Form1.Height then portrait := False
+  else portrait := True;
 
-// Проверка и переформатирование панелей элементов
+// РџСЂРѕРІРµСЂРєР° Рё РїРµСЂРµС„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РїР°РЅРµР»РµР№ СЌР»РµРјРµРЅС‚РѕРІ
   if portrait then
-  //портретная ориентация
+  //РїРѕСЂС‚СЂРµС‚РЅР°СЏ РѕСЂРёРµРЅС‚Р°С†РёСЏ
   case TabControl1.ActiveTab.Index of
-    // Элементы на PackList
+    // Р­Р»РµРјРµРЅС‚С‹ РЅР° PackList
     0:  begin
           SetCompanel( ComPanelPacks, ColorBox4 );
           GridPanelLayoutGorizontalSet( GridPanelPacks );
-          // отступы у списка карточек
+          // РѕС‚СЃС‚СѓРїС‹ Сѓ СЃРїРёСЃРєР° РєР°СЂС‚РѕС‡РµРє
           ListPacks.Margins.Bottom      := 0;
           ListPacks.Margins.Right       := 0; //space;
     end;
-    // Панель на Pack
+    // РџР°РЅРµР»СЊ РЅР° Pack
     1:  begin
           SetCompanel(ComPanelPack, ColorBox2);
           GridPanelLayoutGorizontalSet( GridPanelPack );
 
-          // отступы таблицы с карточками
+          // РѕС‚СЃС‚СѓРїС‹ С‚Р°Р±Р»РёС†С‹ СЃ РєР°СЂС‚РѕС‡РєР°РјРё
           btnDeleteStatistics.Position.X := Statistics.Width - btn_size-space;
     end;
-    // Панель Opros
+    // РџР°РЅРµР»СЊ Opros
     3:  begin
           SetCompanel(ComPanelOpros,ColorBox3);
 
           OprosPackName.Width := Form1.Width - 190;
-          // Положение полей для вывода вопроса/ответа
-          i := Round( TabControl1.Height*0.15 );           // 15% от размера формы
+          // РџРѕР»РѕР¶РµРЅРёРµ РїРѕР»РµР№ РґР»СЏ РІС‹РІРѕРґР° РІРѕРїСЂРѕСЃР°/РѕС‚РІРµС‚Р°
+          i := Round( TabControl1.Height*0.15 );           // 15% РѕС‚ СЂР°Р·РјРµСЂР° С„РѕСЂРјС‹
           if i>90 then i := 90
           else if i<btn_size then i := btn_size;
 
-          // ширина отступов между элементами
-          interv  := 6; //TabControl1.Height*0.03;  //3% от ширины
+          // С€РёСЂРёРЅР° РѕС‚СЃС‚СѓРїРѕРІ РјРµР¶РґСѓ СЌР»РµРјРµРЅС‚Р°РјРё
+          interv  := 6; //TabControl1.Height*0.03;  //3% РѕС‚ С€РёСЂРёРЅС‹
 
-          // изменение размера картинки в зависимости от ширины экрана
+          // РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РєР°СЂС‚РёРЅРєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С€РёСЂРёРЅС‹ СЌРєСЂР°РЅР°
           btnDirection.Height := Round( PanelOpros.Height / 14 );
 
           OprosPackName.Height  := i;
 
           case Opros.Tag of
-            2:  // режим изучения (нет цифр статистики)
+            2:  // СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ (РЅРµС‚ С†РёС„СЂ СЃС‚Р°С‚РёСЃС‚РёРєРё)
                   i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
                       - GridPanelOprosSwitch.Height - interv*5;
             else  i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
                       - StatCard.Height - btnDirection.Height - interv*6;
           end;
 
-          // если панель с кнопками видна, учесть ее размер (вычесть из доступного пространства)
+          // РµСЃР»Рё РїР°РЅРµР»СЊ СЃ РєРЅРѕРїРєР°РјРё РІРёРґРЅР°, СѓС‡РµСЃС‚СЊ РµРµ СЂР°Р·РјРµСЂ (РІС‹С‡РµСЃС‚СЊ РёР· РґРѕСЃС‚СѓРїРЅРѕРіРѕ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°)
           if ComPanelOpros.Visible then i := i - ComPanelOpros.Height;
 
-          i := Round( i *0.5 );  // по 50% на панель
+          i := Round( i *0.5 );  // РїРѕ 50% РЅР° РїР°РЅРµР»СЊ
 
           RectangleQuestion.Position.Y  := Round( OprosPackName.Position.Y + OprosPackName.Height + interv );
           RectangleQuestion.Height      := i;
 
           case Opros.Tag of
-            2: // режим изучения (нет цифр статистики)
+            2: // СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ (РЅРµС‚ С†РёС„СЂ СЃС‚Р°С‚РёСЃС‚РёРєРё)
               begin
-                // Панель с переключателями режима обучения
+                // РџР°РЅРµР»СЊ СЃ РїРµСЂРµРєР»СЋС‡Р°С‚РµР»СЏРјРё СЂРµР¶РёРјР° РѕР±СѓС‡РµРЅРёСЏ
                 GridPanelOprosSwitch.Position.Y := Round( RectangleQuestion.Position.Y + RectangleQuestion.Height + interv );
 
                 RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
                 RectangleAnswer.Height        := RectangleQuestion.Height;
 
               end;
-            else // режим опроса (нет панели изменения режима обучения)
+            else // СЂРµР¶РёРј РѕРїСЂРѕСЃР° (РЅРµС‚ РїР°РЅРµР»Рё РёР·РјРµРЅРµРЅРёСЏ СЂРµР¶РёРјР° РѕР±СѓС‡РµРЅРёСЏ)
               begin
-                // Кнопка смены направления опроса
+                // РљРЅРѕРїРєР° СЃРјРµРЅС‹ РЅР°РїСЂР°РІР»РµРЅРёСЏ РѕРїСЂРѕСЃР°
                 btnDirection.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
                 btnDirection.Position.X := Round( (PanelOpros.Width - btn_size)/2 );
 
                 RectangleAnswer.Position.Y    := Round( btnDirection.Position.Y + btnDirection.Height + interv );
                 RectangleAnswer.Height        := RectangleQuestion.Height;
 
-                // Статистика по карточке
+                // РЎС‚Р°С‚РёСЃС‚РёРєР° РїРѕ РєР°СЂС‚РѕС‡РєРµ
                 statCard.Position.X := RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width;
                 statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
 
-                // Кнопки завершения опроса карточки
+                // РљРЅРѕРїРєРё Р·Р°РІРµСЂС€РµРЅРёСЏ РѕРїСЂРѕСЃР° РєР°СЂС‚РѕС‡РєРё
                 GridPanelLayoutGorizontalSet( GridPanelOpros );
               end;
           end;
 
-          // Установка параметров для панелей в анимации
+          // РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РїР°РЅРµР»РµР№ РІ Р°РЅРёРјР°С†РёРё
           PrepareAnimation;
     end;
-    // Панель ExpressOpros
+    // РџР°РЅРµР»СЊ ExpressOpros
     4:  begin
-          // ширина отступов между элементами
+          // С€РёСЂРёРЅР° РѕС‚СЃС‚СѓРїРѕРІ РјРµР¶РґСѓ СЌР»РµРјРµРЅС‚Р°РјРё
           interv  := 6;
 
-          // изменение размера картинки в зависимости от ширины экрана
+          // РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РєР°СЂС‚РёРЅРєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С€РёСЂРёРЅС‹ СЌРєСЂР°РЅР°
           Image3.Height := Round( PanelExpressOpros.Height / 14 );
 
-          // панель с вопросом
+          // РїР°РЅРµР»СЊ СЃ РІРѕРїСЂРѕСЃРѕРј
           RectangleExpressQ.Width       := Round(PanelExpressOpros.Width * 0.88);
           RectangleExpressQ.Position.X  := Round( (PanelExpressOpros.Width - RectangleExpressQ.Width)/2 );
           RectangleExpressQ.Position.Y  := ExpressPackName.Position.Y + ExpressPackName.Height + interv;
@@ -2189,23 +2169,23 @@ begin
           //
           Image3.Position.Y := RectangleExpressQ.Position.Y + RectangleExpressQ.Height + interv;
 
-          // панели с вариантами ответов (4 шт.)
-          // 1-я
+          // РїР°РЅРµР»Рё СЃ РІР°СЂРёР°РЅС‚Р°РјРё РѕС‚РІРµС‚РѕРІ (4 С€С‚.)
+          // 1-СЏ
           RectangleExpressA1.Position.X := RectangleExpressQ.Position.X;
           RectangleExpressA1.Position.Y := Image3.Position.Y + Image3.Height + interv;
           RectangleExpressA1.Width      := RectangleExpressQ.Width;
           RectangleExpressA1.Height     := RectangleExpressQ.Height;
-          // 2-я
+          // 2-СЏ
           RectangleExpressA2.Position.X := RectangleExpressQ.Position.X;
           RectangleExpressA2.Position.Y := RectangleExpressA1.Position.Y + RectangleExpressQ.Height + interv;
           RectangleExpressA2.Width      := RectangleExpressQ.Width;
           RectangleExpressA2.Height     := RectangleExpressQ.Height;
-          // 3-я
+          // 3-СЏ
           RectangleExpressA3.Position.X := RectangleExpressQ.Position.X;
           RectangleExpressA3.Position.Y := RectangleExpressA2.Position.Y + RectangleExpressQ.Height  + interv;
           RectangleExpressA3.Width      := RectangleExpressQ.Width;
           RectangleExpressA3.Height     := RectangleExpressQ.Height;
-          // 4-я
+          // 4-СЏ
           RectangleExpressA4.Position.X := RectangleExpressQ.Position.X;
           RectangleExpressA4.Position.Y := RectangleExpressA3.Position.Y + RectangleExpressQ.Height  + interv;
           RectangleExpressA4.Width      := RectangleExpressQ.Width;
@@ -2215,96 +2195,96 @@ begin
     end;
   end
   else
-  // ландшафтная
+  // Р»Р°РЅРґС€Р°С„С‚РЅР°СЏ
   case TabControl1.ActiveTab.Index of
-    // Элементы на PackList
+    // Р­Р»РµРјРµРЅС‚С‹ РЅР° PackList
     0:  begin
           SetCompanel( ComPanelPacks, ColorBox4 );
           GridPanelLayoutVerticalSet( GridPanelPacks );
-          // отступы у списка карточек
+          // РѕС‚СЃС‚СѓРїС‹ Сѓ СЃРїРёСЃРєР° РєР°СЂС‚РѕС‡РµРє
           ListPacks.Margins.Bottom      := 0; //space;
           ListPacks.Margins.Right       := 0;
     end;
-    // Панель на Pack
+    // РџР°РЅРµР»СЊ РЅР° Pack
     1:  begin
           SetCompanel(ComPanelPack, ColorBox2);
           GridPanelLayoutVerticalSet( GridPanelPack );
 
-          // отступы таблицы с карточками
+          // РѕС‚СЃС‚СѓРїС‹ С‚Р°Р±Р»РёС†С‹ СЃ РєР°СЂС‚РѕС‡РєР°РјРё
           btnDeleteStatistics.Position.X := Statistics.Width - btn_size-space;
     end;
-    // Панель Opros
+    // РџР°РЅРµР»СЊ Opros
     3:  begin
           SetCompanel(ComPanelOpros, ColorBox3);
 
           OprosPackName.Width := PanelOpros.Width - 210;
-          // Положение полей для вывода вопроса/ответа
-          i := Round( PanelOpros.Height*0.15 );           // 15% от размера формы
+          // РџРѕР»РѕР¶РµРЅРёРµ РїРѕР»РµР№ РґР»СЏ РІС‹РІРѕРґР° РІРѕРїСЂРѕСЃР°/РѕС‚РІРµС‚Р°
+          i := Round( PanelOpros.Height*0.15 );           // 15% РѕС‚ СЂР°Р·РјРµСЂР° С„РѕСЂРјС‹
           if i>90 then i := 90
           else if i<btn_size then i := btn_size;
 
           OprosPackName.Height := i;
 
-          // ширина отступов между элементами
-          interv  := 6; //TabControl1.Height*0.03;  //3% от ширины
+          // С€РёСЂРёРЅР° РѕС‚СЃС‚СѓРїРѕРІ РјРµР¶РґСѓ СЌР»РµРјРµРЅС‚Р°РјРё
+          interv  := 6; //TabControl1.Height*0.03;  //3% РѕС‚ С€РёСЂРёРЅС‹
 
-          // изменение размера картинки в зависимости от ширины экрана
+          // РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РєР°СЂС‚РёРЅРєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С€РёСЂРёРЅС‹ СЌРєСЂР°РЅР°
           btnDirection.Height := Round( PanelOpros.Height / 14 );
 
-          // свободное пространство для карт: (размер формы - фиксированные элементы - отступы)
+          // СЃРІРѕР±РѕРґРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РґР»СЏ РєР°СЂС‚: (СЂР°Р·РјРµСЂ С„РѕСЂРјС‹ - С„РёРєСЃРёСЂРѕРІР°РЅРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ - РѕС‚СЃС‚СѓРїС‹)
           case Opros.Tag of
-            2:  // режим изучения (нет цифр статистики)
+            2:  // СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ (РЅРµС‚ С†РёС„СЂ СЃС‚Р°С‚РёСЃС‚РёРєРё)
                   i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
                       - GridPanelOprosSwitch.Height - interv * 5;
             else  i := PanelOpros.Height - OprosPackName.Position.Y - OprosPackName.Height
                       - StatCard.Height - btnDirection.Height - interv * 6;
           end;
-          i := i *0.5;  // по 50% на панель
+          i := i *0.5;  // РїРѕ 50% РЅР° РїР°РЅРµР»СЊ
 
           RectangleQuestion.Position.Y  := Round( OprosPackName.Position.Y + OprosPackName.Height + interv );
           RectangleQuestion.Height      := Round( i );
 
           case Opros.Tag of
-            2:  begin // режим изучения (панели настройки есть)
-                  // Панель с переключателями режима обучения
+            2:  begin // СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ (РїР°РЅРµР»Рё РЅР°СЃС‚СЂРѕР№РєРё РµСЃС‚СЊ)
+                  // РџР°РЅРµР»СЊ СЃ РїРµСЂРµРєР»СЋС‡Р°С‚РµР»СЏРјРё СЂРµР¶РёРјР° РѕР±СѓС‡РµРЅРёСЏ
                   GridPanelOprosSwitch.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
 
-                  // Панель карточки ответа
+                  // РџР°РЅРµР»СЊ РєР°СЂС‚РѕС‡РєРё РѕС‚РІРµС‚Р°
                   RectangleAnswer.Position.Y    := Round( GridPanelOprosSwitch.Position.Y + GridPanelOprosSwitch.Height + interv );
                   RectangleAnswer.Height        := RectangleQuestion.Height;
                 end
-            else  // нет панели настройки, есть кнопка направления переключания карточек
+            else  // РЅРµС‚ РїР°РЅРµР»Рё РЅР°СЃС‚СЂРѕР№РєРё, РµСЃС‚СЊ РєРЅРѕРїРєР° РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµРєР»СЋС‡Р°РЅРёСЏ РєР°СЂС‚РѕС‡РµРє
                 begin
-                  // Кнопка смены направления опроса
+                  // РљРЅРѕРїРєР° СЃРјРµРЅС‹ РЅР°РїСЂР°РІР»РµРЅРёСЏ РѕРїСЂРѕСЃР°
                   btnDirection.Position.Y := RectangleQuestion.Position.Y + RectangleQuestion.Height + interv;
                   btnDirection.Position.X := Round( (PanelOpros.Width - com_panel - btn_size)/2 );
 
-                  // Панель карточки ответа
+                  // РџР°РЅРµР»СЊ РєР°СЂС‚РѕС‡РєРё РѕС‚РІРµС‚Р°
                   RectangleAnswer.Position.Y    := Round( btnDirection.Position.Y + btnDirection.Height + interv );
                   RectangleAnswer.Height        := RectangleQuestion.Height;
 
-                  // Статистика по карточке
+                  // РЎС‚Р°С‚РёСЃС‚РёРєР° РїРѕ РєР°СЂС‚РѕС‡РєРµ
                   statCard.Position.X := Round( RectangleAnswer.Position.X + RectangleAnswer.Width-statCard.Width );
                   statCard.Position.Y := Round( RectangleAnswer.Position.Y + RectangleAnswer.Height + interv );
 
-                  // Кнопки завершения опроса карточки
+                  // РљРЅРѕРїРєРё Р·Р°РІРµСЂС€РµРЅРёСЏ РѕРїСЂРѕСЃР° РєР°СЂС‚РѕС‡РєРё
                   GridPanelLayoutVerticalSet( GridPanelOpros );
                 end;
           end;
 
-          // Установка параметров для панелей в анимации
+          // РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РїР°РЅРµР»РµР№ РІ Р°РЅРёРјР°С†РёРё
           PrepareAnimation;
 
     end;
-    // Панель ExpressOpros
+    // РџР°РЅРµР»СЊ ExpressOpros
     4:  begin
-          // ширина отступов между элементами
+          // С€РёСЂРёРЅР° РѕС‚СЃС‚СѓРїРѕРІ РјРµР¶РґСѓ СЌР»РµРјРµРЅС‚Р°РјРё
           interv  := 6;
 
-          // изменение размера картинки в зависимости от ширины экрана
+          // РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РєР°СЂС‚РёРЅРєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С€РёСЂРёРЅС‹ СЌРєСЂР°РЅР°
           Image3.Height := Round( PanelExpressOpros.Height / 14 );
 
-          // панель с вопросом
+          // РїР°РЅРµР»СЊ СЃ РІРѕРїСЂРѕСЃРѕРј
           RectangleExpressQ.Width       := Round( (PanelExpressOpros.Width - interv * 6)/2 );
           RectangleExpressQ.Height      := Round( (PanelExpressOpros.Height - Image3.Height - ExpressPackName.Position.Y
                                             - ExpressPackName.Height - interv * 7)/3 );
@@ -2313,23 +2293,23 @@ begin
           RectangleExpressQ.Position.Y  := ExpressPackName.Position.Y + ExpressPackName.Height + interv;
           //
           Image3.Position.Y := RectangleExpressQ.Position.Y + RectangleExpressQ.Height + interv;
-          // панели с вариантами ответов (4 шт.)
-          // 1-я;
+          // РїР°РЅРµР»Рё СЃ РІР°СЂРёР°РЅС‚Р°РјРё РѕС‚РІРµС‚РѕРІ (4 С€С‚.)
+          // 1-СЏ;
           RectangleExpressA1.Position.X := interv * 2;
           RectangleExpressA1.Position.Y := Image3.Position.Y + Image3.Height + interv;
           RectangleExpressA1.Width      := RectangleExpressQ.Width;
           RectangleExpressA1.Height     := RectangleExpressQ.Height;
-          // 2-я
+          // 2-СЏ
           RectangleExpressA2.Position.X := RectangleExpressA1.Position.X + RectangleExpressA1.Width + interv * 2;
           RectangleExpressA2.Position.Y := RectangleExpressA1.Position.Y;
           RectangleExpressA2.Width      := RectangleExpressQ.Width;
           RectangleExpressA2.Height     := RectangleExpressQ.Height;
-          // 3-я
+          // 3-СЏ
           RectangleExpressA3.Position.X := RectangleExpressA1.Position.X;
           RectangleExpressA3.Position.Y := RectangleExpressA1.Position.Y + RectangleExpressQ.Height + interv * 2;
           RectangleExpressA3.Width      := RectangleExpressQ.Width;
           RectangleExpressA3.Height     := RectangleExpressQ.Height;
-          // 4-я
+          // 4-СЏ
           RectangleExpressA4.Position.X := RectangleExpressA2.Position.X;
           RectangleExpressA4.Position.Y := RectangleExpressA3.Position.Y;
           RectangleExpressA4.Width      := RectangleExpressQ.Width;
@@ -2343,37 +2323,37 @@ end;
 
 procedure TForm1.ListPacksChange(Sender: TObject);
 begin
-  // если TabControl в процессе обновления
-  // блокируем выбор нового элемента (защита от быстрок тыканья в экран)
+  // РµСЃР»Рё TabControl РІ РїСЂРѕС†РµСЃСЃРµ РѕР±РЅРѕРІР»РµРЅРёСЏ
+  // Р±Р»РѕРєРёСЂСѓРµРј РІС‹Р±РѕСЂ РЅРѕРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° (Р·Р°С‰РёС‚Р° РѕС‚ Р±С‹СЃС‚СЂРѕРє С‚С‹РєР°РЅСЊСЏ РІ СЌРєСЂР°РЅ)
   if TabControl1.TransitionRunning then
   begin
     if (Assigned(pack_selected^) and (pack_selected^<>ListPacks.Selected)) then ListPacks.ItemIndex := pack_selected^.Index;
     Exit;
   end;
 
-  // убираем "aMore" с предыдущего элемента списка
+  // СѓР±РёСЂР°РµРј "aMore" СЃ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р° СЃРїРёСЃРєР°
   if (Assigned(pack_selected^) and (pack_selected^<>ListPacks.Selected)) then
   begin
     pack_selected^.ItemData.Accessory := TListBoxItemData.TAccessory.aNone;
     pack_selected^ := nil;
-    //скрываем кнопки нижнего меню
-    btnStartStudy.Visible := cFalse;
-    btnInfoPack.Visible   := cFalse;
-    btnDeletePack.Visible := cFalse;
-    mDelPack.Enabled      := cFalse;
-    mDelPack.HitTest      := cFalse;
-    mExport.Enabled       := cFalse;
-    mExport.HitTest       := cFalse;
+    //СЃРєСЂС‹РІР°РµРј РєРЅРѕРїРєРё РЅРёР¶РЅРµРіРѕ РјРµРЅСЋ
+    btnStartStudy.Visible := False;
+    btnInfoPack.Visible   := False;
+    btnDeletePack.Visible := False;
+    mDelPack.Enabled      := False;
+    mDelPack.HitTest      := False;
+    mExport.Enabled       := False;
+    mExport.HitTest       := False;
   end;
 
-  // если выбран, обрабатываем новый элемент
+  // РµСЃР»Рё РІС‹Р±СЂР°РЅ, РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚
   if ListPacks.ItemIndex<>-1 then
   begin
     ListPacks.Selected.ItemData.Accessory := TListBoxItemData.TAccessory.aMore;
 
-    pack_selected^ := ListPacks.Selected;  // запоминаем ссылку на выбранную пачку
+    pack_selected^ := ListPacks.Selected;  // Р·Р°РїРѕРјРёРЅР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РІС‹Р±СЂР°РЅРЅСѓСЋ РїР°С‡РєСѓ
 
-    //если левые/нижние кнопки меню скрыты, то отображаем
+    //РµСЃР»Рё Р»РµРІС‹Рµ/РЅРёР¶РЅРёРµ РєРЅРѕРїРєРё РјРµРЅСЋ СЃРєСЂС‹С‚С‹, С‚Рѕ РѕС‚РѕР±СЂР°Р¶Р°РµРј
     if not btnInfoPack.Visible then btnInfoPack.Visible := not btnInfoPack.Visible;
 
     if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
@@ -2383,39 +2363,39 @@ begin
     if not DM.FDStat.Prepared then DM.FDStat.Prepare;
     DM.FDStat.OpenOrExecute;
 
-    // кнопку изучения показываем только если больше 0 не скрытых карточек
+    // РєРЅРѕРїРєСѓ РёР·СѓС‡РµРЅРёСЏ РїРѕРєР°Р·С‹РІР°РµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё Р±РѕР»СЊС€Рµ 0 РЅРµ СЃРєСЂС‹С‚С‹С… РєР°СЂС‚РѕС‡РµРє
     if ((VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide1']))>0) or
        ((VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide2']))>0)
        then btnStartStudy.Visible := True;
 
-    // кнопку опроса показываем только если больше 1 карточки
+    // РєРЅРѕРїРєСѓ РѕРїСЂРѕСЃР° РїРѕРєР°Р·С‹РІР°РµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё Р±РѕР»СЊС€Рµ 1 РєР°СЂС‚РѕС‡РєРё
     if VarToInt(DM.FDStat['countcards'])>0 then
     begin
-      btnStartEducation.Visible := cTrue;
-      //включаем в меню "экспорт", если пачка не системная
+      btnStartEducation.Visible := True;
+      //РІРєР»СЋС‡Р°РµРј РІ РјРµРЅСЋ "СЌРєСЃРїРѕСЂС‚", РµСЃР»Рё РїР°С‡РєР° РЅРµ СЃРёСЃС‚РµРјРЅР°СЏ
       if ListPacks.Selected.Tag<>0 then
       begin
-        mExport.Enabled     := cTrue;
-        mExport.HitTest     := cTrue;
+        mExport.Enabled     := True;
+        mExport.HitTest     := True;
       end;
     end
-    else btnStartEducation.Visible := cFalse;
+    else btnStartEducation.Visible := False;
 
-    // кнопку експресс опроса показываем кнопку только если в пачке больше 5 карточек
-    if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := cTrue
-    else btnStartTraining.Visible := cFalse;
+    // РєРЅРѕРїРєСѓ РµРєСЃРїСЂРµСЃСЃ РѕРїСЂРѕСЃР° РїРѕРєР°Р·С‹РІР°РµРј РєРЅРѕРїРєСѓ С‚РѕР»СЊРєРѕ РµСЃР»Рё РІ РїР°С‡РєРµ Р±РѕР»СЊС€Рµ 5 РєР°СЂС‚РѕС‡РµРє
+    if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := True
+    else btnStartTraining.Visible := False;
 
     case pack_selected^.Tag of
       1..2 :
       begin
-        //btnDeletePack.Visible := cTrue;
-        mDelPack.Enabled  := cTrue;
-        mDelPack.HitTest  := cTrue;
+        //btnDeletePack.Visible := True;
+        mDelPack.Enabled  := True;
+        mDelPack.HitTest  := True;
       end
     else
-      btnDeletePack.Visible := cFalse;
-      mDelPack.Enabled  := cFalse;
-      mDelPack.HitTest  := cFalse;
+      btnDeletePack.Visible := False;
+      mDelPack.Enabled  := False;
+      mDelPack.HitTest  := False;
     end;
   end;
 end;
@@ -2423,9 +2403,9 @@ end;
 procedure TForm1.ListPacksDblClick(Sender: TObject);
 begin
 
-  if not btnStartEducation.Visible then Exit; // кнопка не доступна занчит в пачке нет карточек, ничего не делаем
+  if not btnStartEducation.Visible then Exit; // РєРЅРѕРїРєР° РЅРµ РґРѕСЃС‚СѓРїРЅР° Р·Р°РЅС‡РёС‚ РІ РїР°С‡РєРµ РЅРµС‚ РєР°СЂС‚РѕС‡РµРє, РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
   try
-    // выбор направления
+    // РІС‹Р±РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
     with DM.FDStat do
     begin
       if (FieldByName('countcards').AsInteger-FieldByName('hide1').AsInteger)>0 then
@@ -2435,12 +2415,12 @@ begin
       else if FieldByName('countcards').AsInteger=0 then Exit
       else
       begin
-        // Все карточки отвечены. Открыть форму со статистикой
-        Pack.Tag := 4;                            // 4 - открыть в режиме ReadOnly с открытой статистикой
+        // Р’СЃРµ РєР°СЂС‚РѕС‡РєРё РѕС‚РІРµС‡РµРЅС‹. РћС‚РєСЂС‹С‚СЊ С„РѕСЂРјСѓ СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№
+        Pack.Tag := 4;                            // 4 - РѕС‚РєСЂС‹С‚СЊ РІ СЂРµР¶РёРјРµ ReadOnly СЃ РѕС‚РєСЂС‹С‚РѕР№ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№
         ChangeTabActionPack.ExecuteTarget(self);  // TabControl1.ActiveTab := Pack;
         Exit;
       end;
-      // Начинаем опрос
+      // РќР°С‡РёРЅР°РµРј РѕРїСЂРѕСЃ
       ChangeTabActionOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := Opros;
     end;
     //
@@ -2452,7 +2432,7 @@ end;
 procedure TForm1.ListPacksItemClick(const Sender: TCustomListBox;
   const Item: TListBoxItem);
 begin
-  // для обработки повторного клика по выбранной строки (для пальцев)
+  // РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё РїРѕРІС‚РѕСЂРЅРѕРіРѕ РєР»РёРєР° РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё (РґР»СЏ РїР°Р»СЊС†РµРІ)
   if last_tap=Item.GetHashCode then ListPacksDblClick(Sender)
   else last_tap := Item.GetHashCode;
 end;
@@ -2465,7 +2445,7 @@ end;
 
 procedure TForm1.mItemMouseLeave(Sender: TObject);
 begin
-  (Sender as TListBoxItem).IsSelected := cFalse
+  (Sender as TListBoxItem).IsSelected := False
 end;
 
 procedure TForm1.MasterPanelStartHiding(Sender: TObject);
@@ -2473,8 +2453,8 @@ begin
   if btnMenuAnimation.Inverse then
   begin
     btnMenuAnimation.Start;
-    ShowMenuElements(cTrue);
-    //TabControl1Change(TabControl1); // для обновления элементов управления
+    ShowMenuElements(True);
+    //TabControl1Change(TabControl1); // РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ
   end;
 end;
 
@@ -2483,17 +2463,72 @@ begin
   if not btnMenuAnimation.Inverse then
   begin
     btnMenuAnimation.Start;
-    ShowMenuElements(cFalse);
+    ShowMenuElements(False);
   end;
+end;
+
+// РЈСЃС‚Р°РЅРѕРІРєР°/СЃРЅСЏС‚РёРµ РїСЂРёР·РЅРєР° СЃРєСЂС‹С‚РёСЏ РїРѕР»СЏ РєР°СЂС‚РѕС‡РєРё
+// f=1 - hide1, f=2 - hide2
+// t=0 - РїРѕРєР°Р·Р°С‚СЊ, t=1 - СЃРєСЂС‹С‚СЊ
+procedure TForm1.SetHideFromPopMenu(f,t: integer);
+begin
+  CardsGrid.BeginUpdate;
+  if not DM.FDDatabese.InTransaction then DM.FDTransaction1.StartTransaction;
+  DM.FDDatabese.ExecSQL(
+    'UPDATE cards SET hide'+ f.ToString +
+    '=' + t.ToString +
+    ' WHERE np=' + pack_selected^.TagString + ';');
+  DM.FDQuery2.Refresh;
+  CardsGrid.EndUpdate;
+end;
+
+procedure TForm1.MenuDirectHideClick(Sender: TObject);
+begin
+  SetHideFromPopMenu(1,1);
+end;
+
+procedure TForm1.MenuDirectHideTap(Sender: TObject; const Point: TPointF);
+begin
+  SetHideFromPopMenu(1,1);
+end;
+
+procedure TForm1.MenuDirectShowClick(Sender: TObject);
+begin
+  SetHideFromPopMenu(1,0);
+end;
+
+procedure TForm1.MenuDirectShowTap(Sender: TObject; const Point: TPointF);
+begin
+  SetHideFromPopMenu(1,0);
+end;
+
+procedure TForm1.MenuReverseHideClick(Sender: TObject);
+begin
+  SetHideFromPopMenu(2,1);
+end;
+
+procedure TForm1.MenuReverseHideTap(Sender: TObject; const Point: TPointF);
+begin
+  SetHideFromPopMenu(2,1);
+end;
+
+procedure TForm1.MenuReverseShowClick(Sender: TObject);
+begin
+  SetHideFromPopMenu(2,0);
+end;
+
+procedure TForm1.MenuReverseShowTap(Sender: TObject; const Point: TPointF);
+begin
+  SetHideFromPopMenu(2,0);
 end;
 
 procedure TForm1.mExitClick(Sender: TObject);
 begin
-  // Закрыть приложение
+  // Р—Р°РєСЂС‹С‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ
   {$IF DEFINED(IOS)}
     // MainActivity.moveTaskToBack(True);
   {$ELSEIF DEFINED(ANDROID)}
-    MainActivity.moveTaskToBack(True); // прячем, если закрыть полностью то нужно в блок ниже
+    MainActivity.moveTaskToBack(True); // РїСЂСЏС‡РµРј, РµСЃР»Рё Р·Р°РєСЂС‹С‚СЊ РїРѕР»РЅРѕСЃС‚СЊСЋ С‚Рѕ РЅСѓР¶РЅРѕ РІ Р±Р»РѕРє РЅРёР¶Рµ
     MasterPanel.HideMaster;
   {$ELSE}
     Application.Terminate;
@@ -2515,7 +2550,7 @@ begin
 
       if OpenDialog.Execute then
       begin
-        // перебираем файлы и заполняем форму
+        // РїРµСЂРµР±РёСЂР°РµРј С„Р°Р№Р»С‹ Рё Р·Р°РїРѕР»РЅСЏРµРј С„РѕСЂРјСѓ
         import        := TImport.Create(self);
         import.Width  := ini_width;
         import.Height := ini_height;
@@ -2524,15 +2559,15 @@ begin
           for i:= 0 to OpenDialog.Files.Count-1 do Import.Files.Add(OpenDialog.Files[i]);
           Import.ShowModal;
         finally
-          import.DisposeOf; //очистка формы
+          import.Free;      //РѕС‡РёСЃС‚РєР° С„РѕСЂРјС‹
         end;
       end;
-      PackListUpdate;             // обновление списка пачек
+      PackListUpdate;             // РѕР±РЅРѕРІР»РµРЅРёРµ СЃРїРёСЃРєР° РїР°С‡РµРє
       MasterPanel.HideMaster;
 
     {$ELSEIF DEFINED(ANDROID) or DEFINED(IOS)}
       Import := TImport.Create(self);
-      //заполняем списком из export_dir/*.xml
+      //Р·Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРєРѕРј РёР· export_dir/*.xml
 
       i := FindFirst( TPath.Combine(export_dir,'*'+exp_ext), faAnyFile, s_file);
       while i=0 do
@@ -2542,18 +2577,18 @@ begin
         i := FindNext(s_file)
       end;
       FindClose(s_file);
-      // открываем форму в модальном режиме
+      // РѕС‚РєСЂС‹РІР°РµРј С„РѕСЂРјСѓ РІ РјРѕРґР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ
       Import.ShowModal(procedure( AResult: TModalResult)
         begin
-          //if (AResult = mrOK) then ShowMessage('Ура');
+          //if (AResult = mrOK) then ShowMessage('РЈСЂР°');
           //Form1.StyleBook := StyleBook1;
-          PackListUpdate;             // обновление списка пачек
+          PackListUpdate;             // РѕР±РЅРѕРІР»РµРЅРёРµ СЃРїРёСЃРєР° РїР°С‡РµРє
           MasterPanel.HideMaster;
         end);
     {$ENDIF}
 end;
 
-// Экспорт пачки
+// Р­РєСЃРїРѕСЂС‚ РїР°С‡РєРё
 procedure TForm1.mExportClick(Sender: TObject);
 var
     packname          : string;
@@ -2575,45 +2610,45 @@ begin
 end;
 //
 begin
-  DM.XMLData.XML.Text := '';   // без этого идет наложение старых данных из XML на новые
+  DM.XMLData.XML.Text := '';   // Р±РµР· СЌС‚РѕРіРѕ РёРґРµС‚ РЅР°Р»РѕР¶РµРЅРёРµ СЃС‚Р°СЂС‹С… РґР°РЅРЅС‹С… РёР· XML РЅР° РЅРѕРІС‹Рµ
   try
-    // отбор данных по выбранной пачке
-    if DM.FDQuery1.Active then DM.FDQuery1.Active := cFalse;
+    // РѕС‚Р±РѕСЂ РґР°РЅРЅС‹С… РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ РїР°С‡РєРµ
+    if DM.FDQuery1.Active then DM.FDQuery1.Active := False;
     DM.FDQuery1.SQL.Text := 'SELECT p.uid, p.lang, p.packname, p.descript,';
     DM.FDQuery1.SQL.Add('p.version, datetime(s.lastmod,''localtime'') AS lastmod');
     DM.FDQuery1.SQL.Add('FROM packet p LEFT JOIN pack_stats s ON s.np=p.np');
     DM.FDQuery1.SQL.Add('WHERE p.np =' + pack_selected^.TagString);
     DM.FDQuery1.OpenOrExecute;
 
-    //заполнение информации об экспортируемой пачке
-    DM.XMLData.Active := cTrue;
-    DM.XMLData.ChildNodes.Add(DM.XMLData.CreateNode('Пакет карточек программы Cards', ntComment)); // комментарий
-    // корневой узел
+    //Р·Р°РїРѕР»РЅРµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё РѕР± СЌРєСЃРїРѕСЂС‚РёСЂСѓРµРјРѕР№ РїР°С‡РєРµ
+    DM.XMLData.Active := True;
+    DM.XMLData.ChildNodes.Add(DM.XMLData.CreateNode('РџР°РєРµС‚ РєР°СЂС‚РѕС‡РµРє РїСЂРѕРіСЂР°РјРјС‹ Cards', ntComment)); // РєРѕРјРјРµРЅС‚Р°СЂРёР№
+    // РєРѕСЂРЅРµРІРѕР№ СѓР·РµР»
     DM.XMLData.DocumentElement := DM.XMLData.CreateNode('pack', ntElement);
-    DM.XMLData.DocumentElement.SetAttribute('program', 'cards');   // добавляем атрибуты корневого узла
-    DM.XMLData.DocumentElement.SetAttribute('data-format', '1');   // добавляем атрибуты корневого узла
-    // узел пакета и его атрибуты
+    DM.XMLData.DocumentElement.SetAttribute('program', 'cards');   // РґРѕР±Р°РІР»СЏРµРј Р°С‚СЂРёР±СѓС‚С‹ РєРѕСЂРЅРµРІРѕРіРѕ СѓР·Р»Р°
+    DM.XMLData.DocumentElement.SetAttribute('data-format', '1');   // РґРѕР±Р°РІР»СЏРµРј Р°С‚СЂРёР±СѓС‚С‹ РєРѕСЂРЅРµРІРѕРіРѕ СѓР·Р»Р°
+    // СѓР·РµР» РїР°РєРµС‚Р° Рё РµРіРѕ Р°С‚СЂРёР±СѓС‚С‹
     lNode := DM.XMLData.CreateNode('packet',ntElement);
     lNode.Attributes['uid']     := VarToStr(DM.FDQuery1['uid']);
     lNode.Attributes['lang']    := VarToStr(DM.FDQuery1['lang']);
-// вот тут не та дата
+// РІРѕС‚ С‚СѓС‚ РЅРµ С‚Р° РґР°С‚Р°
     lNode.Attributes['version'] := Format('%.19s',[ VarToStr(DM.FDQuery1['version']) ]);
     lNode.Attributes['changed'] := Format('%.19s',[ VarToStr(DM.FDQuery1['lastmod']) ]);
     DM.XMLData.DocumentElement.ChildNodes.Add(lNode);
-    // значение полей пачки
+    // Р·РЅР°С‡РµРЅРёРµ РїРѕР»РµР№ РїР°С‡РєРё
     lNode := DM.XMLData.DocumentElement.ChildNodes['packet'].AddChild('packname');
     packname := VarToStr(DM.FDQuery1['packname']);
     lNode.NodeValue := packname;
     lNode := DM.XMLData.DocumentElement.ChildNodes['packet'].AddChild('descript');
     lNode.NodeValue := VarToStr(DM.FDQuery1['descript']);
 
-    // блоки карточек
-    DM.FDQuery1.Active := cFalse;
+    // Р±Р»РѕРєРё РєР°СЂС‚РѕС‡РµРє
+    DM.FDQuery1.Active := False;
     DM.FDQuery1.SQL.Text := 'SELECT question1, question2, version FROM cards WHERE np=' + pack_selected^.TagString;
     DM.FDQuery1.OpenOrExecute;
     DM.FDQuery1.First;
 
-    // сохранение блоков карточек
+    // СЃРѕС…СЂР°РЅРµРЅРёРµ Р±Р»РѕРєРѕРІ РєР°СЂС‚РѕС‡РµРє
     cardsNode := DM.XMLData.DocumentElement.ChildNodes['packet'].AddChild('cards');
     while not DM.FDQuery1.Eof do
     begin
@@ -2626,21 +2661,21 @@ begin
       DM.FDQuery1.Next
     end;
 
-    // Сохранение файла экспорта exp_fname
+    // РЎРѕС…СЂР°РЅРµРЅРёРµ С„Р°Р№Р»Р° СЌРєСЃРїРѕСЂС‚Р° exp_fname
     {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
       SaveDialog.InitialDir := export_dir;
       SaveDialog.FileName := exp_fname+exp_ext;
       if SaveDialog.Execute then DM.XMLData.SaveToFile(SaveDialog.FileName);
     {$ELSEIF DEFINED(ANDROID)}
-      // удаление директориии (если имя совпадает с файлом експорта) - файл перепишется, директория нет
+      // СѓРґР°Р»РµРЅРёРµ РґРёСЂРµРєС‚РѕСЂРёРёРё (РµСЃР»Рё РёРјСЏ СЃРѕРІРїР°РґР°РµС‚ СЃ С„Р°Р№Р»РѕРј РµРєСЃРїРѕСЂС‚Р°) - С„Р°Р№Р» РїРµСЂРµРїРёС€РµС‚СЃСЏ, РґРёСЂРµРєС‚РѕСЂРёСЏ РЅРµС‚
       if DirectoryExists(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext)) then
-            TDirectory.Delete(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext), cTrue);
-      // формирование имени для директории общих документов
+            TDirectory.Delete(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext), True);
+      // С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ РёРјРµРЅРё РґР»СЏ РґРёСЂРµРєС‚РѕСЂРёРё РѕР±С‰РёС… РґРѕРєСѓРјРµРЅС‚РѕРІ
       file_ind := 0;
       while FileExists( TPath.Combine(export_dir,CreateName(exp_fname+exp_ext, file_ind)) ) do inc(file_ind);
-      // сохраняем новый файл для почты в Androidapi.IOUtils.getExternalFilesDir
+      // СЃРѕС…СЂР°РЅСЏРµРј РЅРѕРІС‹Р№ С„Р°Р№Р» РґР»СЏ РїРѕС‡С‚С‹ РІ Androidapi.IOUtils.getExternalFilesDir
       DM.XMLData.SaveToFile(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext));
-      // сохраняем новый файл в общую папку загрузки export_dir
+      // СЃРѕС…СЂР°РЅСЏРµРј РЅРѕРІС‹Р№ С„Р°Р№Р» РІ РѕР±С‰СѓСЋ РїР°РїРєСѓ Р·Р°РіСЂСѓР·РєРё export_dir
       DM.XMLData.SaveToFile(TPath.Combine(export_dir, CreateName(exp_fname+exp_ext, file_ind)));
       //
       Intent := TJIntent.Create;
@@ -2648,35 +2683,35 @@ begin
       Intent.setFlags(TJIntent.JavaClass.FLAG_ACTIVITY_NEW_TASK);
       Intent.putExtra(TJIntent.JavaClass.EXTRA_SUBJECT, StringToJString('Export Cards-pack '+DateTimeToStr(now)));
       Intent.putExtra(TJIntent.JavaClass.EXTRA_TEXT, StringToJString(txt_warning7+packname));
-      // присоединяем файл експорта
+      // РїСЂРёСЃРѕРµРґРёРЅСЏРµРј С„Р°Р№Р» РµРєСЃРїРѕСЂС‚Р°
       j_file := TAndroidHelper.Activity.getExternalFilesDir(StringToJString(exp_fname+exp_ext));
       uri := TJnet_Uri.JavaClass.fromFile(j_file);
       Intent.putExtra(TJIntent.JavaClass.EXTRA_STREAM,TJParcelable.Wrap((uri as ILocalObject).GetObjectID));
       Intent.setType(StringToJString('vnd.android.cursor.dir/email'));
-      // вызов диалога отправки
+      // РІС‹Р·РѕРІ РґРёР°Р»РѕРіР° РѕС‚РїСЂР°РІРєРё
       TAndroidHelper.Activity.startActivity(Intent);
     {$ELSEIF DEFINED(IOS)}
-      //потом сделать выгрузку для iOS
+      //РїРѕС‚РѕРј СЃРґРµР»Р°С‚СЊ РІС‹РіСЂСѓР·РєСѓ РґР»СЏ iOS
     {$ENDIF}
   //
   except
     on E: Exception do ShowMessage(txt_error0 + E.Message);
   end;
 
-  if DM.XMLData.Active then DM.XMLData.Active   := cFalse;
-  if DM.FDQuery1.Active then DM.FDQuery1.Active := cFalse;
+  if DM.XMLData.Active then DM.XMLData.Active   := False;
+  if DM.FDQuery1.Active then DM.FDQuery1.Active := False;
   MasterPanel.HideMaster;
 end;
 
 procedure TForm1.mItemMouseEnter(Sender: TObject);
 begin
-  (Sender as TListBoxItem).IsSelected := cTrue;
+  (Sender as TListBoxItem).IsSelected := True;
 end;
 
-// экспорт карточек в XML файл
+// СЌРєСЃРїРѕСЂС‚ РєР°СЂС‚РѕС‡РµРє РІ XML С„Р°Р№Р»
 procedure TForm1.mOprosClick(Sender: TObject);
 begin
-  Opros.Tag := 2; //режим обучения (просто перебор открытых карточек)
+  Opros.Tag := 2; //СЂРµР¶РёРј РѕР±СѓС‡РµРЅРёСЏ (РїСЂРѕСЃС‚Рѕ РїРµСЂРµР±РѕСЂ РѕС‚РєСЂС‹С‚С‹С… РєР°СЂС‚РѕС‡РµРє)
   ChangeTabActionOpros.ExecuteTarget(self);  // TabControl1.ActiveTab := Opros;
   MasterPanel.HideMaster
 end;
@@ -2686,26 +2721,26 @@ begin
 
 end;
 
-// заполнение полей с карточками экспресс опроса
-// (повторяемая часть)
+// Р·Р°РїРѕР»РЅРµРЅРёРµ РїРѕР»РµР№ СЃ РєР°СЂС‚РѕС‡РєР°РјРё СЌРєСЃРїСЂРµСЃСЃ РѕРїСЂРѕСЃР°
+// (РїРѕРІС‚РѕСЂСЏРµРјР°СЏ С‡Р°СЃС‚СЊ)
 procedure SetExpressField;
 var i,j : integer;
 begin
   with Form1 do
   begin
-          // отбор произвоьных карт
-          for i := 0 to length(mn)-1 do mn[i] := 0;  //обнуляем отбор
+          // РѕС‚Р±РѕСЂ РїСЂРѕРёР·РІРѕСЊРЅС‹С… РєР°СЂС‚
+          for i := 0 to length(mn)-1 do mn[i] := 0;  //РѕР±РЅСѓР»СЏРµРј РѕС‚Р±РѕСЂ
           for i := 0 to length(mn)-1 do
           begin
-            repeat  // генерация номера не входящего в массив и не равно верному предыдущему ответу
+            repeat  // РіРµРЅРµСЂР°С†РёСЏ РЅРѕРјРµСЂР° РЅРµ РІС…РѕРґСЏС‰РµРіРѕ РІ РјР°СЃСЃРёРІ Рё РЅРµ СЂР°РІРЅРѕ РІРµСЂРЅРѕРјСѓ РїСЂРµРґС‹РґСѓС‰РµРјСѓ РѕС‚РІРµС‚Сѓ
               j := Random(DM.FDQuery1.RecordCount)+1;
             until (j<>k_true) and (InArray(j,mn)=-1);
             mn[i] := j;
           end;
 
-          // выбираем номер карточки в массиве, котороай будет в вопросе (он же верный ответ)
+          // РІС‹Р±РёСЂР°РµРј РЅРѕРјРµСЂ РєР°СЂС‚РѕС‡РєРё РІ РјР°СЃСЃРёРІРµ, РєРѕС‚РѕСЂРѕР°Р№ Р±СѓРґРµС‚ РІ РІРѕРїСЂРѕСЃРµ (РѕРЅ Р¶Рµ РІРµСЂРЅС‹Р№ РѕС‚РІРµС‚)
           k_true := Random(4)+1;  // 1-4
-          direct := Random(2);    // что в вопросе (0 - question1, 1 - question2)
+          direct := Random(2);    // С‡С‚Рѕ РІ РІРѕРїСЂРѕСЃРµ (0 - question1, 1 - question2)
           q := 'question';
           a := q;
           if direct=0 then
@@ -2719,26 +2754,26 @@ begin
             a := a+'1'
           end;
 
-          // закрываем карточки. если это необходимо
+          // Р·Р°РєСЂС‹РІР°РµРј РєР°СЂС‚РѕС‡РєРё. РµСЃР»Рё СЌС‚Рѕ РЅРµРѕР±С…РѕРґРёРјРѕ
           for i := 0 to length(mp)-1 do if not mp[i].Visible then
-          begin  // прячем карточку
+          begin  // РїСЂСЏС‡РµРј РєР°СЂС‚РѕС‡РєСѓ
             map[i].Start;
             mas[i].Start;
           end;
 
-          // заполняем пол вопроса и поля ответов
+          // Р·Р°РїРѕР»РЅСЏРµРј РїРѕР» РІРѕРїСЂРѕСЃР° Рё РїРѕР»СЏ РѕС‚РІРµС‚РѕРІ
           for i := 1 to length(mt)-1 do
           begin
-            while mas[i].Running do Delay(100); // ждем закрытия карточки
+            while mas[i].Running do Delay(100); // Р¶РґРµРј Р·Р°РєСЂС‹С‚РёСЏ РєР°СЂС‚РѕС‡РєРё
             DM.FDQuery1.RecNo := mn[i-1];
             if i=k_true then mt[0].Text := VarToStr(DM.FDQuery1[q]);
             mt[i].Text := VarToStr(DM.FDQuery1[a])
           end;
 
-          // открываем все карточки
+          // РѕС‚РєСЂС‹РІР°РµРј РІСЃРµ РєР°СЂС‚РѕС‡РєРё
           for i := 0 to length(mt)-1 do
           begin
-            //while mas[i].Running do Delay(100); ??? зачем проверял, если ждал завершения анимации в цикле выше
+            //while mas[i].Running do Delay(100); ??? Р·Р°С‡РµРј РїСЂРѕРІРµСЂСЏР», РµСЃР»Рё Р¶РґР°Р» Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё РІ С†РёРєР»Рµ РІС‹С€Рµ
             map[i].Start;
             mas[i].Start;
           end;
@@ -2748,39 +2783,39 @@ end;
 procedure TForm1.ExpressAClick(Sender: TObject);
 var i  : integer;
 begin
-  //если таймер не активен или активна анимация, то прервать обработку нажатия
+  //РµСЃР»Рё С‚Р°Р№РјРµСЂ РЅРµ Р°РєС‚РёРІРµРЅ РёР»Рё Р°РєС‚РёРІРЅР° Р°РЅРёРјР°С†РёСЏ, С‚Рѕ РїСЂРµСЂРІР°С‚СЊ РѕР±СЂР°Р±РѕС‚РєСѓ РЅР°Р¶Р°С‚РёСЏ
   if not Timer1.Enabled then Exit;
   for i := 0 to length(mas)-1 do if mas[i].Running then Exit;
 
-  // совпадает ли выбранный ответ с верным? показываем индикатор верности ответа
+  // СЃРѕРІРїР°РґР°РµС‚ Р»Рё РІС‹Р±СЂР°РЅРЅС‹Р№ РѕС‚РІРµС‚ СЃ РІРµСЂРЅС‹Рј? РїРѕРєР°Р·С‹РІР°РµРј РёРЅРґРёРєР°С‚РѕСЂ РІРµСЂРЅРѕСЃС‚Рё РѕС‚РІРµС‚Р°
   if TRectangle(Sender).Tag=k_true then new_rec := new_rec+1;
   Green.Visible := TRectangle(Sender).Tag=k_true;
   Red.Visible   := not Green.Visible;
   SemaforShow.Start;
 
-  // вывод в заголовок количества верных ответов
+  // РІС‹РІРѕРґ РІ Р·Р°РіРѕР»РѕРІРѕРє РєРѕР»РёС‡РµСЃС‚РІР° РІРµСЂРЅС‹С… РѕС‚РІРµС‚РѕРІ
   if new_rec<>0 then TopLabel.Text := txt_warning5+' '+IntToStr(new_rec);
 
-  k_true := mn[k_true-1]; // запоминаем номер вороса/ответа карточки из базы, вместо номера в массиве
+  k_true := mn[k_true-1]; // Р·Р°РїРѕРјРёРЅР°РµРј РЅРѕРјРµСЂ РІРѕСЂРѕСЃР°/РѕС‚РІРµС‚Р° РєР°СЂС‚РѕС‡РєРё РёР· Р±Р°Р·С‹, РІРјРµСЃС‚Рѕ РЅРѕРјРµСЂР° РІ РјР°СЃСЃРёРІРµ
   SetExpressField;
 end;
 
-// Запуск анимации панели возпроса
+// Р—Р°РїСѓСЃРє Р°РЅРёРјР°С†РёРё РїР°РЅРµР»Рё РІРѕР·РїСЂРѕСЃР°
 procedure TForm1.AnimationQuestion;
 begin
-  // ждем завершения предыдущей анимации
+  // Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ РїСЂРµРґС‹РґСѓС‰РµР№ Р°РЅРёРјР°С†РёРё
   while not Application.Terminated and (QuestionAnimationScale.Running or QuestionAnimationPosition.Running) do Delay(100);
-  // эмитация псевдо переворота карты
+  // СЌРјРёС‚Р°С†РёСЏ РїСЃРµРІРґРѕ РїРµСЂРµРІРѕСЂРѕС‚Р° РєР°СЂС‚С‹
   QuestionAnimationScale.Start;
   QuestionAnimationPosition.Start;
 end;
 
-// Запуск анимации панели ответа
+// Р—Р°РїСѓСЃРє Р°РЅРёРјР°С†РёРё РїР°РЅРµР»Рё РѕС‚РІРµС‚Р°
 procedure TForm1.AnimationAnswer;
 begin
-  // ждем завершения предыдущей анимации
+  // Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ РїСЂРµРґС‹РґСѓС‰РµР№ Р°РЅРёРјР°С†РёРё
   while not Application.Terminated and (AnswerAnimationScale.Running or AnswerAnimationPosition.Running) do Delay(100);
-  // эмитация псевдо переворота карты
+  // СЌРјРёС‚Р°С†РёСЏ РїСЃРµРІРґРѕ РїРµСЂРµРІРѕСЂРѕС‚Р° РєР°СЂС‚С‹
   AnswerAnimationScale.Start;
   AnswerAnimationPosition.Start;
 end;
@@ -2790,7 +2825,7 @@ var i : integer;
 begin
     if not TFloatAnimation(Sender).Inverse then
     begin
-      // Скрытие шторки карточки
+      // РЎРєСЂС‹С‚РёРµ С€С‚РѕСЂРєРё РєР°СЂС‚РѕС‡РєРё
       if TFloatAnimation(Sender).Name='QuestionAnimationScale' then
         ImageQ.Visible := not ImageQ.Visible
       else if TFloatAnimation(Sender).Name='AnswerAnimationScale' then
@@ -2798,7 +2833,7 @@ begin
       else for i := 0 to length(mas)-1 do
         if (TFloatAnimation(Sender) = mas[i]^) then mp[i].Visible := not mp[i].Visible;
 
-       // Оботражение панели, теперь уже с карточкой
+       // РћР±РѕС‚СЂР°Р¶РµРЅРёРµ РїР°РЅРµР»Рё, С‚РµРїРµСЂСЊ СѓР¶Рµ СЃ РєР°СЂС‚РѕС‡РєРѕР№
       TFloatAnimation(Sender).Inverse := not TFloatAnimation(Sender).Inverse;
       TFloatAnimation(Sender).Start;
     end
@@ -2808,11 +2843,11 @@ end;
 procedure TForm1.ClickToContinue(Sender: TObject);
 begin
   case Opros.Tag of
-  0,1 : //режим опроса
+  0,1 : //СЂРµР¶РёРј РѕРїСЂРѕСЃР°
     begin
 
       if btnOprosOk.Visible then
-      begin //кнопки ответов уже показаны. показать анимацию подсказки
+      begin //РєРЅРѕРїРєРё РѕС‚РІРµС‚РѕРІ СѓР¶Рµ РїРѕРєР°Р·Р°РЅС‹. РїРѕРєР°Р·Р°С‚СЊ Р°РЅРёРјР°С†РёСЋ РїРѕРґСЃРєР°Р·РєРё
         if not KeyOkAnimated.Running then KeyOkAnimated.Start;
         if not KeyErrAnimated.Running then KeyErrAnimated.Start;
         if not KeyHideAnimated.Running then KeyHideAnimated.Start;
@@ -2821,43 +2856,43 @@ begin
       end
       else
       begin
-        // показываем кнопки для выбора ответа
+        // РїРѕРєР°Р·С‹РІР°РµРј РєРЅРѕРїРєРё РґР»СЏ РІС‹Р±РѕСЂР° РѕС‚РІРµС‚Р°
         HideButtonOpros(False);
         case Opros.Tag of
           0: AnimationAnswer;
           1: AnimationQuestion;
         end;
 
-        // Ожидаем завершения анимации панели
+        // РћР¶РёРґР°РµРј Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё РїР°РЅРµР»Рё
         Delay(600);
 
       end;
     end;
-  2: //режим изучения
+  2: //СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ
     begin
-       // защита от "много тыканья"
+       // Р·Р°С‰РёС‚Р° РѕС‚ "РјРЅРѕРіРѕ С‚С‹РєР°РЅСЊСЏ"
        if QuestionAnimationScale.Running or QuestionAnimationPosition.Running or
           AnswerAnimationScale.Running or AnswerAnimationPosition.Running then Exit;
 
-      // прячим карточки
+      // РїСЂСЏС‡РёРј РєР°СЂС‚РѕС‡РєРё
       AnimationQuestion;
-      Delay(200); //задержка для рассинхронизации переворота карточек (для красоты)
+      Delay(200); //Р·Р°РґРµСЂР¶РєР° РґР»СЏ СЂР°СЃСЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РїРµСЂРµРІРѕСЂРѕС‚Р° РєР°СЂС‚РѕС‡РµРє (РґР»СЏ РєСЂР°СЃРѕС‚С‹)
       AnimationAnswer;
-      // Ожидаем завершения анимации карточек
+      // РћР¶РёРґР°РµРј Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё РєР°СЂС‚РѕС‡РµРє
       Delay(600);
 
-      // перезапускаем таймер, если необходимо (на случай, если карточку поменяли вручную)
+      // РїРµСЂРµР·Р°РїСѓСЃРєР°РµРј С‚Р°Р№РјРµСЂ, РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ (РЅР° СЃР»СѓС‡Р°Р№, РµСЃР»Рё РєР°СЂС‚РѕС‡РєСѓ РїРѕРјРµРЅСЏР»Рё РІСЂСѓС‡РЅСѓСЋ)
       if SwitchAuto.IsChecked and (TabControl1.ActiveTab.Index = 3) then
       begin
-        Timer1.Enabled := cFalse;
-        Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
-        with SpeedSelector do Timer1.Interval := Round(Max + Min - Value) + 1200; //максимальное значение скорости в миниальную паузу
-        Timer1.Enabled := cTrue;
+        Timer1.Enabled := False;
+        Timer1.TagString := DateTimeToStr( Now ); // Р·Р°РїРѕРјРёРЅР°РµРј РІСЂРµРјСЏ РЅР°С‡Р°Р»Р° РёРЅС‚РµСЂРІР°Р»Р°
+        with SpeedSelector do Timer1.Interval := Round(Max + Min - Value) + 1200; //РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РІ РјРёРЅРёР°Р»СЊРЅСѓСЋ РїР°СѓР·Сѓ
+        Timer1.Enabled := True;
       end
-      else if TabControl1.ActiveTab.Index <> 3 then Exit; // закладку уже поменяли
+      else if TabControl1.ActiveTab.Index <> 3 then Exit; // Р·Р°РєР»Р°РґРєСѓ СѓР¶Рµ РїРѕРјРµРЅСЏР»Рё
 
 
-      // поменять карточки
+      // РїРѕРјРµРЅСЏС‚СЊ РєР°СЂС‚РѕС‡РєРё
       SelectNewCardToOpros;
 
     end;
@@ -2866,11 +2901,11 @@ end;
 
 procedure TForm1.SearchBoxPackChangeTracking(Sender: TObject);
 begin
-  // сброс выбранной пачки
+  // СЃР±СЂРѕСЃ РІС‹Р±СЂР°РЅРЅРѕР№ РїР°С‡РєРё
   if Listpacks.ItemIndex<>-1 then
   begin
     Listpacks.ItemIndex := -1;
-    {т.к. для ListPack режим BeginUpdate не включен, действия что ниже выполняется по событию onChange
+    {С‚.Рє. РґР»СЏ ListPack СЂРµР¶РёРј BeginUpdate РЅРµ РІРєР»СЋС‡РµРЅ, РґРµР№СЃС‚РІРёСЏ С‡С‚Рѕ РЅРёР¶Рµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РїРѕ СЃРѕР±С‹С‚РёСЋ onChange
     pack_selected^.ItemData.Accessory := TListBoxItemData.TAccessory.aNone;
     pack_selected^        := nil;
     btnInfoPack.Visible   := False;
@@ -2891,10 +2926,10 @@ var i : integer;
 begin
   if (mt[0].TextSettings.Font.Size<6) then Exit;
 
-  // изменить размер шрифта
+  // РёР·РјРµРЅРёС‚СЊ СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р°
   for i := 0 to length(mt)-1 do mt[i].TextSettings.Font.Size := mt[i].TextSettings.Font.Size + TSpeedButton(Sender).Tag;
 
-  // Сохранить в файле ini
+  // РЎРѕС…СЂР°РЅРёС‚СЊ РІ С„Р°Р№Р»Рµ ini
   ini_fontExpress := mt[0].TextSettings.Font.Size;
 end;
 
@@ -2902,15 +2937,15 @@ procedure TForm1.SpeedSelectorChange(Sender: TObject);
 var timerEnd  : TDateTime;
     speedRot  : Integer;
 begin
-  with SpeedSelector do speedRot := Round(Max + Min - Value) + 1200; //максимальное значение скорости в миниальную паузу
+  with SpeedSelector do speedRot := Round(Max + Min - Value) + 1200; //РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РІ РјРёРЅРёР°Р»СЊРЅСѓСЋ РїР°СѓР·Сѓ
   timerEnd    := IncMilliSecond(StrToDateTime(Timer1.TagString), speedRot);
-  // проверяем, не пора ли сменить карточки для нового установленного интервала
-  if CompareDateTime(timerEnd, Now) = -1 then ClickToContinue(nil)  // пора менять карточки
+  // РїСЂРѕРІРµСЂСЏРµРј, РЅРµ РїРѕСЂР° Р»Рё СЃРјРµРЅРёС‚СЊ РєР°СЂС‚РѕС‡РєРё РґР»СЏ РЅРѕРІРѕРіРѕ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РёРЅС‚РµСЂРІР°Р»Р°
+  if CompareDateTime(timerEnd, Now) = -1 then ClickToContinue(nil)  // РїРѕСЂР° РјРµРЅСЏС‚СЊ РєР°СЂС‚РѕС‡РєРё
   else
-  begin // установить таймер на остаток интервала
-    Timer1.Enabled  := cFalse;
+  begin // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚Р°Р№РјРµСЂ РЅР° РѕСЃС‚Р°С‚РѕРє РёРЅС‚РµСЂРІР°Р»Р°
+    Timer1.Enabled  := False;
     Timer1.Interval := MilliSecondsBetween( timerEnd, Now );
-    Timer1.Enabled  := cTrue;
+    Timer1.Enabled  := True;
   end;
 end;
 
@@ -2923,7 +2958,7 @@ procedure TForm1.SwitchAutoClick(Sender: TObject);
 begin
 end;
 
-// установка состояния элемнов управления скорости прокрутки
+// СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ СЌР»РµРјРЅРѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё РїСЂРѕРєСЂСѓС‚РєРё
 procedure ShowSpeedControl(const setState : boolean);
 begin
   with Form1 do
@@ -2934,24 +2969,24 @@ begin
   end;
 end;
 
-// включение/выключение режима автопереключения карточек при изучении
+// РІРєР»СЋС‡РµРЅРёРµ/РІС‹РєР»СЋС‡РµРЅРёРµ СЂРµР¶РёРјР° Р°РІС‚РѕРїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РєР°СЂС‚РѕС‡РµРє РїСЂРё РёР·СѓС‡РµРЅРёРё
 procedure TForm1.SwitchAutoSwitch(Sender: TObject);
 begin
   if SwitchAuto.IsChecked then
   begin
-    // включени регулятора скорости прокрутки
-    ShowSpeedControl(cTrue);
-    // включение таймера переключения карточек
-    Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
-    Timer1.Enabled := cTrue;
-    ClickToContinue(nil);  // закрыть карточки и выбрать новые (эмуляция нажатия)
+    // РІРєР»СЋС‡РµРЅРё СЂРµРіСѓР»СЏС‚РѕСЂР° СЃРєРѕСЂРѕСЃС‚Рё РїСЂРѕРєСЂСѓС‚РєРё
+    ShowSpeedControl(True);
+    // РІРєР»СЋС‡РµРЅРёРµ С‚Р°Р№РјРµСЂР° РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РєР°СЂС‚РѕС‡РµРє
+    Timer1.TagString := DateTimeToStr( Now ); // Р·Р°РїРѕРјРёРЅР°РµРј РІСЂРµРјСЏ РЅР°С‡Р°Р»Р° РёРЅС‚РµСЂРІР°Р»Р°
+    Timer1.Enabled := True;
+    ClickToContinue(nil);  // Р·Р°РєСЂС‹С‚СЊ РєР°СЂС‚РѕС‡РєРё Рё РІС‹Р±СЂР°С‚СЊ РЅРѕРІС‹Рµ (СЌРјСѓР»СЏС†РёСЏ РЅР°Р¶Р°С‚РёСЏ)
   end
   else
   begin
-    // отключение регулятора скорости
-    ShowSpeedControl(cFalse);
-    // остановка автоматического переключения карточек
-    Timer1.Enabled := cFalse;
+    // РѕС‚РєР»СЋС‡РµРЅРёРµ СЂРµРіСѓР»СЏС‚РѕСЂР° СЃРєРѕСЂРѕСЃС‚Рё
+    ShowSpeedControl(False);
+    // РѕСЃС‚Р°РЅРѕРІРєР° Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РєР°СЂС‚РѕС‡РµРє
+    Timer1.Enabled := False;
   end;
 end;
 
@@ -2960,63 +2995,75 @@ var current_nc                : int64;
     rest_timer, rest_record   : boolean;
 begin
 
-  // карточка уже выбрана, запоминаем уникальный номер значение
+  // РєР°СЂС‚РѕС‡РєР° СѓР¶Рµ РІС‹Р±СЂР°РЅР°, Р·Р°РїРѕРјРёРЅР°РµРј СѓРЅРёРєР°Р»СЊРЅС‹Р№ РЅРѕРјРµСЂ Р·РЅР°С‡РµРЅРёРµ
   rest_record := DM.FDQuery2.Active;
   if DM.FDQuery2.Active then current_nc := DM.FDQuery2.FieldByName('nc').AsInteger
-  else current_nc := 0; // чтоб убрать "warning" отладчика
+  else current_nc := 0; // С‡С‚РѕР± СѓР±СЂР°С‚СЊ "warning" РѕС‚Р»Р°РґС‡РёРєР°
 
-  // если таймер включен, то остановить
+  // РµСЃР»Рё С‚Р°Р№РјРµСЂ РІРєР»СЋС‡РµРЅ, С‚Рѕ РѕСЃС‚Р°РЅРѕРІРёС‚СЊ
   rest_timer := Timer1.Enabled;
-  if Timer1.Enabled then Timer1.Enabled := cFalse;
+  if Timer1.Enabled then Timer1.Enabled := False;
 
   //
   DM.FDQuery2.Close;  DM.FDQuery2.SQL.Clear;
   DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
   DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
-  if SwitchHideLearned.IsChecked then // показывать только не выученные карточки
+  if SwitchHideLearned.IsChecked then // РїРѕРєР°Р·С‹РІР°С‚СЊ С‚РѕР»СЊРєРѕ РЅРµ РІС‹СѓС‡РµРЅРЅС‹Рµ РєР°СЂС‚РѕС‡РєРё
     DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND (c.hide1=0 OR c.hide2=0);')
-  else // показывать все карточки
+  else // РїРѕРєР°Р·С‹РІР°С‚СЊ РІСЃРµ РєР°СЂС‚РѕС‡РєРё
     DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+';');
   //
 
-  // если необходимо восстанавливаем позицию записи в БД
+  // РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР·РёС†РёСЋ Р·Р°РїРёСЃРё РІ Р‘Р”
   if rest_record then
   begin
     DM.FDQuery2.OpenOrExecute;
     DM.FDQuery2.Filter    := 'nc=' + IntToStr(current_nc);
-    DM.FDQuery2.Filtered  := cTrue;
+    DM.FDQuery2.Filtered  := True;
     DM.FDQuery2.FindFirst;
-    DM.FDQuery2.Filtered  := cFalse;
+    DM.FDQuery2.Filtered  := False;
   end;
 
-  // если нужно, восстанавливаем активность таймера
+  // РµСЃР»Рё РЅСѓР¶РЅРѕ, РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р°РєС‚РёРІРЅРѕСЃС‚СЊ С‚Р°Р№РјРµСЂР°
   if rest_timer then Timer1.Enabled := rest_timer;
 
 end;
 
 procedure TForm1.btnDeleteStatisticsClick(Sender: TObject);
+var
+  ASyncService : IFMXDialogServiceASync;
 begin
-  // другой способ описания кнопок: TMsgDlgBtn(n)
+  { 'MessageDlg' is deprecated: 'Use FMX.DialogService methods'
   MessageDlg(txt_question1,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],0,TMsgDlgBtn.mbNo,CloseDlgDeleteStat);
+  }
+  if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+   ASyncService.MessageDialogAsync(
+    txt_question2,
+    TMsgDlgType.mtConfirmation,
+    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],
+    TMsgDlgBtn.mbNo,
+    0,
+    CloseDlgDeleteStat
+  );
 end;
 
 procedure TForm1.ChengebtnDirectClick(Sender: TObject);
 begin
 end;
 
-// обработчик MessageDlg (требоване для Non-blocking вызова OS)
+// РѕР±СЂР°Р±РѕС‚С‡РёРє MessageDlg (С‚СЂРµР±РѕРІР°РЅРµ РґР»СЏ Non-blocking РІС‹Р·РѕРІР° OS)
 procedure TForm1.CloseDlgDeleteStat(const AResult: TModalResult);
 begin
   if AResult=mrYes then
   begin
-    // Удаляем статистику
+    // РЈРґР°Р»СЏРµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ
     DM.FDDatabese.ExecSQL('DELETE FROM answers WHERE nc IN (SELECT nc FROM cards WHERE np='+pack_selected^.TagString+');');
     DM.FDDatabese.ExecSQL('UPDATE cards SET hide1=0, hide2=0 WHERE np='+pack_selected^.TagString+';');
 
     Statistics.IsExpanded := not Statistics.IsExpanded;
     DM.FDQuery1.Refresh;
     DM.FDQuery2.Refresh;
-    SetPackStatistics;      // обновление полей статистики
+    SetPackStatistics;      // РѕР±РЅРѕРІР»РµРЅРёРµ РїРѕР»РµР№ СЃС‚Р°С‚РёСЃС‚РёРєРё
     CardsGrid.Repaint
   end;
 end;
@@ -3025,93 +3072,94 @@ procedure TForm1.TabControl1Change(Sender: TObject);
 var i : integer;
 begin
 
-  btnTools.Visible := cFalse;
-  // Настройка элементов для различных TabControl
+  btnTools.Visible := False;
+  // РќР°СЃС‚СЂРѕР№РєР° СЌР»РµРјРµРЅС‚РѕРІ РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… TabControl
   case TabControl1.ActiveTab.Index of
-    // Форма PackList
+    // Р¤РѕСЂРјР° PackList
     0:  begin
-          btnTools.Visible := cTrue;
-          // если пачка в списке уже выбрана, то запомнить ее хешь (для "Tap"), иначе сбросить
+          btnTools.Visible := True;
+          // РµСЃР»Рё РїР°С‡РєР° РІ СЃРїРёСЃРєРµ СѓР¶Рµ РІС‹Р±СЂР°РЅР°, С‚Рѕ Р·Р°РїРѕРјРЅРёС‚СЊ РµРµ С…РµС€СЊ (РґР»СЏ "Tap"), РёРЅР°С‡Рµ СЃР±СЂРѕСЃРёС‚СЊ
           if Listpacks.ItemIndex<>-1 then last_tap := ListPacks.Selected.GetHashCode
-          else last_tap := -1;                // сброс номера последней выбранной пачки (для "Tap")
+          else last_tap := -1;                // СЃР±СЂРѕСЃ РЅРѕРјРµСЂР° РїРѕСЃР»РµРґРЅРµР№ РІС‹Р±СЂР°РЅРЅРѕР№ РїР°С‡РєРё (РґР»СЏ "Tap")
           Toplabel.Text         := EmptyStr;
           TopLabel.TextSettings.FontColor := TAlphaColorRec.Black;
-          btnSearch.Visible     := cTrue;
+          btnSearch.Visible     := True;
           btnAppend.StyleLookup := 'addtoolbutton';
-          btnAppend.Visible     := cTrue;
-          btnBack.Visible       := cFalse;
-          btnSave.Visible       := cFalse;
-          btnEdit.Visible       := cFalse;
-          semafor.Visible       := cFalse;
-          labelTimer.Visible    := cFalse;
+          btnAppend.Visible     := True;
+          btnBack.Visible       := False;
+          btnSave.Visible       := False;
+          btnEdit.Visible       := False;
+          semafor.Visible       := False;
+          labelTimer.Visible    := False;
           if Listpacks.ItemIndex <> -1 then
           begin
-            btnInfoPack.Visible := cTrue;
+            btnInfoPack.Visible := True;
             DM.FDStat.Refresh;
 
-            // кнопку изучения показываем только если больше 0-ля не скрытых карточек
+            // РєРЅРѕРїРєСѓ РёР·СѓС‡РµРЅРёСЏ РїРѕРєР°Р·С‹РІР°РµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё Р±РѕР»СЊС€Рµ 0-Р»СЏ РЅРµ СЃРєСЂС‹С‚С‹С… РєР°СЂС‚РѕС‡РµРє
             if (VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide1'])>0) or
                (VarToInt(DM.FDStat['countcards']) - VarToInt(DM.FDStat['hide2'])>0)
-               then btnStartStudy.Visible := cTrue
-            else btnStartStudy.Visible := cFalse;
+               then btnStartStudy.Visible := True
+            else btnStartStudy.Visible := False;
 
 
-            // кнопку опроса показываем только если больше 1 карточки
+            // РєРЅРѕРїРєСѓ РѕРїСЂРѕСЃР° РїРѕРєР°Р·С‹РІР°РµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё Р±РѕР»СЊС€Рµ 1 РєР°СЂС‚РѕС‡РєРё
             if VarToInt(DM.FDStat['countcards'])>0 then
             begin
-              btnStartEducation.Visible := cTrue;
-              //включаем в меню "экспорт", если пачка не системная
+              btnStartEducation.Visible := True;
+              //РІРєР»СЋС‡Р°РµРј РІ РјРµРЅСЋ "СЌРєСЃРїРѕСЂС‚", РµСЃР»Рё РїР°С‡РєР° РЅРµ СЃРёСЃС‚РµРјРЅР°СЏ
               if ListPacks.Selected.Tag<>0 then
               begin
-                mExport.Enabled := cTrue;
-                mExport.HitTest := cTrue;
+                mExport.Enabled := True;
+                mExport.HitTest := True;
               end;
             end
-            else btnStartEducation.Visible := cFalse;
+            else btnStartEducation.Visible := False;
 
-            // кнопку експресс опроса показываем кнопку только если в пачке больше 5 карточек
-            if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := cTrue
-            else btnStartTraining.Visible := cFalse;
+            // РєРЅРѕРїРєСѓ РµРєСЃРїСЂРµСЃСЃ РѕРїСЂРѕСЃР° РїРѕРєР°Р·С‹РІР°РµРј РєРЅРѕРїРєСѓ С‚РѕР»СЊРєРѕ РµСЃР»Рё РІ РїР°С‡РєРµ Р±РѕР»СЊС€Рµ 5 РєР°СЂС‚РѕС‡РµРє
+            if VarToInt(DM.FDStat['countcards'])>5 then btnStartTraining.Visible := True
+            else btnStartTraining.Visible := False;
 
             case pack_selected^.Tag of
               1..2 :
               begin
-                //btnDeletePack.Visible := cTrue;  // кнопка удаления локальной или сетевой пачки
-                mDelPack.Enabled  := cTrue;
-                mDelPack.HitTest  := cTrue;
+                //btnDeletePack.Visible := True;  // РєРЅРѕРїРєР° СѓРґР°Р»РµРЅРёСЏ Р»РѕРєР°Р»СЊРЅРѕР№ РёР»Рё СЃРµС‚РµРІРѕР№ РїР°С‡РєРё
+                mDelPack.Enabled  := True;
+                mDelPack.HitTest  := True;
               end;
               else
               begin
-                btnDeletePack.Visible    := cFalse;
-                mDelPack.Enabled  := cFalse;
-                mDelPack.HitTest  := cFalse;
+                btnDeletePack.Visible    := False;
+                mDelPack.Enabled  := False;
+                mDelPack.HitTest  := False;
               end;
             end;
 
           end
           else
           begin
-            btnStartStudy.Visible     := cFalse;
-            btnInfoPack.Visible       := cFalse;
-            btnStartTraining.Visible  := cFalse;
-            btnStartEducation.Visible := cFalse;
-            btnDeletePack.Visible     := cFalse;
-            mDelPack.Enabled          := cFalse;
-            mDelPack.HitTest          := cFalse;
+            btnStartStudy.Visible     := False;
+            btnInfoPack.Visible       := False;
+            btnStartTraining.Visible  := False;
+            btnStartEducation.Visible := False;
+            btnDeletePack.Visible     := False;
+            mDelPack.Enabled          := False;
+            mDelPack.HitTest          := False;
           end;
     // End PackList
     end;
 
-    // Форма Pack
+    // Р¤РѕСЂРјР° Pack
     1:  begin
-          btnSearch.Visible   := cFalse;
-          btnAppend.Visible   := cFalse;
-          semafor.Visible     := cFalse;
-          labelTimer.Visible  := cFalse;
-          btnBack.Visible     := cTrue;
+          CardsGrid.BeginUpdate;
+          btnSearch.Visible   := False;
+          btnAppend.Visible   := False;
+          semafor.Visible     := False;
+          labelTimer.Visible  := False;
+          btnBack.Visible     := True;
           //
-          btnSave.Width := btn_stn;
-          btnSave.Text := btn_save;
+          btnSave.Width       := btn_stn;
+          btnSave.Text        := btn_save;
           btnSave.TextSettings.FontColor := $FFFF0000;  // red
           //
           //btnBack.Width       := btn_stn;
@@ -3119,26 +3167,26 @@ begin
           //
           if ini_maxanswer<>0 then Progress.Max := ini_maxanswer*2
           else Progress.Max := 20;
-          if CardsGrid.Selected=-1 then btnInfoCard.Visible := cFalse
-          else btnInfoCard.Visible := cTrue;
-          // показываем или сворачиваем панель статистики
-          if Pack.Tag=4 then Statistics.IsExpanded := cTrue
-          else Statistics.IsExpanded  := cFalse;
+          if CardsGrid.Selected=-1 then btnInfoCard.Visible := False
+          else btnInfoCard.Visible := True;
+          // РїРѕРєР°Р·С‹РІР°РµРј РёР»Рё СЃРІРѕСЂР°С‡РёРІР°РµРј РїР°РЅРµР»СЊ СЃС‚Р°С‚РёСЃС‚РёРєРё
+          if Pack.Tag=4 then Statistics.IsExpanded := True
+          else Statistics.IsExpanded  := False;
 
-          // отбоб информации по выбранной пачке
+          // РѕС‚Р±РѕР± РёРЅС„РѕСЂРјР°С†РёРё РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ РїР°С‡РєРµ
           if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
           DM.FDQuery1.SQL.Clear;
           DM.FDQuery2.SQL.Clear;
 
           case Pack.Tag of
-            // открываем или редактируем существующую
+            // РѕС‚РєСЂС‹РІР°РµРј РёР»Рё СЂРµРґР°РєС‚РёСЂСѓРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰СѓСЋ
             0..1,4: begin
                     DM.FDQuery1.SQL.Add('SELECT p.packname, p.type, p.lang, p.descript, s.countcards, s.hide1, s.hide2');
                     DM.FDQuery1.SQL.Add('FROM packet p');
                     DM.FDQuery1.SQL.Add('LEFT JOIN pack_stats s ON s.np=p.np');
                     DM.FDQuery1.SQL.Add('WHERE p.np='+pack_selected^.TagString);
 
-                    //отбор карточек
+                    //РѕС‚Р±РѕСЂ РєР°СЂС‚РѕС‡РµРє
                     DM.FDQuery2.SQL.Add('SELECT c.nc,c.question1,c.question2,c.hide1,c.hide2,');
                     DM.FDQuery2.SQL.Add('s.direct_true,s.direct_false,s.reverse_true,s.reverse_false');
                     DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
@@ -3153,12 +3201,12 @@ begin
                     PackDescription.Text    := DM.FDQuery1.FieldByName('descript').AsString;
                     LangEdit.Text           := DM.FDQuery1.FieldByName('lang').AsString;
 
-                    SetPackStatistics;    // заполнение полей статитики по выбранной пачке
+                    SetPackStatistics;    // Р·Р°РїРѕР»РЅРµРЅРёРµ РїРѕР»РµР№ СЃС‚Р°С‚РёС‚РёРєРё РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ РїР°С‡РєРµ
             end;
 
-            // добавляем новую
+            // РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ
             2:  begin
-                  CardsGrid.Visible       := cFalse;
+                  CardsGrid.Visible       := False;
                   Statistics.Enabled      := CardsGrid.Visible;
 
                   PackName.Text           := EmptyStr;
@@ -3168,42 +3216,43 @@ begin
           end;
 
           case Pack.Tag of
-            // режим просмотра
-            0,4:  SetPackReadOnly(cTrue);//SetPackReadOnly;
-            // режим редактирования
-            1..2:  SetPackReadOnly(cFalse);//SetPackEdit;
+            // СЂРµР¶РёРј РїСЂРѕСЃРјРѕС‚СЂР°
+            0,4:  SetPackReadOnly(True);//SetPackReadOnly;
+            // СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+            1..2:  SetPackReadOnly(False);//SetPackEdit;
           end;
+          CardsGrid.EndUpdate;
     // End Pack
     end;
 
-    // Форма Card
+    // Р¤РѕСЂРјР° Card
     2:  begin
           TopLabel.TextSettings.FontColor := TAlphaColorRec.Black;
           btnSave.Width     := btn_big;
           btnSave.Text      := btn_continue;
           btnSave.TextSettings.FontColor := $FF008000;  // green
-          semafor.Visible   := cFalse;
+          semafor.Visible   := False;
           labelTimer.Visible  := semafor.Visible;
           //
           case Card.Tag of
-            // открыть форму в режиме ReadOnly
+            // РѕС‚РєСЂС‹С‚СЊ С„РѕСЂРјСѓ РІ СЂРµР¶РёРјРµ ReadOnly
             0:  begin
-                  SetCard;                // установка значений полей карты
-                  SetCardReadOnly(cTrue);  // установка режима RedOnly
+                  SetCard;                // СѓСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РїРѕР»РµР№ РєР°СЂС‚С‹
+                  SetCardReadOnly(True);  // СѓСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° RedOnly
                 end;
-            // открыть форму в режиме Edit
+            // РѕС‚РєСЂС‹С‚СЊ С„РѕСЂРјСѓ РІ СЂРµР¶РёРјРµ Edit
             1:  begin
-                  SetCard;                //установка значений полей карты
-                  SetCardReadOnly(cFalse);
+                  SetCard;                //СѓСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РїРѕР»РµР№ РєР°СЂС‚С‹
+                  SetCardReadOnly(False);
                 end;
-            // открыть форму в режиме Add
+            // РѕС‚РєСЂС‹С‚СЊ С„РѕСЂРјСѓ РІ СЂРµР¶РёРјРµ Add
             2:  begin
-                  SetCardReadOnly(cFalse);
+                  SetCardReadOnly(False);
                   EditCardPack.Text         := PackName.Text;
                   EditQuestion.Text         := EmptyStr;
                   EditAnswer.Text           := EditQuestion.Text;
-                  EditDirectHide.IsChecked  := cFalse;
-                  EditReverseHide.IsChecked := cFalse;
+                  EditDirectHide.IsChecked  := False;
+                  EditReverseHide.IsChecked := False;
                   TopLabel.Text             := 'Insert';
                   CorrectDir.Text           := EmptyStr;
                   CorrectRev.Text           := EmptyStr;
@@ -3212,55 +3261,55 @@ begin
     // End Card
     end;
 
-    //  Форма Opros
+    //  Р¤РѕСЂРјР° Opros
     3:  begin
-          // в DM.FDStat отбор статистики по пачке
+          // РІ DM.FDStat РѕС‚Р±РѕСЂ СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РїР°С‡РєРµ
           last_card             := EmptyStr;
           Toplabel.Text         := EmptyStr;
           TopLabel.TextSettings.FontColor := TAlphaColorRec.Black;
           btnBack.StyleLookup   := 'backtoolbutton';
           btnBack.Width         := btn_stn;
-          btnBack.Visible       := cTrue;
-          btnSearch.Visible     := cFalse;
-          btnAppend.Visible     := cFalse;
-          btnSave.Visible       := cFalse;
-          btnEdit.Visible       := cFalse;
-          semafor.Visible       := cFalse;
-          labelTimer.Visible    := cFalse;
-          ImageQ.Visible        := cTrue;
-          ImageA.Visible        := cTrue;
+          btnBack.Visible       := True;
+          btnSearch.Visible     := False;
+          btnAppend.Visible     := False;
+          btnSave.Visible       := False;
+          btnEdit.Visible       := False;
+          semafor.Visible       := False;
+          labelTimer.Visible    := False;
+          ImageQ.Visible        := True;
+          ImageA.Visible        := True;
           OprosPackName.Text    := pack_selected^.ItemData.Text;
-          HideButtonOpros(cTrue);
+          HideButtonOpros(True);
 
           case Opros.Tag of
-          0,1 : // режим опроса
+          0,1 : // СЂРµР¶РёРј РѕРїСЂРѕСЃР°
             begin
-              PanelOpros.HitTest    := cTrue;
-              btnDirection.Visible  := cTrue;
-              statCard.Visible      := cTrue;
-              GridPanelOprosSwitch.Visible  := cFalse;
+              PanelOpros.HitTest    := True;
+              btnDirection.Visible  := True;
+              statCard.Visible      := True;
+              GridPanelOprosSwitch.Visible  := False;
               if not ComPanelOpros.Visible then
               begin
-                ComPanelOpros.Visible := cTrue;
-                FormResize(nil);  // дополнительный пересчет панели, т.к. ComPanelOpros поменяла состояние
+                ComPanelOpros.Visible := True;
+                FormResize(nil);  // РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ РїРµСЂРµСЃС‡РµС‚ РїР°РЅРµР»Рё, С‚.Рє. ComPanelOpros РїРѕРјРµРЅСЏР»Р° СЃРѕСЃС‚РѕСЏРЅРёРµ
               end;
             end;
-          2 :   // режим изучения
+          2 :   // СЂРµР¶РёРј РёР·СѓС‡РµРЅРёСЏ
             begin
-              PanelOpros.HitTest    := cTrue;
-              btnDirection.Visible  := cFalse;
-              statCard.Visible      := cFalse;
-              GridPanelOprosSwitch.Visible  := cTrue;
+              PanelOpros.HitTest    := True;
+              btnDirection.Visible  := False;
+              statCard.Visible      := False;
+              GridPanelOprosSwitch.Visible  := True;
               if ComPanelOpros.Visible then
               begin
-                ComPanelOpros.Visible := cFalse;
-                FormResize(nil);  // дополнительный пересчет панели, т.к. ComPanelOpros поменяла состояние
+                ComPanelOpros.Visible := False;
+                FormResize(nil);  // РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ РїРµСЂРµСЃС‡РµС‚ РїР°РЅРµР»Рё, С‚.Рє. ComPanelOpros РїРѕРјРµРЅСЏР»Р° СЃРѕСЃС‚РѕСЏРЅРёРµ
               end;
 
-              // настройка параметров таймера
-              // время срабатывания + время анимации карточек
-              with SpeedSelector do Timer1.Interval := Round(Max + Min - Value) + 1200; //максимальное значение скорости в миниальную паузу
-              Timer1.OnTimer      := Timer1Opros; // назначение обработчика на таймер (переключение карточек)
+              // РЅР°СЃС‚СЂРѕР№РєР° РїР°СЂР°РјРµС‚СЂРѕРІ С‚Р°Р№РјРµСЂР°
+              // РІСЂРµРјСЏ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ + РІСЂРµРјСЏ Р°РЅРёРјР°С†РёРё РєР°СЂС‚РѕС‡РµРє
+              with SpeedSelector do Timer1.Interval := Round(Max + Min - Value) + 1200; //РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РІ РјРёРЅРёР°Р»СЊРЅСѓСЋ РїР°СѓР·Сѓ
+              Timer1.OnTimer      := Timer1Opros; // РЅР°Р·РЅР°С‡РµРЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР° РЅР° С‚Р°Р№РјРµСЂ (РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РєР°СЂС‚РѕС‡РµРє)
 
             end;
           end;
@@ -3269,35 +3318,35 @@ begin
           DM.FDQuery2.SQL.Clear;
 
           case Opros.Tag of
-          0 : // прямой перебор карт
+          0 : // РїСЂСЏРјРѕР№ РїРµСЂРµР±РѕСЂ РєР°СЂС‚
             begin
-              // кнопки изменения направления перебора
+              // РєРЅРѕРїРєРё РёР·РјРµРЅРµРЅРёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµР±РѕСЂР°
               btnDirection.RotationAngle := 0;
               if (DM.FDStat.FieldByName('countcards').AsInteger-DM.FDStat.FieldByName('hide2').AsInteger)>0 then
-                    btnDirection.HitTest  := cTrue
-              else  btnDirection.HitTest  := cFalse;
+                    btnDirection.HitTest  := True
+              else  btnDirection.HitTest  := False;
 
-              // селект данных со статистикой по карточке для прямого перебора
+              // СЃРµР»РµРєС‚ РґР°РЅРЅС‹С… СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№ РїРѕ РєР°СЂС‚РѕС‡РєРµ РґР»СЏ РїСЂСЏРјРѕРіРѕ РїРµСЂРµР±РѕСЂР°
               DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
               DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
               DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND c.hide1=0;');
             end;
-          1 : // обратный перебор
+          1 : // РѕР±СЂР°С‚РЅС‹Р№ РїРµСЂРµР±РѕСЂ
             begin
-              // кнопки изменения направления перебора
+              // РєРЅРѕРїРєРё РёР·РјРµРЅРµРЅРёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµР±РѕСЂР°
               btnDirection.RotationAngle := 180;
               if (DM.FDStat.FieldByName('countcards').AsInteger-DM.FDStat.FieldByName('hide1').AsInteger)>0 then
-                    btnDirection.HitTest := cTrue
-              else  btnDirection.HitTest := cFalse;
+                    btnDirection.HitTest := True
+              else  btnDirection.HitTest := False;
 
-              // селект данных со статистикой по карточке для обратного перебора
+              // СЃРµР»РµРєС‚ РґР°РЅРЅС‹С… СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№ РїРѕ РєР°СЂС‚РѕС‡РєРµ РґР»СЏ РѕР±СЂР°С‚РЅРѕРіРѕ РїРµСЂРµР±РѕСЂР°
               DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.reverse_true true, s.reverse_false false');
               DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
               DM.FDQuery2.SQL.Add('WHERE c.np='+pack_selected^.TagString+' AND c.hide2=0;');
             end;
-          2 : // режим обучения
+          2 : // СЂРµР¶РёРј РѕР±СѓС‡РµРЅРёСЏ
             begin
-              SwitchHideLearnedSwitch(nil); // заполение селекта в зависимости от переключателя фильтра
+              SwitchHideLearnedSwitch(nil); // Р·Р°РїРѕР»РµРЅРёРµ СЃРµР»РµРєС‚Р° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РїРµСЂРµРєР»СЋС‡Р°С‚РµР»СЏ С„РёР»СЊС‚СЂР°
               {
               DM.FDQuery2.SQL.Add('SELECT c.nc, c.question1, c.question2, s.direct_true true, s.direct_false false');
               DM.FDQuery2.SQL.Add('FROM cards c LEFT JOIN card_stats s ON s.nc=c.nc');
@@ -3306,50 +3355,50 @@ begin
             end;
           end;
 
-          // отбор карточек
+          // РѕС‚Р±РѕСЂ РєР°СЂС‚РѕС‡РµРє
           DM.FDQuery2.OpenOrExecute;
           case Opros.Tag of
-          0,1 : // режим опроса
+          0,1 : // СЂРµР¶РёРј РѕРїСЂРѕСЃР°
             begin
               SelectNewCardToOpros;
             end;
-          2 :   // режим обучения
+          2 :   // СЂРµР¶РёРј РѕР±СѓС‡РµРЅРёСЏ
             begin
-              DM.FDQuery2.Last;   // переход к последней карточке (чтобы начать показ с первой)
+              DM.FDQuery2.Last;   // РїРµСЂРµС…РѕРґ Рє РїРѕСЃР»РµРґРЅРµР№ РєР°СЂС‚РѕС‡РєРµ (С‡С‚РѕР±С‹ РЅР°С‡Р°С‚СЊ РїРѕРєР°Р· СЃ РїРµСЂРІРѕР№)
 
-              // только одна карточка. скрываем панель выбора вариантов перебора
-              if DM.FDQuery2.RecNo < 2 then GridPanelOprosSwitch.Visible := cFalse;
+              // С‚РѕР»СЊРєРѕ РѕРґРЅР° РєР°СЂС‚РѕС‡РєР°. СЃРєСЂС‹РІР°РµРј РїР°РЅРµР»СЊ РІС‹Р±РѕСЂР° РІР°СЂРёР°РЅС‚РѕРІ РїРµСЂРµР±РѕСЂР°
+              if DM.FDQuery2.RecNo < 2 then GridPanelOprosSwitch.Visible := False;
 
               SelectNewCardToOpros;
               if SwitchAuto.IsChecked then
               begin
-                ShowSpeedControl(cTrue);  // включение элекменов панели выбора скорости перебора
-                Timer1.TagString := DateTimeToStr( Now ); // запоминаем время начала интервала
-                Timer1.Enabled := cTrue;  // запуск авто смены карточек, если это включено
+                ShowSpeedControl(True);  // РІРєР»СЋС‡РµРЅРёРµ СЌР»РµРєРјРµРЅРѕРІ РїР°РЅРµР»Рё РІС‹Р±РѕСЂР° СЃРєРѕСЂРѕСЃС‚Рё РїРµСЂРµР±РѕСЂР°
+                Timer1.TagString := DateTimeToStr( Now ); // Р·Р°РїРѕРјРёРЅР°РµРј РІСЂРµРјСЏ РЅР°С‡Р°Р»Р° РёРЅС‚РµСЂРІР°Р»Р°
+                Timer1.Enabled := True;  // Р·Р°РїСѓСЃРє Р°РІС‚Рѕ СЃРјРµРЅС‹ РєР°СЂС‚РѕС‡РµРє, РµСЃР»Рё СЌС‚Рѕ РІРєР»СЋС‡РµРЅРѕ
               end
-              else ShowSpeedControl(cFalse);  // отключение элекменов панели выбора скорости перебора
+              else ShowSpeedControl(False);  // РѕС‚РєР»СЋС‡РµРЅРёРµ СЌР»РµРєРјРµРЅРѕРІ РїР°РЅРµР»Рё РІС‹Р±РѕСЂР° СЃРєРѕСЂРѕСЃС‚Рё РїРµСЂРµР±РѕСЂР°
             end;
           end;
     // End Opros
     end;
 
-    //  Форма ExpresOpros
+    //  Р¤РѕСЂРјР° ExpresOpros
     4:  begin
           k_true                := 0;
           new_rec               := k_true;
           Toplabel.Text         := EmptyStr;
           TopLabel.TextSettings.FontColor := TAlphaColorRec.Green;
 
-          btnSearch.Visible     := cFalse;
-          btnEdit.Visible       := cFalse;
-          btnAppend.Visible     := cFalse;
+          btnSearch.Visible     := False;
+          btnEdit.Visible       := False;
+          btnAppend.Visible     := False;
           btnAppend.StyleLookup := 'refreshtoolbutton';
-          btnSave.Visible       := cFalse;
-          btnBack.Visible       := cTrue;
+          btnSave.Visible       := False;
+          btnBack.Visible       := True;
           btnback.StyleLookup   := 'backtoolbutton';
           btnback.Width         := btn_stn;
           semafor.Opacity       := 0;
-          semafor.Visible       := cTrue;
+          semafor.Visible       := True;
           ExpressPackName.Text  := pack_selected^.ItemData.Text;
 
           if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
@@ -3357,32 +3406,32 @@ begin
           DM.FDQuery1.SQL.Text := 'SELECT question1,question2 FROM cards WHERE np='+pack_selected^.TagString+';';
           DM.FDQuery3.OpenOrExecute;
           DM.FDQuery1.OpenOrExecute;
-          DM.FDQuery1.Last;        // для корректного получения количества карточек в бд
+          DM.FDQuery1.Last;        // РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° РєР°СЂС‚РѕС‡РµРє РІ Р±Рґ
 
-          // вывод в заголовок предыдущего рекорда (если был)
+          // РІС‹РІРѕРґ РІ Р·Р°РіРѕР»РѕРІРѕРє РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЂРµРєРѕСЂРґР° (РµСЃР»Рё Р±С‹Р»)
           if VarToInt(DM.FDQuery3['record'])<>0 then TopLabel.Text := ReplaceInStr(txt_warning4, VarToStr(DM.FDQuery3['record']));
 
-          // запуск таймера опроса
-          Timer1.Interval     := 1000;        // 1 секунда срабатывания
-          Timer1.OnTimer      := Timer1Timer; // установка обработчика таймера
+          // Р·Р°РїСѓСЃРє С‚Р°Р№РјРµСЂР° РѕРїСЂРѕСЃР°
+          Timer1.Interval     := 1000;        // 1 СЃРµРєСѓРЅРґР° СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ
+          Timer1.OnTimer      := Timer1Timer; // СѓСЃС‚Р°РЅРѕРІРєР° РѕР±СЂР°Р±РѕС‚С‡РёРєР° С‚Р°Р№РјРµСЂР°
           Timer1.Tag          := 61;
-          Timer1.Enabled      := cTrue;
-          LabelTimer.Visible  := cTrue;
+          Timer1.Enabled      := True;
+          LabelTimer.Visible  := True;
 
-          // закрываем карточки. если это необходимо
-          for i := 0 to length(mp)-1 do if not mp[i].Visible then mp[i].Visible := cTrue;
+          // Р·Р°РєСЂС‹РІР°РµРј РєР°СЂС‚РѕС‡РєРё. РµСЃР»Рё СЌС‚Рѕ РЅРµРѕР±С…РѕРґРёРјРѕ
+          for i := 0 to length(mp)-1 do if not mp[i].Visible then mp[i].Visible := True;
 
-          // заполняем карточки
+          // Р·Р°РїРѕР»РЅСЏРµРј РєР°СЂС‚РѕС‡РєРё
           SetExpressField;
     // End ExpresOpros
     end;
   end;
 
   //
-  FormResize(nil);  // пересчет размещение элементов панели. (и всего TabControl) Добавил в версии IDE 11
+  FormResize(nil);  // РїРµСЂРµСЃС‡РµС‚ СЂР°Р·РјРµС‰РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїР°РЅРµР»Рё. (Рё РІСЃРµРіРѕ TabControl) Р”РѕР±Р°РІРёР» РІ РІРµСЂСЃРёРё IDE 11
 end;
 
-// Обработка таймера для ExpressOpros
+// РћР±СЂР°Р±РѕС‚РєР° С‚Р°Р№РјРµСЂР° РґР»СЏ ExpressOpros
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   Timer1.Tag := Timer1.Tag-1;
@@ -3390,24 +3439,24 @@ begin
 
   if Timer1.Tag<=0 then
   begin
-    // опрос закончен
+    // РѕРїСЂРѕСЃ Р·Р°РєРѕРЅС‡РµРЅ
     Timer1.Enabled      := not Timer1.Enabled;
-    LabelTimer.Visible  := cFalse;
+    LabelTimer.Visible  := False;
 
-    // если новый рекорд
+    // РµСЃР»Рё РЅРѕРІС‹Р№ СЂРµРєРѕСЂРґ
     if new_rec>VarToInt(DM.FDQuery3['record']) then
     begin
       TopLabel.Text := ReplaceInStr(txt_warning6,IntToStr(new_rec));
-      // сохранить результат в БД
+      // СЃРѕС…СЂР°РЅРёС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ РІ Р‘Р”
       DM.FDDatabese.ExecSQL('UPDATE packet SET record='+IntToStr(new_rec)+' WHERE np='+pack_selected^.TagString+';');
     end;
 
-    // отображение кнопки повторного запуска опроса
+    // РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РєРЅРѕРїРєРё РїРѕРІС‚РѕСЂРЅРѕРіРѕ Р·Р°РїСѓСЃРєР° РѕРїСЂРѕСЃР°
     btnAppend.Visible := not btnAppend.Visible;
   end;
 end;
 
-// Обработка таймера для автоматической смены карточек в режиме Opros
+// РћР±СЂР°Р±РѕС‚РєР° С‚Р°Р№РјРµСЂР° РґР»СЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕР№ СЃРјРµРЅС‹ РєР°СЂС‚РѕС‡РµРє РІ СЂРµР¶РёРјРµ Opros
 procedure TForm1.Timer1Opros(Sender: TObject);
 begin
   ClickToContinue(nil);

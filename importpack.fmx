@@ -43,6 +43,7 @@ object Import: TImport
         Size.PlatformDefault = False
         StyleLookup = 'backtoolbutton'
         Text = 'Back'
+        TextSettings.Trimming = None
       end
       object TopLabel: TLabel
         Align = Client
@@ -55,6 +56,7 @@ object Import: TImport
         TextSettings.FontColor = claGreen
         TextSettings.HorzAlign = Center
         TextSettings.WordWrap = False
+        TextSettings.Trimming = None
       end
     end
   end

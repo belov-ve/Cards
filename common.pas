@@ -1,4 +1,4 @@
-unit common;
+п»їunit common;
 
 interface
 
@@ -16,20 +16,20 @@ const
   app_name        : string = 'Cards';
   exp_fname       : string = 'export';
   exp_ext         : string = '.xml';
-  cTrue           : Boolean = True;
-  cFalse          : Boolean = False;
+
 var
   export_dir      : string;
   home_dir        : string;
-  updv            : integer;          // текущая версия стуктуры БД и последнее обновление
+  dbv             : Integer;          // С‚РµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ Р‘Р”
+  updv            : integer;          // С‚РµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ РґР°РЅРЅС‹С…
   last_id         : int64;
   script1         : TStringList;
-  com_panel       : integer = 53;     // ширина панели кнопок
-  btn_size        : single = 44;      // размер кнопки
-  space           : single = 5;       // отступы у элементов (кнопки, панели и т.д.)
-  btn_big         : single = 85;      // размер большой кнопки меню
-  btn_stn         : single = 70;      // размер стандартной кнопки меню
-  last_card       : string;         // вопрос последней карты в форме Opros
+  com_panel       : integer = 53;     // С€РёСЂРёРЅР° РїР°РЅРµР»Рё РєРЅРѕРїРѕРє
+  btn_size        : single = 44;      // СЂР°Р·РјРµСЂ РєРЅРѕРїРєРё
+  space           : single = 5;       // РѕС‚СЃС‚СѓРїС‹ Сѓ СЌР»РµРјРµРЅС‚РѕРІ (РєРЅРѕРїРєРё, РїР°РЅРµР»Рё Рё С‚.Рґ.)
+  btn_big         : single = 85;      // СЂР°Р·РјРµСЂ Р±РѕР»СЊС€РѕР№ РєРЅРѕРїРєРё РјРµРЅСЋ
+  btn_stn         : single = 70;      // СЂР°Р·РјРµСЂ СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РєРЅРѕРїРєРё РјРµРЅСЋ
+  last_card       : string;         // РІРѕРїСЂРѕСЃ РїРѕСЃР»РµРґРЅРµР№ РєР°СЂС‚С‹ РІ С„РѕСЂРјРµ Opros
   //
   btn_save        : string = 'Save';
   btn_continue    : string = 'Continue';
@@ -65,7 +65,7 @@ begin
   else  Result := 'en';
 end;
 
-// Получиеня rowid для последнней вставленной записи
+// РџРѕР»СѓС‡РёРµРЅСЏ rowid РґР»СЏ РїРѕСЃР»РµРґРЅРЅРµР№ РІСЃС‚Р°РІР»РµРЅРЅРѕР№ Р·Р°РїРёСЃРё
 function LastRowID(db_connect : TFDConnection): int64;
 var query  : TFDQuery;
 begin
@@ -75,11 +75,11 @@ begin
     query.Open('SELECT last_insert_rowid() AS rid;');
     Result := query.FieldByName('rid').AsInteger;
   finally
-    query.DisposeOf;
+    query.Free;
   end;
 end;
 
-// Проверка и замена недопустимых символов в запросе
+// РџСЂРѕРІРµСЂРєР° Рё Р·Р°РјРµРЅР° РЅРµРґРѕРїСѓСЃС‚РёРјС‹С… СЃРёРјРІРѕР»РѕРІ РІ Р·Р°РїСЂРѕСЃРµ
 function CheckAndCorrect(const str : string) : string;
 var i : integer;
     s : string;
@@ -89,18 +89,18 @@ begin
   begin
     s := Copy(str,i,1);
     Result := Result + s;
-    if s='''' then Result := Result + s;  // дублирование '
+    if s='''' then Result := Result + s;  // РґСѓР±Р»РёСЂРѕРІР°РЅРёРµ '
   end;
 end;
 
-// Применение обновления
-// из временных таблиц DM.FDMemTable1 и DM.FDMemTable2
+// РџСЂРёРјРµРЅРµРЅРёРµ РѕР±РЅРѕРІР»РµРЅРёСЏ
+// РёР· РІСЂРµРјРµРЅРЅС‹С… С‚Р°Р±Р»РёС† DM.FDMemTable1 Рё DM.FDMemTable2
 procedure DBUpdate(typePack : shortint);
 var a   : string;
     pn  : string;
     i   : Shortint;
 begin
-      // отбираем текущие данные
+      // РѕС‚Р±РёСЂР°РµРј С‚РµРєСѓС‰РёРµ РґР°РЅРЅС‹Рµ
       DM.FDQuery1.SQL.Clear;
       DM.FDQuery2.SQL.Clear;
       DM.FDQuery3.SQL.Clear;
@@ -109,66 +109,67 @@ begin
       DM.FDQuery3.SQL.Text := 'SELECT np FROM packet WHERE packname=:PN;';
 
       //
-      if typePack=0 then  // системное обновление?
+      if typePack=0 then  // СЃРёСЃС‚РµРјРЅРѕРµ РѕР±РЅРѕРІР»РµРЅРёРµ?
       begin
-        DM.FDDatabese.ExecSQL('UPDATE version SET updv='+IntToStr(updv)); //тогда сохраняем версию текущего обновления
+        DM.FDDatabese.ExecSQL('UPDATE version SET updv='+IntToStr(updv)); //С‚РѕРіРґР° СЃРѕС…СЂР°РЅСЏРµРј РІРµСЂСЃРёСЋ С‚РµРєСѓС‰РµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ
 
-        // удаляем указанные в обновлении обьекты
+        // СѓРґР°Р»СЏРµРј СѓРєР°Р·Р°РЅРЅС‹Рµ РІ РѕР±РЅРѕРІР»РµРЅРёРё РѕР±СЊРµРєС‚С‹
         with DM.FDMemTable3 do
         begin
           First;
-          while not Eof do  // перебор таблицы пачек
+          while not Eof do  // РїРµСЂРµР±РѕСЂ С‚Р°Р±Р»РёС†С‹ РїР°С‡РµРє
           begin
-            if FieldByName('type').AsString = 'packet' then // удаление пачки
+            if FieldByName('type').AsString = 'packet' then // СѓРґР°Р»РµРЅРёРµ РїР°С‡РєРё
             begin
               DM.FDDatabese.ExecSQL('DELETE FROM packet WHERE uid=:UID;',[FieldByName('uid').AsString]);
             end
-            else if FieldByName('type').AsString = 'card' then  // удаление каторчки
+            else if FieldByName('type').AsString = 'card' then  // СѓРґР°Р»РµРЅРёРµ РєР°С‚РѕСЂС‡РєРё
             begin
               DM.FDDatabese.ExecSQL('DELETE FROM cards WHERE question1=:QUESTION1 AND np IN '+
                                     '(SELECT np FROM packet WHERE uid=:UID);',
                                     [FieldByName('contents').AsString, FieldByName('uid').AsString]);
             end;
-            Next;  // переход к следующиму обьекту для удаления
+            Next;  // РїРµСЂРµС…РѕРґ Рє СЃР»РµРґСѓСЋС‰РёРјСѓ РѕР±СЊРµРєС‚Сѓ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
           end;
         end;
         //
 
       end;
 
-      // отключить триггер cards_update
+      // РѕС‚РєР»СЋС‡РёС‚СЊ С‚СЂРёРіРіРµСЂ cards_update
       DM.FDDatabese.ExecSQL('DROP TRIGGER IF EXISTS cards_update;');
       //
       DM.FDMemTable1.First;
-      while not DM.FDMemTable1.Eof do  // перебор таблицы пачек
+      while not DM.FDMemTable1.Eof do  // РїРµСЂРµР±РѕСЂ С‚Р°Р±Р»РёС†С‹ РїР°С‡РµРє
       begin
-        // фильтруем карточки текущй пачки для обновления или добавления
+        // С„РёР»СЊС‚СЂСѓРµРј РєР°СЂС‚РѕС‡РєРё С‚РµРєСѓС‰Р№ РїР°С‡РєРё РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РёР»Рё РґРѕР±Р°РІР»РµРЅРёСЏ
+        //FMX.Dialogs.ShowMessage( DM.FDMemTable2.RecordCount.ToString );
         DM.FDMemTable2.Filter := 'np='+DM.FDMemTable1.FieldByName('np').AsString;
-        DM.FDMemTable2.Filtered := cTrue;
+        DM.FDMemTable2.Filtered := True;
         DM.FDMemTable2.First;
-        // ищем пачки в рабочей базе, которые так же есть в обновлении
+        // РёС‰РµРј РїР°С‡РєРё РІ СЂР°Р±РѕС‡РµР№ Р±Р°Р·Рµ, РєРѕС‚РѕСЂС‹Рµ С‚Р°Рє Р¶Рµ РµСЃС‚СЊ РІ РѕР±РЅРѕРІР»РµРЅРёРё
         DM.FDQuery1.Close;
         DM.FDQuery1.ParamByName('UID').AsString := DM.FDMemTable1.FieldByName('uid').AsString;
         DM.FDQuery1.Prepare;
-        DM.FDQuery1.Active := cTrue;
+        DM.FDQuery1.Active := True;
 
-        if DM.FDQuery1.RecordCount<>0 then // найдена пачка с совпадающим uid, необходимо обновить карточки
+        if DM.FDQuery1.RecordCount<>0 then // РЅР°Р№РґРµРЅР° РїР°С‡РєР° СЃ СЃРѕРІРїР°РґР°СЋС‰РёРј uid, РЅРµРѕР±С…РѕРґРёРјРѕ РѕР±РЅРѕРІРёС‚СЊ РєР°СЂС‚РѕС‡РєРё
         begin
-          // если версия обновления больше текущего (только для системный обновлений), начинаем обновлять
+          // РµСЃР»Рё РІРµСЂСЃРёСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ Р±РѕР»СЊС€Рµ С‚РµРєСѓС‰РµРіРѕ (С‚РѕР»СЊРєРѕ РґР»СЏ СЃРёСЃС‚РµРјРЅС‹Р№ РѕР±РЅРѕРІР»РµРЅРёР№), РЅР°С‡РёРЅР°РµРј РѕР±РЅРѕРІР»СЏС‚СЊ
           if ( (DM.FDMemTable1.FieldByName('version').AsString>DM.FDQuery1.FieldByName('version').AsString)
               or (typePack<>0) ) then
           begin
-            // перебираем карточки в обновлении, сравниваем по полю question1 и version при необходимости добовляем
-            // (таким образом измененные пользователем игнорируем)
+            // РїРµСЂРµР±РёСЂР°РµРј РєР°СЂС‚РѕС‡РєРё РІ РѕР±РЅРѕРІР»РµРЅРёРё, СЃСЂР°РІРЅРёРІР°РµРј РїРѕ РїРѕР»СЋ question1 Рё version РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РґРѕР±РѕРІР»СЏРµРј
+            // (С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј РёР·РјРµРЅРµРЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РёРіРЅРѕСЂРёСЂСѓРµРј)
             while not DM.FDMemTable2.Eof do
             begin
               DM.FDQuery2.Close;
               DM.FDQuery2.ParamByName('NP').AsInteger := DM.FDQuery1.FieldByName('np').AsInteger;
               DM.FDQuery2.ParamByName('QUESTION1').AsString := DM.FDMemTable2.FieldByName('question1').AsString;
               DM.FDQuery2.Prepare;
-              DM.FDQuery2.Active := cTrue;
-              // обновляем или добавляем новую карточку, если такой нет в рабочей БД
-              if DM.FDQuery2.RecordCount=0 then //добовляем новую карточку из обновления
+              DM.FDQuery2.Active := True;
+              // РѕР±РЅРѕРІР»СЏРµРј РёР»Рё РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ РєР°СЂС‚РѕС‡РєСѓ, РµСЃР»Рё С‚Р°РєРѕР№ РЅРµС‚ РІ СЂР°Р±РѕС‡РµР№ Р‘Р”
+              if DM.FDQuery2.RecordCount=0 then //РґРѕР±РѕРІР»СЏРµРј РЅРѕРІСѓСЋ РєР°СЂС‚РѕС‡РєСѓ РёР· РѕР±РЅРѕРІР»РµРЅРёСЏ
               begin
                 DM.FDDatabese.ExecSQL('INSERT INTO cards (np,question1,question2,version)'
                 + 'VALUES (' + DM.FDQuery1.FieldByName('np').AsString + ','''
@@ -176,26 +177,26 @@ begin
                 + CheckAndCorrect( DM.FDMemTable2.FieldByName('question2').AsString ) + ''','''
                 + DM.FDMemTable2.FieldByName('version').AsString + ''');');
               end
-              // обновляем карточку, если в обновлении более новая
+              // РѕР±РЅРѕРІР»СЏРµРј РєР°СЂС‚РѕС‡РєСѓ, РµСЃР»Рё РІ РѕР±РЅРѕРІР»РµРЅРёРё Р±РѕР»РµРµ РЅРѕРІР°СЏ
               else if DM.FDMemTable2.FieldByName('version').AsString>DM.FDQuery2.FieldByName('version').AsString  then
               begin
                 DM.FDDatabese.ExecSQL('UPDATE cards SET question2=''' + CheckAndCorrect( DM.FDMemTable2.FieldByName('question2').AsString )
                 + ''', version=''' + DM.FDMemTable2.FieldByName('version').AsString + ''' WHERE nc='+DM.FDQuery2.FieldByName('nc').AsString+';');
               end;
-              DM.FDMemTable2.Next;  // переход к следующей карточке в обновлении
+              DM.FDMemTable2.Next;  // РїРµСЂРµС…РѕРґ Рє СЃР»РµРґСѓСЋС‰РµР№ РєР°СЂС‚РѕС‡РєРµ РІ РѕР±РЅРѕРІР»РµРЅРёРё
               //
             end;
-            // изменяем версию обработанной пачки
+            // РёР·РјРµРЅСЏРµРј РІРµСЂСЃРёСЋ РѕР±СЂР°Р±РѕС‚Р°РЅРЅРѕР№ РїР°С‡РєРё
             DM.FDQuery1.Edit;
             DM.FDQuery1.FieldByName('version').AsString := DM.FDMemTable1.FieldByName('version').AsString;
             DM.FDQuery1.Post
           end;
         end
         else
-        begin // добавляем новую пачку
-          //добавление пачки
-          if GetLocale='ru' then a := '_ru' else a := EmptyStr; // если локаль русская, то берем описания по русски
-          //проверяем, есть ли пачка с совпадающим именем (но не UID)
+        begin // РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ РїР°С‡РєСѓ
+          //РґРѕР±Р°РІР»РµРЅРёРµ РїР°С‡РєРё
+          if GetLocale='ru' then a := '_ru' else a := EmptyStr; // РµСЃР»Рё Р»РѕРєР°Р»СЊ СЂСѓСЃСЃРєР°СЏ, С‚Рѕ Р±РµСЂРµРј РѕРїРёСЃР°РЅРёСЏ РїРѕ СЂСѓСЃСЃРєРё
+          //РїСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё РїР°С‡РєР° СЃ СЃРѕРІРїР°РґР°СЋС‰РёРј РёРјРµРЅРµРј (РЅРѕ РЅРµ UID)
           i := 0;
           with DM.FDMemTable1 do
           begin
@@ -206,7 +207,7 @@ begin
               DM.FDQuery3.Prepare;
               DM.FDQuery3.OpenOrExecute;
               Inc(i);
-            until DM.FDQuery3.RecordCount=0;  // пачка с таким именем не найдена.
+            until DM.FDQuery3.RecordCount=0;  // РїР°С‡РєР° СЃ С‚Р°РєРёРј РёРјРµРЅРµРј РЅРµ РЅР°Р№РґРµРЅР°.
             pn := CheckAndCorrect( FieldByName('packname'+a).AsString ) + pn;
             //
             DM.FDDatabese.ExecSQL('INSERT INTO packet (type,uid,lang,packname,descript,version) '
@@ -214,10 +215,10 @@ begin
             + ''',''' + pn + ''',''' + CheckAndCorrect( FieldByName('descript'+a).AsString )
             + ''',''' + Fieldbyname('version').AsString + ''');');
           end;
-          // получение last_row_id
+          // РїРѕР»СѓС‡РµРЅРёРµ last_row_id
           last_id := LastRowID(DM.FDDatabese);
-          // добавление карточек
-          with DM.FDMemTable2 do while not Eof do  // перебираем карточеки и заполняем
+          // РґРѕР±Р°РІР»РµРЅРёРµ РєР°СЂС‚РѕС‡РµРє
+          with DM.FDMemTable2 do while not Eof do  // РїРµСЂРµР±РёСЂР°РµРј РєР°СЂС‚РѕС‡РµРєРё Рё Р·Р°РїРѕР»РЅСЏРµРј
           begin
             DM.FDDatabese.ExecSQL('INSERT INTO cards (np,question1,question2,version)'
             + 'VALUES (' + IntToStr(last_id) + ',''' + CheckAndCorrect( Fieldbyname('question1').AsString )
@@ -226,10 +227,10 @@ begin
             Next;
           end;
         end;
-        DM.FDMemTable1.Next; // если есть, то к следующей пачке в обновлении
+        DM.FDMemTable1.Next; // РµСЃР»Рё РµСЃС‚СЊ, С‚Рѕ Рє СЃР»РµРґСѓСЋС‰РµР№ РїР°С‡РєРµ РІ РѕР±РЅРѕРІР»РµРЅРёРё
       end;
 
-      // восстанавливаем триггер
+      // РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚СЂРёРіРіРµСЂ
       DM.FDDatabese.ExecSQL(script1.Text);
 end;
 

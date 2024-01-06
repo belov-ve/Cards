@@ -1,13 +1,13 @@
 --------------------------------------------------------------------------------
--- База данных update.s3db
--- таблица верси обновления
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… update.s3db
+-- С‚Р°Р±Р»РёС†Р° РІРµСЂСЃРё РѕР±РЅРѕРІР»РµРЅРёСЏ
 CREATE TABLE IF NOT EXISTS version (
-	updv		INTEGER DEFAULT 1);		-- версия последнего обновления
+	updv		INTEGER DEFAULT 1);		-- РІРµСЂСЃРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ
 
--- таблица пачек
+-- С‚Р°Р±Р»РёС†Р° РїР°С‡РµРє
 CREATE TABLE IF NOT EXISTS packet (
 	np  		INTEGER PRIMARY KEY,
-	uid 		TEXT UNIQUE,			-- уникальный ID пачки. для системных всегда первая *
+	uid 		TEXT UNIQUE,			-- СѓРЅРёРєР°Р»СЊРЅС‹Р№ ID РїР°С‡РєРё. РґР»СЏ СЃРёСЃС‚РµРјРЅС‹С… РІСЃРµРіРґР° РїРµСЂРІР°СЏ *
 	lang 		TEXT,
 	packname 	TEXT NOT NULL,
 	packname_ru	TEXT NOT NULL,
@@ -15,25 +15,25 @@ CREATE TABLE IF NOT EXISTS packet (
 	descript_ru	TEXT,
 	version		default CURRENT_TIMESTAMP);
 
--- SELECT hex(randomblob(16));		-- для uid
--- SELECT datetime('now');		-- для version
+-- SELECT hex(randomblob(16));		-- РґР»СЏ uid
+-- SELECT datetime('now');		-- РґР»СЏ version
 
--- таблица карточек
+-- С‚Р°Р±Р»РёС†Р° РєР°СЂС‚РѕС‡РµРє
 CREATE TABLE IF NOT EXISTS cards (
 	np		INTEGER REFERENCES packet (np) ON DELETE CASCADE ON UPDATE CASCADE,
 	question1	TEXT UNIQUE,
 	question2	TEXT NOT NULL,
 	version		default CURRENT_TIMESTAMP);
 	
--- таблица удаленных обьектов
+-- С‚Р°Р±Р»РёС†Р° СѓРґР°Р»РµРЅРЅС‹С… РѕР±СЊРµРєС‚РѕРІ
 CREATE TABLE IF NOT EXISTS content_delete (
-	uid 		TEXT NOT NULL,	-- удикальный uid обьекта
-	type		TEXT,		-- тип удаляемого обьекта (card, packet)
-	contents	TEXT);	-- что удалять
+	uid 		TEXT NOT NULL,	-- СѓРґРёРєР°Р»СЊРЅС‹Р№ uid РѕР±СЊРµРєС‚Р°
+	type		TEXT,		-- С‚РёРї СѓРґР°Р»СЏРµРјРѕРіРѕ РѕР±СЊРµРєС‚Р° (card, packet)
+	contents	TEXT);	-- С‡С‚Рѕ СѓРґР°Р»СЏС‚СЊ
 
--- SELECT datetime('now');	-- для version
+-- SELECT datetime('now');	-- РґР»СЏ version
 
--- триггер установки значения поля даты при изменеии статистики
+-- С‚СЂРёРіРіРµСЂ СѓСЃС‚Р°РЅРѕРІРєРё Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЏ РґР°С‚С‹ РїСЂРё РёР·РјРµРЅРµРёРё СЃС‚Р°С‚РёСЃС‚РёРєРё
 CREATE TRIGGER IF NOT EXISTS card_update AFTER UPDATE ON cards
 BEGIN
 	UPDATE cards SET version=datetime('now') where rowid=new.rowid;
@@ -47,49 +47,49 @@ BEGIN
 END;
 
 
--- UPDATE cards SET version=1 WHERE np=1; -- принудительная установка поля version (дата) (отработает триггер)
+-- UPDATE cards SET version=1 WHERE np=1; -- РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР° РїРѕР»СЏ version (РґР°С‚Р°) (РѕС‚СЂР°Р±РѕС‚Р°РµС‚ С‚СЂРёРіРіРµСЂ)
 
 --------------------------------------------------------------------------------
--- База данных card.s3db
--- таблица версии структуры БД
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… card.s3db
+-- С‚Р°Р±Р»РёС†Р° РІРµСЂСЃРёРё СЃС‚СЂСѓРєС‚СѓСЂС‹ Р‘Р”
 CREATE TABLE IF NOT EXISTS version (
-	dbv 		INTEGER DEFAULT 1,		-- версия структуры базы данных		
-	updv		INTEGER DEFAULT 0);		-- версия последнего обновления
+	dbv 		INTEGER DEFAULT 1,		-- РІРµСЂСЃРёСЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ Р±Р°Р·С‹ РґР°РЅРЅС‹С…		
+	updv		INTEGER DEFAULT 0);		-- РІРµСЂСЃРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ
 
--- таблица пачек
+-- С‚Р°Р±Р»РёС†Р° РїР°С‡РµРє
 CREATE TABLE IF NOT EXISTS packet (
-	np  		INTEGER PRIMARY KEY,	-- номер пачки
-	uid 		TEXT UNIQUE,		-- уникальный ID пачки, для системных всегда первая *
-	type		INTEGER DEFAULT 1,	-- тип пачки (0 - системная, 1 - локальная, 2 - сетевая (загруженная локально), 2 сетевая без загрузки 
-	lang 		TEXT DEFAULT "",	-- язык карточек (Ru-Ru,Ru-En,En-Ru,En-En,De-Ru,Ru-De,Other)
-	packname	TEXT NOT NULL,		-- название пачки
-	descript	TEXT,			-- описание пачки
-	version		default CURRENT_TIMESTAMP,	-- версия последнего пакета обновления (время)
-	record		INTEGER DEFAULT 0);	-- рекорд при експресс опросе		
+	np  		INTEGER PRIMARY KEY,	-- РЅРѕРјРµСЂ РїР°С‡РєРё
+	uid 		TEXT UNIQUE,		-- СѓРЅРёРєР°Р»СЊРЅС‹Р№ ID РїР°С‡РєРё, РґР»СЏ СЃРёСЃС‚РµРјРЅС‹С… РІСЃРµРіРґР° РїРµСЂРІР°СЏ *
+	type		INTEGER DEFAULT 1,	-- С‚РёРї РїР°С‡РєРё (0 - СЃРёСЃС‚РµРјРЅР°СЏ, 1 - Р»РѕРєР°Р»СЊРЅР°СЏ, 2 - СЃРµС‚РµРІР°СЏ (Р·Р°РіСЂСѓР¶РµРЅРЅР°СЏ Р»РѕРєР°Р»СЊРЅРѕ), 2 СЃРµС‚РµРІР°СЏ Р±РµР· Р·Р°РіСЂСѓР·РєРё 
+	lang 		TEXT DEFAULT "",	-- СЏР·С‹Рє РєР°СЂС‚РѕС‡РµРє (Ru-Ru,Ru-En,En-Ru,En-En,De-Ru,Ru-De,Other)
+	packname	TEXT NOT NULL,		-- РЅР°Р·РІР°РЅРёРµ РїР°С‡РєРё
+	descript	TEXT,				-- РѕРїРёСЃР°РЅРёРµ РїР°С‡РєРё
+	version		default CURRENT_TIMESTAMP,	-- РІРµСЂСЃРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РїР°РєРµС‚Р° РѕР±РЅРѕРІР»РµРЅРёСЏ (РІСЂРµРјСЏ)
+	record		INTEGER DEFAULT 0);	-- СЂРµРєРѕСЂРґ РїСЂРё СЌРєСЃРїСЂРµСЃСЃ РѕРїСЂРѕСЃРµ		
 	
--- таблица карточек
+-- С‚Р°Р±Р»РёС†Р° РєР°СЂС‚РѕС‡РµРє
 CREATE TABLE IF NOT EXISTS cards (
-	nc		INTEGER PRIMARY KEY,	-- номер карточки (в локальной БД)
-	np		INTEGER REFERENCES packet (np) ON DELETE CASCADE ON UPDATE CASCADE,	-- карточка от пачки packet.np
-	question1	TEXT NOT NULL,		-- вопрос карточки
-	question2	TEXT NOT NULL,		-- ответ карточки
-	hide1		INTEGER DEFAULT 0,	-- признак "скрыть для прямого перебора"
-	hide2		INTEGER DEFAULT 0,	-- признак "скрыть для прямого перебора"
-	version		default CURRENT_TIMESTAMP);	-- версия (время последнего изменения)
--- индекс для карточек
+	nc		INTEGER PRIMARY KEY,	-- РЅРѕРјРµСЂ РєР°СЂС‚РѕС‡РєРё (РІ Р»РѕРєР°Р»СЊРЅРѕР№ Р‘Р”)
+	np		INTEGER REFERENCES packet (np) ON DELETE CASCADE ON UPDATE CASCADE,	-- РєР°СЂС‚РѕС‡РєР° РѕС‚ РїР°С‡РєРё packet.np
+	question1	TEXT NOT NULL,		-- РІРѕРїСЂРѕСЃ РєР°СЂС‚РѕС‡РєРё
+	question2	TEXT NOT NULL,		-- РѕС‚РІРµС‚ РєР°СЂС‚РѕС‡РєРё
+	hide1		INTEGER DEFAULT 0,	-- РїСЂРёР·РЅР°Рє "СЃРєСЂС‹С‚СЊ РґР»СЏ РїСЂСЏРјРѕРіРѕ РїРµСЂРµР±РѕСЂР°"
+	hide2		INTEGER DEFAULT 0,	-- РїСЂРёР·РЅР°Рє "СЃРєСЂС‹С‚СЊ РґР»СЏ РїСЂСЏРјРѕРіРѕ РїРµСЂРµР±РѕСЂР°"
+	version		default CURRENT_TIMESTAMP);	-- РІРµСЂСЃРёСЏ (РІСЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РёР·РјРµРЅРµРЅРёСЏ)
+-- РёРЅРґРµРєСЃ РґР»СЏ РєР°СЂС‚РѕС‡РµРє
 CREATE INDEX IF NOT EXISTS card_np on cards (np ASC);	
 
 CREATE INDEX IF NOT EXISTS card_question on cards (question1 ASC);
 
 
--- триггер установки значения поля версии (даты) при изменеии карточки
--- (отключать при обновлении БД) DROP TRIGGER IF EXISTS cards_update;
+-- С‚СЂРёРіРіРµСЂ СѓСЃС‚Р°РЅРѕРІРєРё Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЏ РІРµСЂСЃРёРё (РґР°С‚С‹) РїСЂРё РёР·РјРµРЅРµРёРё РєР°СЂС‚РѕС‡РєРё
+-- (РѕС‚РєР»СЋС‡Р°С‚СЊ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё Р‘Р”) DROP TRIGGER IF EXISTS cards_update;
 CREATE TRIGGER IF NOT EXISTS cards_update AFTER UPDATE OF question1, question2 ON cards
 BEGIN
 	UPDATE cards SET version=datetime("now") where nc=new.nc;
 END;
 
--- триггер проверки дублирования поля question1+np при изменеии карточки
+-- С‚СЂРёРіРіРµСЂ РїСЂРѕРІРµСЂРєРё РґСѓР±Р»РёСЂРѕРІР°РЅРёСЏ РїРѕР»СЏ question1+np РїСЂРё РёР·РјРµРЅРµРёРё РєР°СЂС‚РѕС‡РєРё
 CREATE TRIGGER IF NOT EXISTS cards_update_question AFTER UPDATE OF question1 ON cards
 BEGIN
 	SELECT
@@ -99,7 +99,7 @@ BEGIN
 	FROM cards WHERE np||question1=new.np||new.question1;
 END;
 
--- триггер проверки дублирования поля question1+np при добавлении карточки
+-- С‚СЂРёРіРіРµСЂ РїСЂРѕРІРµСЂРєРё РґСѓР±Р»РёСЂРѕРІР°РЅРёСЏ РїРѕР»СЏ question1+np РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РєР°СЂС‚РѕС‡РєРё
 CREATE TRIGGER IF NOT EXISTS cards_insert_question BEFORE INSERT ON cards
 BEGIN
 	SELECT
@@ -109,34 +109,34 @@ BEGIN
 	FROM cards WHERE np||question1=new.np||new.question1;
 END;
 
--- триггер очистки при удалении пачки
--- (заменен на констрейн)
+-- С‚СЂРёРіРіРµСЂ РѕС‡РёСЃС‚РєРё РїСЂРё СѓРґР°Р»РµРЅРёРё РїР°С‡РєРё
+-- (Р·Р°РјРµРЅРµРЅ РЅР° РєРѕРЅСЃС‚СЂРµР№РЅ)
 -- CREATE TRIGGER IF NOT EXISTS cards_clear BEFORE DELETE ON packet
 -- BEGIN
 --	DELETE FROM cards WHERE np=old.np;
 -- END;
 
 
--- таблица статистики ответов
+-- С‚Р°Р±Р»РёС†Р° СЃС‚Р°С‚РёСЃС‚РёРєРё РѕС‚РІРµС‚РѕРІ
 CREATE TABLE IF NOT EXISTS answers (
-	nc	INTEGER REFERENCES cards (nc) ON DELETE CASCADE ON UPDATE CASCADE,	-- ответ к номеру карточки
-	direct	INTEGER NOT NULL,		-- направление ответа (0/1 - прямой/обратный)
-	answer	INTEGER	NOT NULL,		-- 1/0 (верно/ошибка)
-	atime	default CURRENT_TIMESTAMP);	-- время ответа
+	nc	INTEGER REFERENCES cards (nc) ON DELETE CASCADE ON UPDATE CASCADE,	-- РѕС‚РІРµС‚ Рє РЅРѕРјРµСЂСѓ РєР°СЂС‚РѕС‡РєРё
+	direct	INTEGER NOT NULL,		-- РЅР°РїСЂР°РІР»РµРЅРёРµ РѕС‚РІРµС‚Р° (0/1 - РїСЂСЏРјРѕР№/РѕР±СЂР°С‚РЅС‹Р№)
+	answer	INTEGER	NOT NULL,		-- 1/0 (РІРµСЂРЅРѕ/РѕС€РёР±РєР°)
+	atime	default CURRENT_TIMESTAMP);	-- РІСЂРµРјСЏ РѕС‚РІРµС‚Р°
 	
--- индексы для ответов
+-- РёРЅРґРµРєСЃС‹ РґР»СЏ РѕС‚РІРµС‚РѕРІ
 CREATE INDEX IF NOT EXISTS answers_atime on answers (atime ASC);
 CREATE INDEX IF NOT EXISTS answers_nc on answers (nc ASC);
 CREATE INDEX IF NOT EXISTS answers_direct on answers (direct ASC);
 
--- триггер установки значения поля даты при добавлении статистики (избыточный контролль)
+-- С‚СЂРёРіРіРµСЂ СѓСЃС‚Р°РЅРѕРІРєРё Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЏ РґР°С‚С‹ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё СЃС‚Р°С‚РёСЃС‚РёРєРё (РёР·Р±С‹С‚РѕС‡РЅС‹Р№ РєРѕРЅС‚СЂРѕР»Р»СЊ)
 CREATE TRIGGER IF NOT EXISTS answers_update_time AFTER INSERT ON answers
 BEGIN
 	UPDATE answers SET atime=datetime('now') where rowid=new.rowid;
 END;
 
--- триггер очистки ответов для одной карточки 
--- (не более 10 для одного направления ответа)
+-- С‚СЂРёРіРіРµСЂ РѕС‡РёСЃС‚РєРё РѕС‚РІРµС‚РѕРІ РґР»СЏ РѕРґРЅРѕР№ РєР°СЂС‚РѕС‡РєРё 
+-- (РЅРµ Р±РѕР»РµРµ 10 РґР»СЏ РѕРґРЅРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ РѕС‚РІРµС‚Р°)
 CREATE TRIGGER IF NOT EXISTS answer_count_clear AFTER INSERT ON answers
 BEGIN
 	DELETE FROM answers WHERE rowid IN (
@@ -145,45 +145,45 @@ BEGIN
 		ORDER BY atime DESC LIMIT -1 OFFSET 10);
 END;
 	
--- триггер очистки статистики и сброса признаков "скрытия карточки" при изменении содержания карточки
+-- С‚СЂРёРіРіРµСЂ РѕС‡РёСЃС‚РєРё СЃС‚Р°С‚РёСЃС‚РёРєРё Рё СЃР±СЂРѕСЃР° РїСЂРёР·РЅР°РєРѕРІ "СЃРєСЂС‹С‚РёСЏ РєР°СЂС‚РѕС‡РєРё" РїСЂРё РёР·РјРµРЅРµРЅРёРё СЃРѕРґРµСЂР¶Р°РЅРёСЏ РєР°СЂС‚РѕС‡РєРё
 CREATE TRIGGER IF NOT EXISTS answers_clear AFTER UPDATE OF question1,question2 ON cards
 BEGIN
 	DELETE FROM answers WHERE nc=old.nc;
 	UPDATE cards SET  hide1=0, hide2=0 WHERE nc=old.nc;
 END;
 
--- вьюха статистики по пачке
+-- РІСЊСЋС…Р° СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РїР°С‡РєРµ
 CREATE VIEW IF NOT EXISTS pack_stats AS
-	SELECT	np,		-- номер пачки
-		count(np) AS countcards,	--всего карточек в пачке
+	SELECT	np,		-- РЅРѕРјРµСЂ РїР°С‡РєРё
+		count(np) AS countcards,	--РІСЃРµРіРѕ РєР°СЂС‚РѕС‡РµРє РІ РїР°С‡РєРµ
 		max(version) AS lastmod,
-		(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c1.np and c2.hide1=1) AS hide1,	-- всего скрыто для прямого просмотра
-		(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c1.np and c2.hide2=1) AS hide2	-- всего скрыто для обратного порсмотра
+		(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c1.np and c2.hide1=1) AS hide1,	-- РІСЃРµРіРѕ СЃРєСЂС‹С‚Рѕ РґР»СЏ РїСЂСЏРјРѕРіРѕ РїСЂРѕСЃРјРѕС‚СЂР°
+		(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c1.np and c2.hide2=1) AS hide2	-- РІСЃРµРіРѕ СЃРєСЂС‹С‚Рѕ РґР»СЏ РѕР±СЂР°С‚РЅРѕРіРѕ РїРѕСЂСЃРјРѕС‚СЂР°
 	FROM cards c1 GROUP BY np;
 
--- вьюха статистики по карточке
+-- РІСЊСЋС…Р° СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РєР°СЂС‚РѕС‡РєРµ
 CREATE VIEW IF NOT EXISTS card_stats AS
-	SELECT	nc,				-- номер карточки
-		count(nc) AS countanswers,	--всего ответов на карточеку
-		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=0 and c2.answer=1) AS direct_true,	-- верный ответ. прямой опрос 
-		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=0 and c2.answer=0) AS direct_false,-- ошибочный ответ. прямой опрос 
-		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=1 and c2.answer=1) AS reverse_true,-- верный ответ. обратный опрос
-		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=1 and c2.answer=0) AS reverse_false-- ошибочный ответ. обратный опрос
+	SELECT	nc,				-- РЅРѕРјРµСЂ РєР°СЂС‚РѕС‡РєРё
+		count(nc) AS countanswers,	--РІСЃРµРіРѕ РѕС‚РІРµС‚РѕРІ РЅР° РєР°СЂС‚РѕС‡РµРєСѓ
+		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=0 and c2.answer=1) AS direct_true,	-- РІРµСЂРЅС‹Р№ РѕС‚РІРµС‚. РїСЂСЏРјРѕР№ РѕРїСЂРѕСЃ 
+		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=0 and c2.answer=0) AS direct_false,-- РѕС€РёР±РѕС‡РЅС‹Р№ РѕС‚РІРµС‚. РїСЂСЏРјРѕР№ РѕРїСЂРѕСЃ 
+		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=1 and c2.answer=1) AS reverse_true,-- РІРµСЂРЅС‹Р№ РѕС‚РІРµС‚. РѕР±СЂР°С‚РЅС‹Р№ РѕРїСЂРѕСЃ
+		(SELECT count(c2.nc) FROM answers c2 WHERE c2.nc=c1.nc and c2.direct=1 and c2.answer=0) AS reverse_false-- РѕС€РёР±РѕС‡РЅС‹Р№ РѕС‚РІРµС‚. РѕР±СЂР°С‚РЅС‹Р№ РѕРїСЂРѕСЃ
 	FROM answers c1 GROUP BY nc;
 
  
--- триггер очистки статистики при удалении карточки
--- заменил на констрыин
+-- С‚СЂРёРіРіРµСЂ РѕС‡РёСЃС‚РєРё СЃС‚Р°С‚РёСЃС‚РёРєРё РїСЂРё СѓРґР°Р»РµРЅРёРё РєР°СЂС‚РѕС‡РєРё
+-- Р·Р°РјРµРЅРёР» РЅР° РєРѕРЅСЃС‚СЂС‹РёРЅ
 -- CREATE TRIGGER IF NOT EXISTS answers_clear2 BEFORE DELETE ON cards
 -- BEGIN
 --	DELETE FROM answers WHERE nc=old.rowid;
 -- END;
 ------------------------------------------------------------
 
--- не забыть включить
+-- РЅРµ Р·Р°Р±С‹С‚СЊ РІРєР»СЋС‡РёС‚СЊ
 PRAGMA foreign_keys=ON;
 
--- рабочие "селекты"
+-- СЂР°Р±РѕС‡РёРµ "СЃРµР»РµРєС‚С‹"
 SELECT count(c1.np) FROM cards c1 GROUP BY np;
 SELECT * FROM cards;
 SELECT p.np,p.uid,p.version,max(c.version) AS cversion, count(c.nc) AS ccount FROM packet p
@@ -193,40 +193,40 @@ SELECT c.np, count(c.np) AS cards, max(c.version) AS lastmod,
 	(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c.np and c2.hide1=1) AS hide1,
 	(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c.np and c2.hide2=1) AS hide2
 FROM cards c GROUP BY c.np;
--- отбор информации по пачкам со статистикой
+-- РѕС‚Р±РѕСЂ РёРЅС„РѕСЂРјР°С†РёРё РїРѕ РїР°С‡РєР°Рј СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№
 SELECT p.np,p.uid,p.version,max(c.version) AS cversion, count(c.nc) AS ccount,
 	(SELECT count(c1.np) FROM cards c1 WHERE c1.np=c.np and c1.hide1=1) AS hide1,
 	(SELECT count(c2.np) FROM cards c2 WHERE c2.np=c.np and c2.hide2=1) AS hide2
 	FROM packet p
 	LEFT JOIN cards c ON c.np=p.np GROUP BY p.np;	
--- то же, но через view
+-- С‚Рѕ Р¶Рµ, РЅРѕ С‡РµСЂРµР· view
 SELECT p.np, p.uid, p.version, datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
 	FROM packet p
-	LEFT JOIN pack_stats s ON s.np=p.np GROUP BY s.np;	-- можно без GROUP???
--- то же через view по одной пачке
+	LEFT JOIN pack_stats s ON s.np=p.np GROUP BY s.np;	-- РјРѕР¶РЅРѕ Р±РµР· GROUP???
+-- С‚Рѕ Р¶Рµ С‡РµСЂРµР· view РїРѕ РѕРґРЅРѕР№ РїР°С‡РєРµ
 SELECT p.np, p.uid, p.version, datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
 	FROM packet p
 	LEFT JOIN pack_stats s ON s.np=p.np
 		WHERE p.np=3;	
 	
 
--- отбор информации по карточкам со статистикой
+-- РѕС‚Р±РѕСЂ РёРЅС„РѕСЂРјР°С†РёРё РїРѕ РєР°СЂС‚РѕС‡РєР°Рј СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№
 SELECT 	c.nc,c.question1,c.question2,c.hide1,c.hide2,
 	s.direct_true,s.direct_false,reverse_true,reverse_false
 	FROM cards c
 		LEFT JOIN card_stats s ON s.nc=c.nc
-	WHERE c.np=2					-- номер карточки
+	WHERE c.np=2					-- РЅРѕРјРµСЂ РєР°СЂС‚РѕС‡РєРё
         ORDER BY c.question1;
 
 select * from cards where nc=171;
 
-UPDATE cards SET question1='Ворос 1',question2='Ответ -',hide1=1,hide2=2
+UPDATE cards SET question1='Р’РѕСЂРѕСЃ 1',question2='РћС‚РІРµС‚ -',hide1=1,hide2=2
 WHERE nc=171;
 
 select version, datetime(version,'localtime') from packet;
 
 
--- отбор информации по пачке с детализацией
+-- РѕС‚Р±РѕСЂ РёРЅС„РѕСЂРјР°С†РёРё РїРѕ РїР°С‡РєРµ СЃ РґРµС‚Р°Р»РёР·Р°С†РёРµР№
 SELECT p.lang, datetime(p.version,'localtime') AS version,
   datetime(s.lastmod,'localtime') AS lastmod, s.countcards, s.hide1, s.hide2
   FROM packet p LEFT JOIN pack_stats s ON s.np=p.np 

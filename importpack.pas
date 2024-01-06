@@ -340,9 +340,10 @@ end;
 procedure TImport.FormDestroy(Sender: TObject);
 begin
   try
-    Files.DisposeOf
+    Files.Free
   finally
-    StyleBook1.DisposeOf;   // очистка стиля формы, для обхода глюка со сбоем в XE7 (пропадают элементы в родительской форме)
+    // очистка стиля формы, для обхода глюка со сбоем в XE7 (пропадают элементы в родительской форме)
+    StyleBook1.Free;
   end;
 end;
 

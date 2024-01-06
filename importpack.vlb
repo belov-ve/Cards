@@ -25,3 +25,6 @@ EditingLayerName=
 [TopLabel]
 Coordinates=127,10,53,58
 
+[DM.FDQuery1]
+Visible=False
+

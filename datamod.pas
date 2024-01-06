@@ -11,7 +11,7 @@ uses
   FireDAC.Stan.Util, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Script, FireDAC.Comp.UI, FMX.Types, FMX.Controls,
-  FireDAC.Phys.SQLiteWrapper.Stat;
+  FireDAC.Phys.SQLiteWrapper.Stat, Data.Bind.Components, Data.Bind.DBScope;
 
 type
   TDM = class(TDataModule)
@@ -25,8 +25,9 @@ type
     FDQuery3: TFDQuery;
     FDStat: TFDQuery;
     FDMemTable1: TFDMemTable;
-    FDMemTable2: TFDMemTable;
     FDMemTable3: TFDMemTable;
+    BindSourceDB12: TBindSourceDB;
+    FDMemTable2: TFDMemTable;
   private
     { Private declarations }
   public
