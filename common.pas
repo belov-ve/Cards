@@ -9,7 +9,7 @@ uses
 procedure DBUpdate(typePack : shortint);
 function GetLocale  : string;
 function LastRowID(db_connect : TFDConnection): int64;
-function CheckAndCorrect(const str : string) : string;
+function CheckAndCorrect(str : string) : string;
 
 const
   app_version     : string = '1.12.0';
@@ -36,6 +36,7 @@ var
   btn_cancel      : string = 'Cancel';
   btn_back        : string = 'Back';
   //
+  txt_message0    : string = 'Pack saved to file "%s/%s"';
   txt_error0      : string = 'Exception raised with message';
   txt_error1      : string = 'Fields must be filled';
   txt_error2      : string = 'Field "Question" must be unique';
@@ -43,6 +44,10 @@ var
   txt_error4      : string = 'Error deleting the selected package';
   txt_question1   : string = 'Remove all the statistics for the selected pack?';
   txt_question2   : string = 'Delete the selected pack of cards?';
+  txt_question3   : string = 'Hide all cards in forward direction?';
+  txt_question4   : string = 'Show all cards in forward direction?';
+  txt_question5   : string = 'Hide all cards in reverse?';
+  txt_question6   : string = 'Show all cards in reverse?';
   txt_warning1    : string = 'Last card';
   txt_warning2    : string = 'You have looked through all the cards';
   txt_warning3    : string = 'Continue in reverse?';
@@ -80,16 +85,17 @@ begin
 end;
 
 // Проверка и замена недопустимых символов в запросе
-function CheckAndCorrect(const str : string) : string;
+function CheckAndCorrect(str : string) : string;
 var i : integer;
     s : string;
 begin
   Result := EmptyStr;
+  str := Trim(str);
   for i := 1 to str.Length do
   begin
     s := Copy(str,i,1);
+    if s='"' then s := '''';  // замена " на '
     Result := Result + s;
-    if s='''' then Result := Result + s;  // дублирование '
   end;
 end;
 
@@ -155,33 +161,37 @@ begin
 
         if DM.FDQuery1.RecordCount<>0 then // найдена пачка с совпадающим uid, необходимо обновить карточки
         begin
-          // если версия обновления больше текущего (только для системный обновлений), начинаем обновлять
-          if ( (DM.FDMemTable1.FieldByName('version').AsString>DM.FDQuery1.FieldByName('version').AsString)
-              or (typePack<>0) ) then
+          // если несистемное обновление или версия системного больше текущего, начинаем обновлять
+          if ( (typePack<>0) or
+            (DM.FDMemTable1.FieldByName('version').AsString>DM.FDQuery1.FieldByName('version').AsString) ) then
           begin
-            // перебираем карточки в обновлении, сравниваем по полю question1 и version при необходимости добовляем
+            // перебираем карточки в обновлении, сравниваем по полю question1 и version при необходимости добавляем
             // (таким образом измененные пользователем игнорируем)
+
             while not DM.FDMemTable2.Eof do
             begin
               DM.FDQuery2.Close;
-              DM.FDQuery2.ParamByName('NP').AsInteger := DM.FDQuery1.FieldByName('np').AsInteger;
-              DM.FDQuery2.ParamByName('QUESTION1').AsString := DM.FDMemTable2.FieldByName('question1').AsString;
-              DM.FDQuery2.Prepare;
+              DM.FDQuery2.SQL.Clear;
+              DM.FDQuery2.SQL.Text := 'SELECT nc,version FROM cards WHERE np='
+              + DM.FDQuery1.FieldByName('np').AsString
+              + ' AND question1="' + DM.FDMemTable2.FieldByName('question1').AsString + '";';
               DM.FDQuery2.Active := True;
               // обновляем или добавляем новую карточку, если такой нет в рабочей БД
               if DM.FDQuery2.RecordCount=0 then //добовляем новую карточку из обновления
               begin
                 DM.FDDatabese.ExecSQL('INSERT INTO cards (np,question1,question2,version)'
-                + 'VALUES (' + DM.FDQuery1.FieldByName('np').AsString + ','''
-                + CheckAndCorrect( DM.FDMemTable2.Fieldbyname('question1').AsString ) + ''','''
-                + CheckAndCorrect( DM.FDMemTable2.FieldByName('question2').AsString ) + ''','''
-                + DM.FDMemTable2.FieldByName('version').AsString + ''');');
+                + 'VALUES (' + DM.FDQuery1.FieldByName('np').AsString + ',"'
+                + CheckAndCorrect( DM.FDMemTable2.Fieldbyname('question1').AsString ) + '","'
+                + CheckAndCorrect( DM.FDMemTable2.FieldByName('question2').AsString ) + '","'
+                + DM.FDMemTable2.FieldByName('version').AsString + '");');
               end
               // обновляем карточку, если в обновлении более новая
               else if DM.FDMemTable2.FieldByName('version').AsString>DM.FDQuery2.FieldByName('version').AsString  then
               begin
-                DM.FDDatabese.ExecSQL('UPDATE cards SET question2=''' + CheckAndCorrect( DM.FDMemTable2.FieldByName('question2').AsString )
-                + ''', version=''' + DM.FDMemTable2.FieldByName('version').AsString + ''' WHERE nc='+DM.FDQuery2.FieldByName('nc').AsString+';');
+                DM.FDDatabese.ExecSQL('UPDATE cards SET question2="'
+                + CheckAndCorrect( DM.FDMemTable2.FieldByName('question2').AsString ) + '",'
+                + 'version="' + DM.FDMemTable2.FieldByName('version').AsString + '" '
+                + 'WHERE nc=' + DM.FDQuery2.FieldByName('nc').AsString+';');
               end;
               DM.FDMemTable2.Next;  // переход к следующей карточке в обновлении
               //
@@ -211,9 +221,11 @@ begin
             pn := CheckAndCorrect( FieldByName('packname'+a).AsString ) + pn;
             //
             DM.FDDatabese.ExecSQL('INSERT INTO packet (type,uid,lang,packname,descript,version) '
-            + 'VALUES ('+IntToStr(typePack)+',''' + FieldByName('uid').AsString + ''',''' + FieldByName('lang').AsString
-            + ''',''' + pn + ''',''' + CheckAndCorrect( FieldByName('descript'+a).AsString )
-            + ''',''' + Fieldbyname('version').AsString + ''');');
+            + 'VALUES (' + IntToStr(typePack) + ',"'
+            + FieldByName('uid').AsString + '","'
+            + FieldByName('lang').AsString + '","'
+            + pn + '","' + CheckAndCorrect( FieldByName('descript'+a).AsString ) + '","'
+            + Fieldbyname('version').AsString + '");');
           end;
           // получение last_row_id
           last_id := LastRowID(DM.FDDatabese);
@@ -221,9 +233,9 @@ begin
           with DM.FDMemTable2 do while not Eof do  // перебираем карточеки и заполняем
           begin
             DM.FDDatabese.ExecSQL('INSERT INTO cards (np,question1,question2,version)'
-            + 'VALUES (' + IntToStr(last_id) + ',''' + CheckAndCorrect( Fieldbyname('question1').AsString )
-            + ''',''' + CheckAndCorrect( Fieldbyname('question2').AsString ) + ''','''
-            + Fieldbyname('version').AsString + ''');');
+            + 'VALUES (' + IntToStr(last_id) + ',"' + CheckAndCorrect( Fieldbyname('question1').AsString )
+            + '","' + CheckAndCorrect( Fieldbyname('question2').AsString ) + '","'
+            + Fieldbyname('version').AsString + '");');
             Next;
           end;
         end;

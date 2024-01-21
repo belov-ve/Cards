@@ -4,7 +4,7 @@ object Import: TImport
   Caption = 'Impost'
   ClientHeight = 640
   ClientWidth = 400
-  Position = Designed
+  Position = ScreenCenter
   StyleBook = StyleBook1
   FormFactor.Width = 320
   FormFactor.Height = 480

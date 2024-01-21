@@ -1,10 +1,11 @@
 object Form1: TForm1
   Left = 630
   Top = 105
+  ActiveControl = PackList
   Caption = 'Cards'
   ClientHeight = 640
   ClientWidth = 400
-  Position = Designed
+  Position = ScreenCenter
   StyleBook = StyleBook1
   FormFactor.Width = 400
   FormFactor.Height = 640
@@ -13084,7 +13085,7 @@ object Form1: TForm1
         Size.Height = 596.000000000000000000
         Size.PlatformDefault = False
         TabHeight = 49.000000000000000000
-        TabIndex = 1
+        TabIndex = 3
         TabOrder = 0
         TabStop = False
         TabPosition = None
@@ -13319,8 +13320,9 @@ object Form1: TForm1
             object Memo1: TMemo
               Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
               DataDetectorTypes = []
+              TextSettings.WordWrap = True
               Align = Bottom
-              Position.Y = 405.000000000000000000
+              Position.Y = 403.000000000000000000
               Size.Width = 400.000000000000000000
               Size.Height = 138.000000000000000000
               Size.PlatformDefault = False
@@ -13336,7 +13338,7 @@ object Form1: TForm1
             item
             end>
           TextSettings.Trimming = None
-          IsSelected = True
+          IsSelected = False
           Size.Width = 11.000000000000000000
           Size.Height = 11.000000000000000000
           Size.PlatformDefault = False
@@ -13358,7 +13360,6 @@ object Form1: TForm1
             ShowHint = False
             OnResize = PanelPackResize
             object CardsGrid: TGrid
-              OnTap = CardsGridTap
               Align = Client
               CanFocus = True
               ClipChildren = True
@@ -13366,15 +13367,14 @@ object Form1: TForm1
               Margins.Left = 5.000000000000000000
               Margins.Top = 5.000000000000000000
               Margins.Right = 5.000000000000000000
-              PopupMenu = PopupMenuCardsCrid
               Size.Width = 390.000000000000000000
               Size.Height = 391.000000000000000000
               Size.PlatformDefault = False
               TabOrder = 1
-              TabStop = False
               RowHeight = 40.000000000000000000
               RowCount = 4
-              Options = [AlternatingRowBackground, RowLines, RowSelect, AlwaysShowSelection, Header]
+              Options = [AlternatingRowBackground, RowLines, RowSelect, AlwaysShowSelection, Header, HeaderClick]
+              OnHeaderClick = CardsGridHeaderClick
               OnGetValue = CardsGridGetValue
               OnResize = CardsGridResize
               OnCellClick = CardsGridCellClick
@@ -13387,23 +13387,27 @@ object Form1: TForm1
                 ReadOnly = True
               end
               object Answer: TStringColumn
+                Tag = 1
+                OnGesture = AnswerGesture
                 Header = 'Answer'
                 HeaderSettings.TextSettings.WordWrap = False
                 ReadOnly = True
                 Size.Width = 200.000000000000000000
               end
               object VisibleDirect: TImageColumn
+                Tag = 2
                 Header = 'D'
                 HeaderSettings.TextSettings.WordWrap = False
                 Size.Width = 24.000000000000000000
               end
               object VisibleReverse: TImageColumn
+                Tag = 3
                 Header = 'R'
                 HeaderSettings.TextSettings.WordWrap = False
                 Size.Width = 24.000000000000000000
               end
               object Progress: TProgressColumn
-                OnGesture = ProgressGesture
+                Tag = 4
                 Header = 'Progress'
                 HeaderSettings.TextSettings.WordWrap = False
                 Max = 20.000000000000000000
@@ -13607,14 +13611,13 @@ object Form1: TForm1
               object Statistics: TExpander
                 Align = Horizontal
                 StyledSettings = [Family, Size, Style]
-                IsExpanded = False
                 Margins.Left = 5.000000000000000000
                 Margins.Right = 5.000000000000000000
                 Position.X = 5.000000000000000000
                 Position.Y = 112.000000000000000000
                 ShowCheck = False
                 Size.Width = 390.000000000000000000
-                Size.Height = 25.000000000000000000
+                Size.Height = 225.000000000000000000
                 Size.PlatformDefault = False
                 Text = 'Statistics'
                 TabOrder = 3
@@ -13627,7 +13630,7 @@ object Form1: TForm1
                   Margins.Left = 15.000000000000000000
                   Position.X = 15.000000000000000000
                   Position.Y = 4.000000000000000000
-                  Size.Width = 185.000000000000000000
+                  Size.Width = 43.500000000000000000
                   Size.Height = 21.500000000000000000
                   Size.PlatformDefault = False
                   TextSettings.WordWrap = False
@@ -13656,7 +13659,7 @@ object Form1: TForm1
                   Margins.Left = 15.000000000000000000
                   Position.X = 15.000000000000000000
                   Position.Y = 36.000000000000000000
-                  Size.Width = 185.000000000000000000
+                  Size.Width = 375.000000000000000000
                   Size.Height = 21.500000000000000000
                   Size.PlatformDefault = False
                   TextSettings.WordWrap = False
@@ -13670,7 +13673,7 @@ object Form1: TForm1
                   Margins.Left = 15.000000000000000000
                   Position.X = 15.000000000000000000
                   Position.Y = 68.000000000000000000
-                  Size.Width = 185.000000000000000000
+                  Size.Width = 375.000000000000000000
                   Size.Height = 21.500000000000000000
                   Size.PlatformDefault = False
                   TextSettings.WordWrap = False
@@ -13685,7 +13688,7 @@ object Form1: TForm1
                   Margins.Right = 10.000000000000000000
                   Position.X = 160.000000000000000000
                   Position.Y = 46.000000000000000000
-                  Size.Width = 30.000000000000000000
+                  Size.Width = 220.000000000000000000
                   Size.Height = 4.000000000000000000
                   Size.PlatformDefault = False
                   Value = 50.000000000000000000
@@ -13697,7 +13700,7 @@ object Form1: TForm1
                   Margins.Right = 10.000000000000000000
                   Position.X = 160.000000000000000000
                   Position.Y = 78.000000000000000000
-                  Size.Width = 30.000000000000000000
+                  Size.Width = 220.000000000000000000
                   Size.Height = 4.000000000000000000
                   Size.PlatformDefault = False
                   Value = 50.000000000000000000
@@ -13889,7 +13892,7 @@ object Form1: TForm1
             item
             end>
           TextSettings.Trimming = None
-          IsSelected = False
+          IsSelected = True
           Size.Width = 11.000000000000000000
           Size.Height = 11.000000000000000000
           Size.PlatformDefault = False
@@ -32724,30 +32727,6 @@ object Form1: TForm1
           end
         end
       end
-    end
-  end
-  object PopupMenuCardsCrid: TPopupMenu
-    Left = 233
-    Top = 314
-    object MenuDirectShow: TMenuItem
-      OnTap = MenuDirectShowTap
-      Text = 'All Card in Direct Show'
-      OnClick = MenuDirectShowClick
-    end
-    object MenuDirectHide: TMenuItem
-      OnTap = MenuDirectHideTap
-      Text = 'All Card in Direct Hide'
-      OnClick = MenuDirectHideClick
-    end
-    object MenuReverseShow: TMenuItem
-      OnTap = MenuReverseShowTap
-      Text = 'All Card in Reverse Show'
-      OnClick = MenuReverseShowClick
-    end
-    object MenuReverseHide: TMenuItem
-      OnTap = MenuReverseHideTap
-      Text = 'All Card in Direct Hide'
-      OnClick = MenuReverseHideClick
     end
   end
   object ActionList1: TActionList

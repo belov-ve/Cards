@@ -28,6 +28,8 @@ type
     FDMemTable3: TFDMemTable;
     BindSourceDB12: TBindSourceDB;
     FDMemTable2: TFDMemTable;
+    FDSQLiteValidate1: TFDSQLiteValidate;
+    FDPhysSQLiteDriverLink1: TFDPhysSQLiteDriverLink;
   private
     { Private declarations }
   public

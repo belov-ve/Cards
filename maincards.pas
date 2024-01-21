@@ -13,8 +13,7 @@ uses
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
   Xml.XMLDoc, System.IOUtils, FMX.ScrollBox, FireDAC.Stan.Param,
   DateUtils, FMX.Memo.Types, FMX.Grid.Style,
-  FMX.Dialogs, FMX.DialogService.Sync, FMX.Platform, FMX.Menus;
-
+  FMX.Dialogs, FMX.Platform, FMX.Menus;
 
 type
   TForm1 = class(TForm)
@@ -201,11 +200,6 @@ type
     KeyDirectionAnimated180: TFloatKeyAnimation;
     mDelPack: TListBoxItem;
     LabelDelPack: TLabel;
-    PopupMenuCardsCrid: TPopupMenu;
-    MenuDirectShow: TMenuItem;
-    MenuDirectHide: TMenuItem;
-    MenuReverseShow: TMenuItem;
-    MenuReverseHide: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
@@ -230,7 +224,6 @@ type
     procedure CheckBoxReadOnly(Sender: TObject);
     procedure EditValidate(Sender: TObject; var Text: string);
     procedure EditTracking(Sender: TObject);
-    procedure CardsGridTap(Sender: TObject; const Point: TPointF);
     procedure btnAddCardClick(Sender: TObject);
     procedure CardsGridMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Single);
@@ -257,7 +250,7 @@ type
     procedure btnOprosMouseLeave(Sender: TObject);
     procedure btnDirectionOldClick(Sender: TObject);
     procedure btnAaClick(Sender: TObject);
-    procedure btnMinusClick(Sender: TObject);
+    //procedure btnMinusClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure semaforPaint(Sender: TObject; Canvas: TCanvas;
       const ARect: TRectF);
@@ -289,17 +282,11 @@ type
     procedure CardsGridCellDblClick(const Column: TColumn; const Row: Integer);
     procedure CardsGridCellClick(const Column: TColumn; const Row: Integer);
     procedure OprosClick(Sender: TObject);
-    procedure ProgressGesture(Sender: TObject;
+    procedure QuestionGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
-    procedure SetHideFromPopMenu(f,t: integer);
-    procedure MenuDirectShowClick(Sender: TObject);
-    procedure MenuDirectHideClick(Sender: TObject);
-    procedure MenuDirectHideTap(Sender: TObject; const Point: TPointF);
-    procedure MenuDirectShowTap(Sender: TObject; const Point: TPointF);
-    procedure MenuReverseShowClick(Sender: TObject);
-    procedure MenuReverseShowTap(Sender: TObject; const Point: TPointF);
-    procedure MenuReverseHideClick(Sender: TObject);
-    procedure MenuReverseHideTap(Sender: TObject; const Point: TPointF);
+    procedure AnswerGesture(Sender: TObject; const EventInfo: TGestureEventInfo;
+      var Handled: Boolean);
+    procedure CardsGridHeaderClick(Column: TColumn);
   private
     { Private declarations }
   public
@@ -424,8 +411,8 @@ begin
   try
     query.Connection := db_connect;
 
-    query.SQL.Add('SELECT p.lang, datetime(p.version,''localtime'') AS version,');
-    query.SQL.Add('datetime(s.lastmod,''localtime'') AS lastmod, s.countcards, s.hide1, s.hide2');
+    query.SQL.Add('SELECT p.lang, datetime(p.version,"localtime") AS version,');
+    query.SQL.Add('datetime(s.lastmod,"localtime") AS lastmod, s.countcards, s.hide1, s.hide2');
     query.SQL.Add('FROM packet p LEFT JOIN pack_stats s ON s.np=p.np WHERE p.np='+IntToStr(np)+';');
     query.Active := True;
 
@@ -486,7 +473,6 @@ begin
             begin
               btnAddCard.Visible    := True;
               btnDeleteCard.Visible := True;
-              CardsGrid.PopupMenu := PopupMenuCardsCrid;
             end;
     end;
     if state then
@@ -555,13 +541,14 @@ begin
     DM.FDQuery1.SQL.Clear;
     DM.FDQuery1.Open('SELECT np, packname, type FROM packet ORDER BY np DESC;');
 
-//ListPacks.DefaultItemStyles.ItemStyle := 'listboxitembottomdetail';
+    //ListPacks.DefaultItemStyles.ItemStyle := 'listboxitembottomdetail';
     // заполняем список пачек
     while not DM.FDQuery1.Eof do
     begin
       i := ListPacks.Items.Add( CheckItemText( ListPacks.Items, DM.FDQuery1.FieldByName('packname').AsString ) );
-//стиль ()
-//ListPacks.ListItems[i].StyleLookup := 'listboxitembottomdetail';
+      //стиль ()
+      //ListPacks.ListItems[i].StyleLookup := 'listboxitembottomdetail';
+
       // заполняем строчку для Detail
       ListPacks.ListItems[i].ItemData.Detail := GetDetail(DM.FDDatabese,DM.FDQuery1.FieldByName('np').AsLargeInt);
       // RowID записи
@@ -613,7 +600,7 @@ begin
   FormResize(nil);  // пересчет размещение элементов панели (и всего TabControl)
 end;
 
-procedure TForm1.ProgressGesture(Sender: TObject;
+procedure TForm1.QuestionGesture(Sender: TObject;
   const EventInfo: TGestureEventInfo; var Handled: Boolean);
 begin
 
@@ -812,11 +799,7 @@ var
   ASyncService : IFMXDialogServiceASync;
 begin
   if ListPacks.Index<>-1 then
-    {* Метод устарел
-    MessageDlg(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],0,TMsgDlgBtn.mbNo,CloseDlgDeletePack);
-    *}
 
-//    {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
     if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
      ASyncService.MessageDialogAsync(
       txt_question2,
@@ -826,13 +809,6 @@ begin
       0,
       CloseDlgDeletePack
     );
-
-
-//    {$ELSEIF DEFINED(ANDROID) or DEFINED(IOS)}
-//    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
-//        ASyncService.MessageDialogAsync(txt_question2,TMsgDlgType.mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],TMsgDlgBtn.mbNo,0, CloseDlgDeletePack);
-//
-//    {$ENDIF}
 
 end;
 
@@ -898,10 +874,6 @@ procedure TForm1.btnMenuAnimationFinish(Sender: TObject);
 begin
   BtnMenuAnimation.Inverse := not BtnMenuAnimation.Inverse;
   BtnMenuAnimation.Enabled := False;
-end;
-
-procedure TForm1.btnMinusClick(Sender: TObject);
-begin
 end;
 
 // обработчик MessageDlg (требоване для Non-blocking вызова OS)
@@ -1028,11 +1000,13 @@ begin
   end;
 end;
 
+
 procedure TForm1.btnOprosClick(Sender: TObject);
-procedure HideCard(hide : integer; nc : string);
-begin
-  DM.FDDatabese.ExecSQL('UPDATE cards SET hide'+IntToStr(hide+1)+'=1 WHERE nc='+nc+';');
-end;
+
+  procedure HideCard(hide : integer; nc : string);
+  begin
+    DM.FDDatabese.ExecSQL('UPDATE cards SET hide'+IntToStr(hide+1)+'=1 WHERE nc='+nc+';');
+  end;
 
 begin
   if TSPeedButton(Sender).Visible then  // защита от повторного вызова (по признаку видимости нажатой кнопки)
@@ -1048,8 +1022,8 @@ begin
       else // нажата кнока "верно" или "неверно"
       begin
         //сохраняем ответ в БД
-        DM.FDDatabese.ExecSQL('INSERT INTO answers (nc,direct,answer) VALUES ('+DM.FDQuery2.FieldByName('nc').AsString+
-            ','+IntToStr(Opros.Tag)+','+IntToStr(TSpeedButton(Sender).Tag)+');');
+        DM.FDDatabese.ExecSQL( Format('INSERT INTO answers (nc,direct,answer) VALUES (%d,%d,%d);',
+        [DM.FDQuery2.FieldByName('nc').AsInteger, Opros.Tag, TSpeedButton(Sender).Tag]) );
 
         //если нажали кнопку верного ответа, проверка на авто скрытие карточке при верном ответе
         if (TSpeedButton(Sender).Tag=1) and (ini_autohide<>0) and (VarToInt(DM.FDQuery2['true'])+1>=ini_maxanswer) then
@@ -1162,8 +1136,8 @@ begin
   case TabControl1.ActiveTab.Index of
     // нажата Save на форме Pack
     1:  begin
-          PackName.Text         := Trim(PackName.Text);
-          PackDescription.Text  := Trim(PackDescription.Text);
+          PackName.Text         := CheckAndCorrect(PackName.Text);
+          PackDescription.Text  := CheckAndCorrect(PackDescription.Text);
           LangEdit.Text         := Trim(LangEdit.Text);
           if PackName.Text.Length=0 then
           begin
@@ -1175,26 +1149,28 @@ begin
             if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := not DM.FDDatabese.Connected;
 
             case Pack.Tag of
-              // Редактирование существующей
+              // Редактирование существующей пачки
               1:  begin
                     // проверка на изменение имени
                     DM.FDQuery1.SQL.Clear;
-                    DM.FDQuery1.SQL.Add('SELECT np FROM packet WHERE packname='''+
-                        PackName.Text +''';');
+                    DM.FDQuery1.SQL.Add('SELECT np FROM packet WHERE packname="'
+                      + PackName.Text +'";');
                     DM.FDQuery1.OpenOrExecute;
-                    if ( DM.FDQuery1.RecordCount > 1 ) or
-                       ( VarToStr(DM.FDQuery1['np']) <> pack_selected^.TagString ) then
-                            PackName.Text := CheckItemText( ListPacks.Items, PackName.Text );
+                    if ( DM.FDQuery1.RecordCount > 1 )
+                     or ( VarToStr(DM.FDQuery1['np']) <> pack_selected^.TagString )then
+                        PackName.Text := CheckItemText( ListPacks.Items, PackName.Text );
                     // обновление
-                    DM.FDQuery1.SQL.Clear;
-                    DM.FDQuery1.SQL.Add('UPDATE packet SET packname=:p,');
-                    DM.FDQuery1.SQL.Add('descript=:d,lang=:l');
-                    DM.FDQuery1.SQL.Add('WHERE np=' + pack_selected^.TagString +';');
-                    DM.FDQuery1.ParamByName('p').AsString := PackName.Text;
-                    DM.FDQuery1.ParamByName('d').AsString := PackDescription.Text;
-                    DM.FDQuery1.ParamByName('l').AsString := LangEdit.Text;
-                    DM.FDQuery1.Prepare;
-                    DM.FDQuery1.ExecSQL;
+                    DM.FDDatabese.ExecSQL(
+                      Format(
+                        'UPDATE packet SET packname="%s",descript="%s",lang="%s" WHERE np=%s;',
+                        [
+                          PackName.Text,
+                          PackDescription.Text,
+                          LangEdit.Text,
+                          pack_selected^.TagString
+                        ]
+                      )
+                    );
 
                     pack_selected^.ItemData.Text := PackName.Text;
                     pack_selected^.ItemData.Detail := GetDetail(DM.FDDatabese,StrToInt(pack_selected^.TagString));
@@ -1205,10 +1181,18 @@ begin
                     try
                       DM.FDQuery1.Open('SELECT hex(randomblob(16));');    // формирование уникального uid ддя новой пачки
 
-                      DM.FDDatabese.ExecSQL( 'INSERT INTO packet (uid,lang,packname,descript, version) '
-                        + 'VALUES (''' + DM.FDQuery1.Fields.Fields[0].AsString + ''',''' + LangEdit.Text
-                        + ''',''' + CheckAndCorrect( PackName.Text ) + ''','''
-                        + CheckAndCorrect( PackDescription.Text ) + ''',datetime());' );
+                      DM.FDDatabese.ExecSQL(
+                        Format(
+                          'INSERT INTO packet (uid,lang,packname,descript,version) VALUES ("%s","%s","%s","%s",%s);',
+                          [
+                            DM.FDQuery1.Fields.Fields[0].AsString,
+                            LangEdit.Text,
+                            CheckAndCorrect( PackName.Text ),
+                            CheckAndCorrect( PackDescription.Text ),
+                            'datetime("now")'
+                          ]
+                        )
+                      );
 
                       // получение last_row_id (np для packet)
                       last_id := LastRowID(DM.FDDatabese);
@@ -1261,9 +1245,10 @@ begin
             Exit;
           end;
 
-
+          { // От FDQuery3 избавился
           if DM.FDQuery3.Active then DM.FDQuery3.Close;
           DM.FDQuery3.SQL.Clear;
+          }
           try
             case Card.Tag of
             // Форма Card открыта в режиме редактирования существующей
@@ -1273,30 +1258,38 @@ begin
 
                     // проверка необходимости обновления записи БД
                     if (DM.FDQuery2.FieldByName('question1').AsString <> EditQuestion.Text) or
-                      (DM.FDQuery2.FieldByName('question2').AsString <> EditAnswer.Text)then
+                       (DM.FDQuery2.FieldByName('question2').AsString <> EditAnswer.Text) then
                     begin
-                      DM.FDQuery3.SQL.Add('UPDATE cards SET question1=:q1,question2=:q2');
-                      DM.FDQuery3.SQL.Add('WHERE nc='+DM.FDQuery2.FieldByName('nc').AsString+';');
-                      DM.FDQuery3.ParamByName('q1').AsString := EditQuestion.Text;
-                      DM.FDQuery3.ParamByName('q2').AsString := EditAnswer.Text;
-                      DM.FDQuery3.Prepare;
-                      DM.FDQuery3.ExecSQL;
+                      DM.FDDatabese.ExecSQL(
+                        Format(
+                          'UPDATE cards SET question1="%s",question2="%s" WHERE nc=%d;',
+                          [
+                            EditQuestion.Text,
+                            EditAnswer.Text,
+                            DM.FDQuery2.FieldByName('nc').AsInteger
+                          ]
+                        )
+                      );
+
                       DM.FDQuery2.Refresh;
                     end;
 
                     // если установлены, сохраняем поля hide1 и hide2
                     // из-за наличия Constrain необходимо сохранять отдельно от question1 и question2
                     if (DM.FDQuery2.FieldByName('hide1').AsInteger <> BoolToInt(EditDirectHide.IsChecked)) or
-                      (DM.FDQuery2.FieldByName('hide2').AsInteger <> BoolToInt(EditReverseHide.IsChecked)) then
+                       (DM.FDQuery2.FieldByName('hide2').AsInteger <> BoolToInt(EditReverseHide.IsChecked)) then
                     begin
-                      if DM.FDQuery3.Active then DM.FDQuery3.Close;
-                      DM.FDQuery3.SQL.Clear;
-                      DM.FDQuery3.SQL.Add('UPDATE cards SET hide1=:h1,hide2=:h2');
-                      DM.FDQuery3.SQL.Add('WHERE nc='+DM.FDQuery2.FieldByName('nc').AsString+';');
-                      DM.FDQuery3.ParamByName('h1').AsInteger  := BoolToInt(EditDirectHide.IsChecked);
-                      DM.FDQuery3.ParamByName('h2').AsInteger  := BoolToInt(EditReverseHide.IsChecked);
-                      DM.FDQuery3.Prepare;
-                      DM.FDQuery3.ExecSQL;
+                      DM.FDDatabese.ExecSQL(
+                        Format(
+                          'UPDATE cards SET hide1=%d,hide2=%d WHERE nc=%d;',
+                          [
+                            BoolToInt(EditDirectHide.IsChecked),
+                            BoolToInt(EditReverseHide.IsChecked),
+                            DM.FDQuery2.FieldByName('nc').AsInteger
+                          ]
+                        )
+                      );
+
                     end;
 
                     //установка курсора в CardsGrin на обновленую запись
@@ -1306,12 +1299,17 @@ begin
                 end;
               // Форма Card открыта в режиме добавленя новой карточки
               2:  begin
-                    DM.FDQuery3.SQL.Add('INSERT INTO cards (np,question1,question2,version)');
-                    DM.FDQuery3.SQL.Add('VALUES ('+pack_selected^.TagString+',:q1,:q2,datetime());');
-                    DM.FDQuery3.ParamByName('q1').AsString   := EditQuestion.Text;
-                    DM.FDQuery3.ParamByName('q2').AsString   := EditAnswer.Text;
-                    DM.FDQuery3.Prepare;
-                    DM.FDQuery3.ExecSQL;
+                    DM.FDDatabese.ExecSQL(
+                      Format(
+                        'INSERT INTO cards (np,question1,question2,version)  VALUES (%s,"%s","%s",%s);',
+                        [
+                          pack_selected^.TagString,
+                          CheckAndCorrect( EditQuestion.Text ),
+                          CheckAndCorrect( EditAnswer.Text ),
+                          'datetime("now")'
+                        ]
+                      )
+                    );
 
                     last_id := LastRowID(DM.FDDatabese);            // получение last_row_id
                     CardsGrid.RowCount  := CardsGrid.RowCount + 1;  // +1 карточка в таблице
@@ -1320,14 +1318,17 @@ begin
                     // из-за наличия Constrain необходимо сохранять отдельно от question1 и question2
                     if EditDirectHide.IsChecked or EditReverseHide.IsChecked then
                     begin
-                      if DM.FDQuery3.Active then DM.FDQuery3.Close;
-                      DM.FDQuery3.SQL.Clear;
-                      DM.FDQuery3.SQL.Add('UPDATE cards SET hide1=:h1,hide2=:h2');
-                      DM.FDQuery3.SQL.Add('WHERE nc='+IntToStr(last_id)+';');
-                      DM.FDQuery3.ParamByName('h1').AsInteger  := BoolToInt(EditDirectHide.IsChecked);
-                      DM.FDQuery3.ParamByName('h2').AsInteger  := BoolToInt(EditReverseHide.IsChecked);
-                      DM.FDQuery3.Prepare;
-                      DM.FDQuery3.ExecSQL;
+                      DM.FDDatabese.ExecSQL(
+                        Format(
+                          'UPDATE cards SET hide1=%d,hide2=%d WHERE nc=%d;',
+                          [
+                            BoolToInt(EditDirectHide.IsChecked),
+                            BoolToInt(EditReverseHide.IsChecked),
+                            last_id
+                          ]
+                        )
+                      );
+
                     end;
 
                     // установка курсора на последнюю добавленную запись
@@ -1379,7 +1380,9 @@ end;
 
 procedure TForm1.CardsGridCellClick(const Column: TColumn; const Row: Integer);
 begin
-  Statistics.IsExpanded := False; // Кликнули по таблице - скрыть статистику
+//  TopLabel.Text := '(Click) Row=' + IntToStr(Row) + ' Col=' + IntToStr(CardsGrid.Col) + ' Row='+ IntToStr(CardsGrid.Row);
+
+  if Statistics.IsExpanded then Statistics.IsExpanded := False; // Скрыть панель статистики
   //
   if CardsGrid.Selected <> -1 then
   begin
@@ -1389,8 +1392,7 @@ begin
 end;
 
 //Old CardsGridDblClick
-procedure TForm1.CardsGridCellDblClick(const Column: TColumn;
-  const Row: Integer);
+procedure TForm1.CardsGridCellDblClick(const Column: TColumn;  const Row: Integer);
 
   //функция возвращает обратное значение для поля Hide
   function SetNewFieldHide(x : integer) : string;
@@ -1409,6 +1411,7 @@ procedure TForm1.CardsGridCellDblClick(const Column: TColumn;
     CardsGrid.EndUpdate;
   end;
   //
+
 begin
   if btnInfoCard.Visible then   //карточка выбрана
   begin
@@ -1419,6 +1422,7 @@ begin
     if (Pack.Tag=1) and (CardsGrid.ColumnIndex=3) then SetNewHide('hide2')
     else btnInfoCardClick(nil);
   end;
+
 end;
 
 procedure TForm1.CardsGridGetValue(Sender: TObject; const Col, Row: Integer;
@@ -1445,6 +1449,87 @@ begin
           Value := i;
         end;
   end;
+end;
+
+procedure TForm1.CardsGridHeaderClick(Column: TColumn);
+var
+  hidef         : string; // поле БД
+  question      : string;
+  hide          : Int8;   // скрыть или показать
+  ASyncService  : IFMXDialogServiceASync;
+begin
+  //TopLabel.Text := 'onHeader Click';
+
+  // Кликнули по заголовку. Если карточки есть и пачка редактируется,
+  // то выводим предложение скрыть или показать все карточки
+  if (Pack.Tag=1)
+    and (CardsGrid.RowCount<>0)
+    and ((Column.Tag=2) or (Column.Tag=3)) then
+  begin
+    // Отлкючаю функцию на событие (блокировка повторного срабатывания)
+    CardsGrid.OnHeaderClick := nil;
+
+    if DM.FDQuery3.Active then DM.FDQuery3.Close;
+    DM.FDQuery3.SQL.Clear;
+    DM.FDQuery3.SQL.Add('SELECT countcards, hide1, hide2 FROM pack_stats WHERE np=' + pack_selected^.TagString);
+    DM.FDQuery3.Open;
+
+    hide := 1;
+    case Column.Tag of
+      2: begin
+          hidef := 'hide1';
+          if (DM.FDQuery3.FieldByName('hide1').AsInteger > DM.FDQuery3.FieldByName('countcards').AsInteger/2 ) then
+          begin
+            hide := 0;
+            question := txt_question4;
+          end
+          else question := txt_question3
+      end;
+      3: begin
+          hidef := 'hide2';
+          if (DM.FDQuery3.FieldByName('hide2').AsInteger > DM.FDQuery3.FieldByName('countcards').AsInteger/2 ) then
+          begin
+            hide := 0;
+            question := txt_question6;
+          end
+          else question := txt_question5;
+      end;
+    end;
+
+    //Диалог подтверждения установки видимости всех карточек
+    if TPlatformServices.Current.SupportsPlatformService (IFMXDialogServiceAsync, IInterface(ASyncService)) then
+     ASyncService.MessageDialogAsync(
+      question,
+      TMsgDlgType.mtConfirmation,
+      [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],
+      TMsgDlgBtn.mbNo,
+      0,
+      procedure (const AResult: TModalResult)
+      begin
+        if AResult=mrYes then
+        begin
+          // Уставность скрытие или показ карточек
+          CardsGrid.BeginUpdate;
+          if not DM.FDDatabese.InTransaction then DM.FDTransaction1.StartTransaction;
+          DM.FDDatabese.ExecSQL(
+            Format(
+              'UPDATE cards SET %s=%d WHERE np=%s;',
+              [ hidef, hide, pack_selected^.TagString]
+            )
+          );
+          //
+
+          DM.FDQuery2.Refresh;
+          CardsGrid.EndUpdate;
+        end;
+
+        CardsGrid.OnHeaderClick := CardsGridHeaderClick;
+      end
+    );
+
+    DM.FDQuery3.Close;
+  end;
+
 end;
 
 procedure TForm1.CardsGridMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -1480,16 +1565,6 @@ begin
           Answer.Width                  := CardsGrid.Width - Question.Width - 56;
   end;
   CardsGrid.EndUpdate;
-end;
-
-procedure TForm1.CardsGridTap(Sender: TObject; const Point: TPointF);
-begin
-  //TopLabel.Text := '(Tap) RowTap='+IntToStr(card_lastrow)+'  RowSelected='+IntToStr(CardsGrid.Selected);
-  CardsGrid.Selected  := card_lastrow;
-  CardsGrid.ColumnIndex := card_lastcol;
-  if Statistics.IsExpanded then Statistics.IsExpanded := False
-  else
-  if btnInfoCard.Visible then CardsGridCellDblClick(nil, 0);
 end;
 
 procedure TForm1.CheckBoxReadOnly(Sender: TObject);
@@ -1568,7 +1643,6 @@ begin
   mDelPack.Enabled  := False;
   mDelPack.HitTest  := False;
 
-
   // ------------------- подготовка данных -----------------------------
   //
   // триггер установки значения поля версии (даты) при изменеии карточки
@@ -1581,7 +1655,6 @@ begin
     Add(' UPDATE cards SET version=datetime("now") where nc=new.nc;');
     Add('END;');
   end;
-
 
   // активация путей к БД для разных ОС
   {$IF DEFINED(MSWINDOWS)}
@@ -1636,11 +1709,21 @@ begin
   Memo1.Lines.Add( Format('Upd DB = %s', [db_update]) );
   Memo1.Lines.Add( Format('Export_dir = %s', [export_dir]) );
 
-
   // проверка наличия файла БД и чтение версии структуры БД и последнего обновления
   DM.FDDatabese.Params.Database := db_work;
   if FileExists(db_work) then
   begin
+    // Оптимизация БД
+    try
+      DM.FDSQLiteValidate1.Database := db_work;
+      DM.FDSQLiteValidate1.Sweep;
+      //Memo1.Lines.Add( 'Database is vacuum...');
+      DM.FDSQLiteValidate1.Analyze;
+      //Memo1.Lines.Add( 'Database is analyze...');
+    finally
+      DM.FDSQLiteValidate1.Free;
+    end;
+
     try
       DM.FDDatabese.Connected := True; //открываем соединение
       DM.FDQuery1.SQL.Text := 'Select dbv, updv from version;';
@@ -1650,7 +1733,6 @@ begin
       // Тут можно проверить версию структуры базы данных и если необходимо выполнить обновление
       // Версия БД: dbv
       //..
-      Memo1.Lines.Add( Format('Database version = %d', [dbv]) );
       DM.FDDatabese.Close;
     except
       // что-то не то с базой данных
@@ -1667,6 +1749,7 @@ begin
   else
   begin
     // Скрипт создания структуры данных
+    dbv := 1;   // Версия структуры БД
     with DM.FDScript1 do
     begin
       SQLScripts.Clear;
@@ -1719,7 +1802,7 @@ begin
       // триггер установки значения поля даты при добавлении статистики (избыточный контролль)
         Add('CREATE TRIGGER IF NOT EXISTS answers_update_time AFTER INSERT ON answers');
         Add('BEGIN');
-        Add(' UPDATE answers SET atime=datetime("now") where rowid=new.rowid;');
+      Add(' UPDATE answers SET atime=datetime("now") where rowid=new.rowid;');
         Add('END;');
       // триггер очистки ответов для одной карточки
         Add('CREATE TRIGGER IF NOT EXISTS answer_count_clear AFTER INSERT ON answers');
@@ -1778,6 +1861,7 @@ begin
       DM.FDScript1.SQLScripts.Clear;
     end;
   end;
+  Memo1.Lines.Add( Format('Database version = %d', [dbv]) );
 
   // проверка наличия файла обновления
   try
@@ -2467,61 +2551,6 @@ begin
   end;
 end;
 
-// Установка/снятие признка скрытия поля карточки
-// f=1 - hide1, f=2 - hide2
-// t=0 - показать, t=1 - скрыть
-procedure TForm1.SetHideFromPopMenu(f,t: integer);
-begin
-  CardsGrid.BeginUpdate;
-  if not DM.FDDatabese.InTransaction then DM.FDTransaction1.StartTransaction;
-  DM.FDDatabese.ExecSQL(
-    'UPDATE cards SET hide'+ f.ToString +
-    '=' + t.ToString +
-    ' WHERE np=' + pack_selected^.TagString + ';');
-  DM.FDQuery2.Refresh;
-  CardsGrid.EndUpdate;
-end;
-
-procedure TForm1.MenuDirectHideClick(Sender: TObject);
-begin
-  SetHideFromPopMenu(1,1);
-end;
-
-procedure TForm1.MenuDirectHideTap(Sender: TObject; const Point: TPointF);
-begin
-  SetHideFromPopMenu(1,1);
-end;
-
-procedure TForm1.MenuDirectShowClick(Sender: TObject);
-begin
-  SetHideFromPopMenu(1,0);
-end;
-
-procedure TForm1.MenuDirectShowTap(Sender: TObject; const Point: TPointF);
-begin
-  SetHideFromPopMenu(1,0);
-end;
-
-procedure TForm1.MenuReverseHideClick(Sender: TObject);
-begin
-  SetHideFromPopMenu(2,1);
-end;
-
-procedure TForm1.MenuReverseHideTap(Sender: TObject; const Point: TPointF);
-begin
-  SetHideFromPopMenu(2,1);
-end;
-
-procedure TForm1.MenuReverseShowClick(Sender: TObject);
-begin
-  SetHideFromPopMenu(2,0);
-end;
-
-procedure TForm1.MenuReverseShowTap(Sender: TObject; const Point: TPointF);
-begin
-  SetHideFromPopMenu(2,0);
-end;
-
 procedure TForm1.mExitClick(Sender: TObject);
 begin
   // Закрыть приложение
@@ -2546,7 +2575,7 @@ var i       : integer;
 begin
     {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
       OpenDialog.InitialDir := export_dir;
-      OpenDialog.FileName := exp_fname+exp_ext;
+      OpenDialog.FileName := exp_fname + exp_ext;
 
       if OpenDialog.Execute then
       begin
@@ -2598,8 +2627,8 @@ var
     {$ENDIF}
     {$IF DEFINED(ANDROID)}
       Intent          : JIntent;
-      uri             : Jnet_Uri;
-      j_file          : JFile;
+      //uri             : Jnet_Uri;
+      //j_file          : JFile;
     {$ENDIF}
 //
 function CreateName(exp_fname : string; file_ind : integer) : string;
@@ -2615,7 +2644,7 @@ begin
     // отбор данных по выбранной пачке
     if DM.FDQuery1.Active then DM.FDQuery1.Active := False;
     DM.FDQuery1.SQL.Text := 'SELECT p.uid, p.lang, p.packname, p.descript,';
-    DM.FDQuery1.SQL.Add('p.version, datetime(s.lastmod,''localtime'') AS lastmod');
+    DM.FDQuery1.SQL.Add('p.version, datetime(s.lastmod,"localtime") AS lastmod');
     DM.FDQuery1.SQL.Add('FROM packet p LEFT JOIN pack_stats s ON s.np=p.np');
     DM.FDQuery1.SQL.Add('WHERE p.np =' + pack_selected^.TagString);
     DM.FDQuery1.OpenOrExecute;
@@ -2664,32 +2693,38 @@ begin
     // Сохранение файла экспорта exp_fname
     {$IF DEFINED(MSWINDOWS) or DEFINED(MACOS)}
       SaveDialog.InitialDir := export_dir;
-      SaveDialog.FileName := exp_fname+exp_ext;
+      //SaveDialog.FileName := exp_fname+exp_ext;
+      SaveDialog.FileName := packname + exp_ext;
       if SaveDialog.Execute then DM.XMLData.SaveToFile(SaveDialog.FileName);
     {$ELSEIF DEFINED(ANDROID)}
-      // удаление директориии (если имя совпадает с файлом експорта) - файл перепишется, директория нет
-      if DirectoryExists(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext)) then
-            TDirectory.Delete(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext), True);
+      // удаление директории (если имя совпадает с файлом експорта) - файл перепишется, директория нет
+      if DirectoryExists(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, packname + exp_ext)) then
+            TDirectory.Delete(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, packname + exp_ext), True);
       // формирование имени для директории общих документов
       file_ind := 0;
-      while FileExists( TPath.Combine(export_dir,CreateName(exp_fname+exp_ext, file_ind)) ) do inc(file_ind);
+      while FileExists( TPath.Combine(export_dir,CreateName(packname + exp_ext, file_ind)) ) do inc(file_ind);
       // сохраняем новый файл для почты в Androidapi.IOUtils.getExternalFilesDir
-      DM.XMLData.SaveToFile(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, exp_fname+exp_ext));
+      DM.XMLData.SaveToFile(TPath.Combine(Androidapi.IOUtils.getExternalFilesDir, packname + exp_ext));
       // сохраняем новый файл в общую папку загрузки export_dir
-      DM.XMLData.SaveToFile(TPath.Combine(export_dir, CreateName(exp_fname+exp_ext, file_ind)));
+      DM.XMLData.SaveToFile(TPath.Combine(export_dir, CreateName(packname + exp_ext, file_ind)));
       //
       Intent := TJIntent.Create;
       Intent.setAction(TJIntent.JavaClass.ACTION_SEND);
       Intent.setFlags(TJIntent.JavaClass.FLAG_ACTIVITY_NEW_TASK);
       Intent.putExtra(TJIntent.JavaClass.EXTRA_SUBJECT, StringToJString('Export Cards-pack '+DateTimeToStr(now)));
       Intent.putExtra(TJIntent.JavaClass.EXTRA_TEXT, StringToJString(txt_warning7+packname));
-      // присоединяем файл експорта
-      j_file := TAndroidHelper.Activity.getExternalFilesDir(StringToJString(exp_fname+exp_ext));
+      //
+      ShowMessage( Format(txt_message0, [export_dir, CreateName(packname + exp_ext, file_ind)]) );
+      {
+      // Отключил по причине ошибки начиная с API 23 или 24
+      // присоединяем файл експорта для отпавки по почте
+      j_file := TAndroidHelper.Activity.getExternalFilesDir(StringToJString(exp_fname + exp_ext));
       uri := TJnet_Uri.JavaClass.fromFile(j_file);
       Intent.putExtra(TJIntent.JavaClass.EXTRA_STREAM,TJParcelable.Wrap((uri as ILocalObject).GetObjectID));
       Intent.setType(StringToJString('vnd.android.cursor.dir/email'));
       // вызов диалога отправки
       TAndroidHelper.Activity.startActivity(Intent);
+      }
     {$ELSEIF DEFINED(IOS)}
       //потом сделать выгрузку для iOS
     {$ENDIF}
@@ -2808,6 +2843,12 @@ begin
   // эмитация псевдо переворота карты
   QuestionAnimationScale.Start;
   QuestionAnimationPosition.Start;
+end;
+
+procedure TForm1.AnswerGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+
 end;
 
 // Запуск анимации панели ответа
@@ -3061,10 +3102,11 @@ begin
     DM.FDDatabese.ExecSQL('UPDATE cards SET hide1=0, hide2=0 WHERE np='+pack_selected^.TagString+';');
 
     Statistics.IsExpanded := not Statistics.IsExpanded;
+    CardsGrid.BeginUpdate;
     DM.FDQuery1.Refresh;
     DM.FDQuery2.Refresh;
     SetPackStatistics;      // обновление полей статистики
-    CardsGrid.Repaint
+    CardsGrid.EndUpdate
   end;
 end;
 

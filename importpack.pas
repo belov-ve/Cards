@@ -34,9 +34,9 @@ type
     Files   : TStringList;
   end;
 
-const
-  cTrue     : Boolean = True;
-  cFalse    : Boolean = False;
+//const
+//  cTrue     : Boolean = True;
+//  cFalse    : Boolean = False;
 
 var
   Import: TImport;
@@ -54,7 +54,7 @@ var
 begin
 
   // скрываем кнопку 'Import'
-  AObject.Visible := cFalse;
+  AObject.Visible := False;
 
   // импорт файла номер: AItem.Index
   try
@@ -63,7 +63,7 @@ begin
 
     try
       DM.XMLData.LoadFromFile( Files[AItem.Index] );
-      DM.XMLData.Active := cTrue;
+      DM.XMLData.Active := True;
 
       // начало имопрта данных из файла
       // создаем временные таблицы
@@ -95,12 +95,12 @@ begin
           Size := 1024;
         end;
         with AddFieldDef do begin
-          Name := 'packname_ru';  // избыточные поля (для совеместимости с процедурой обновления)
+          Name := 'packname_ru';  // избыточные поля (для совместимости с процедурой обновления)
           DataType := ftWideString; //ftString;
           Size := 256;
         end;
         with AddFieldDef do begin
-          Name := 'descript_ru';  // избыточные поля (для совеместимости с процедурой обновления)
+          Name := 'descript_ru';  // избыточные поля (для совместимости с процедурой обновления)
           DataType := ftWideString;  //ftString;
           Size := 1024;
         end;
@@ -177,11 +177,11 @@ begin
       end;
 
       // вызов импорта
-      if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := cTrue;
+      if not DM.FDDatabese.Connected then DM.FDDatabese.Connected := True;
       DM.FDTransaction1.StartTransaction;
       DBUpdate(1);
       DM.FDTransaction1.Commit;
-      DM.FDDatabese.Connected := cFalse;
+      DM.FDDatabese.Connected := False;
 
       //
       TopLabel.Text := Format( 'Processed packages - %d  Cards - %d', [count_pack,count_card] );
@@ -190,13 +190,13 @@ begin
       begin
         TopLabel.Text := EmptyStr;    // очищаем предыдущее сообщение
         if DM.FDTransaction1.Active then DM.FDTransaction1.Rollback;  // откатываем изменения
-        if DM.FDDatabese.Connected then DM.FDDatabese.Connected := cFalse;
+        if DM.FDDatabese.Connected then DM.FDDatabese.Connected := False;
         ShowMessage(txt_error0 + E.Message)
       end;
     end;
   //
   finally
-    if DM.XMLData.Active then DM.XMLData.Active   := cFalse;
+    if DM.XMLData.Active then DM.XMLData.Active   := False;
     DM.FDMemTable1.Free;
     DM.FDMemTable2.Free;
   end;
@@ -214,7 +214,7 @@ var
     i, count_pack   : integer;
 begin
   DM.XMLData.LoadFromFile(f_name);
-  DM.XMLData.Active := cTrue;
+  DM.XMLData.Active := True;
 
   // проверка структуры xml файла
   // проверяем корневой узел
@@ -275,7 +275,7 @@ begin
 
   // заполнение списка файлов
   FileList.BeginUpdate;
-  FileList.EditMode := cFalse;
+  FileList.EditMode := False;
   //FileList.Items.Clear;
 
   i := 0;
