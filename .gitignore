@@ -70,6 +70,7 @@ modules/
 
 # Embarcadero compile folder
 Android/
+Android64/
 Win32/
 Win64/
 OSX32/
