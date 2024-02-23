@@ -13,7 +13,7 @@ uses
   FMX.ComboEdit, FMX.Colors, FMX.Effects, Xml.xmldom, Xml.XMLIntf, Xml.adomxmldom,
   Xml.XMLDoc, System.IOUtils, FMX.ScrollBox, FireDAC.Stan.Param,
   DateUtils, FMX.Memo.Types, FMX.Grid.Style,
-  FMX.Dialogs, FMX.Platform, FMX.Menus;
+  FMX.Dialogs, FMX.Platform, FMX.Menus, System.ImageList, FMX.ImgList;
 
 type
   TForm1 = class(TForm)
@@ -287,6 +287,7 @@ type
     procedure AnswerGesture(Sender: TObject; const EventInfo: TGestureEventInfo;
       var Handled: Boolean);
     procedure CardsGridHeaderClick(Column: TColumn);
+    procedure TestClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -3471,6 +3472,11 @@ begin
 
   //
   FormResize(nil);  // пересчет размещение элементов панели. (и всего TabControl) Добавил в версии IDE 11
+end;
+
+procedure TForm1.TestClick(Sender: TObject);
+begin
+
 end;
 
 // Обработка таймера для ExpressOpros

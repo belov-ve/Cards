@@ -4,22 +4,12 @@
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
     <PropertyGroup>
-        <DeviceId Condition="'$(Platform)'=='Android'"/>
+        <DeviceId Condition="'$(Platform)'=='Android'">PUG6R18623001955</DeviceId>
         <DeviceId Condition="'$(Platform)'=='Android64'">PUG6R18623001955</DeviceId>
         <DeviceId Condition="'$(Platform)'=='iOSDevice64'"/>
         <DeviceId Condition="'$(Platform)'=='iOSSimARM64'"/>
     </PropertyGroup>
-    <ItemGroup Condition="'$(Platform)'=='OSX64'">
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards.app\Contents\Resources\StartUp\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-    </ItemGroup>
+    <ItemGroup Condition="'$(Platform)'=='OSX64'"/>
     <ItemGroup Condition="'$(Platform)'=='Win32'">
         <DeployFile Include="Win32\Debug\Cards.exe" Condition="'$(Config)'=='Debug'">
             <RemoteDir>Cards\</RemoteDir>
@@ -30,15 +20,6 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
             <Required>True</Required>
-        </DeployFile>
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
         </DeployFile>
         <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Debug'">
             <RemoteDir>Cards\</RemoteDir>
@@ -146,15 +127,6 @@
             <RemoteName>styles.xml</RemoteName>
             <DeployClass>AndroidSplashStyles</DeployClass>
             <Operation>1</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
@@ -451,15 +423,6 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
         <DeployFile Include="LauncherIcon\Cards_36x36.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>Cards\res\drawable-ldpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
@@ -687,17 +650,7 @@
             <Overwrite>True</Overwrite>
         </DeployFile>
     </ItemGroup>
-    <ItemGroup Condition="'$(Platform)'=='OSXARM64'">
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards.app\Contents\Resources\StartUp\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-    </ItemGroup>
+    <ItemGroup Condition="'$(Platform)'=='OSXARM64'"/>
     <ItemGroup Condition="'$(Platform)'=='Win64'">
         <DeployFile Include="Win64\Release\Cards.exe" Condition="'$(Config)'=='Release'">
             <RemoteDir>Cards\</RemoteDir>
@@ -721,7 +674,7 @@
         <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
             <RemoteDir>Cards\</RemoteDir>
             <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
+            <DeployClass>ProjectFile</DeployClass>
             <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -756,27 +709,7 @@
             <Required>True</Required>
         </DeployFile>
     </ItemGroup>
-    <ItemGroup Condition="'$(Platform)'=='iOSDevice64'">
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards.app\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-    </ItemGroup>
-    <ItemGroup Condition="'$(Platform)'=='iOSSimARM64'">
-        <DeployFile Include="database\update.s3db" Condition="'$(Config)'=='Release'">
-            <RemoteDir>Cards.app\</RemoteDir>
-            <RemoteName>update.s3db</RemoteName>
-            <DeployClass>File</DeployClass>
-            <Operation>0</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-    </ItemGroup>
+    <ItemGroup Condition="'$(Platform)'=='iOSDevice64'"/>
+    <ItemGroup Condition="'$(Platform)'=='iOSSimARM64'"/>
     <ItemGroup Condition="'$(Platform)'=='Linux64'"/>
 </Project>

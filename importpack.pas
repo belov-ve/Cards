@@ -86,22 +86,22 @@ begin
         end;
         with AddFieldDef do begin
           Name := 'packname';
-          DataType := ftString;
+          DataType := ftWideString;
           Size := 256;
         end;
         with AddFieldDef do begin
           Name := 'descript';
-          DataType := ftWideString; //ftString;
+          DataType := ftWideString;
           Size := 1024;
         end;
         with AddFieldDef do begin
           Name := 'packname_ru';  // избыточные поля (для совместимости с процедурой обновления)
-          DataType := ftWideString; //ftString;
+          DataType := ftWideString;
           Size := 256;
         end;
         with AddFieldDef do begin
           Name := 'descript_ru';  // избыточные поля (для совместимости с процедурой обновления)
-          DataType := ftWideString;  //ftString;
+          DataType := ftWideString;
           Size := 1024;
         end;
         with AddFieldDef do begin
@@ -151,6 +151,7 @@ begin
           if Length(VarToStr(INodeP.Attributes['lang']))=0 then DM.FDMemTable1.FieldValues['lang'] := 'Other'
           else DM.FDMemTable1.FieldValues['lang']    := INodeP.Attributes['lang'];
           DM.FDMemTable1.FieldValues['packname']     := INodeP.ChildValues['packname'];
+          //DM.FDMemTable1.FieldValues['packname']     := 'test-question-üöä';         // тест utf-8
           DM.FDMemTable1.FieldValues['packname_ru']  := INodeP.ChildValues['packname'];
           DM.FDMemTable1.FieldValues['descript']     := INodeP.ChildValues['descript'];
           DM.FDMemTable1.FieldValues['descript_ru']  := INodeP.ChildValues['descript'];
@@ -314,6 +315,7 @@ begin
       fname.Height  := com_panel;
       {$IF DEFINED(ANDROID) or DEFINED(IOS)}
         fname.Text  := Format('Files for import into "%s" not found',[export_dir]);
+        ShowMessage(txt_warning9);
       {$ELSE}
         fname.Text  := 'In the selected data file to import not found';
       {$ENDIF}
