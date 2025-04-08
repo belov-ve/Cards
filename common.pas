@@ -15,7 +15,7 @@ function LastRowID(db_connect : TFDConnection): int64;
 function CheckAndCorrect(str : string) : string;
 
 const
-  app_version     : string = '1.12.1';
+  app_version     : string = '1.12.2';
   app_name        : string = 'Cards';
   exp_fname       : string = 'export';
   exp_ext         : string = '.xml';
